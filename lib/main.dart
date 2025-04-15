@@ -373,11 +373,11 @@ class _createScreen extends State<CreateScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset('assets/facebook.jpg', width: 30, height: 30),
+                    Image.asset('assets/images/facebook.jpg', width: 30, height: 30),
                     SizedBox(width: 20),
-                    Image.asset('assets/insta.jpg', width: 30, height: 30),
+                    Image.asset('assets/images/insta.jpg', width: 30, height: 30),
                     SizedBox(width: 20),
-                    Image.asset('assets/tweeter.jpg', width: 30, height: 30),
+                    Image.asset('assets/images/tweeter.jpg', width: 30, height: 30),
                     SizedBox(width: 20),
                   ],
                 ),
