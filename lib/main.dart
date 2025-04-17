@@ -4,26 +4,27 @@ import 'Screens/Create Company/CreateCom.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-
 import 'package:localstorage/localstorage.dart';
-void main() async {  
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await _initializeLocalStorage();  
+  await _initializeLocalStorage();
   runApp(MyApp());
 }
+
 Future<void> _initializeLocalStorage() async {
-  await localStorage.ready;  // Wait for the localStorage to be ready
+  await localStorage.ready; // Wait for the localStorage to be ready
 }
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
-final user=localStorage.getItem('user');
 class MyApp extends StatelessWidget {
+  String user = "";
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false, // Optional: remove the debug banner
-      home: (user == null || user.isEmpty)? CreateScreen() : HomeScreen(),
+      home: (user != null) ? HomeScreen():CreateScreen(),
     );
   }
 }
@@ -34,8 +35,7 @@ class CreateScreen extends StatefulWidget {
 }
 
 class _createScreen extends State<CreateScreen> {
-
-    void initState() {
+  void initState() {
     super.initState();
     _loadUserData();
   }
@@ -43,21 +43,21 @@ class _createScreen extends State<CreateScreen> {
   // Function to load user data after localStorage is initialized
   Future<void> _loadUserData() async {
     var storedUser = await localStorage.getItem('user');
+    if (!mounted) return;
     setState(() {
-      user = storedUser?? '';  // Now it's safe to access localStorage
+      user = storedUser != null ? jsonDecode(storedUser) : '';
     });
   }
 
   bool TermCondition = false;
   bool privacyPolicy = false;
   String msg = 'msg';
-  String user='Demo';
+  String user = 'Demo';
   final _formKey = GlobalKey<FormState>();
   final TextEditingController Uname = TextEditingController();
   final TextEditingController userId = TextEditingController();
   final TextEditingController password = TextEditingController();
   void login(context) async {
-    await _loadUserData();
 
     if (_formKey.currentState?.validate() ?? false) {
       if (!TermCondition || !privacyPolicy) {
@@ -82,36 +82,39 @@ class _createScreen extends State<CreateScreen> {
           headers: {'Content-Type': 'application/json'},
           body: json.encode({"email": userid, "password": Cpassword}),
         );
+
         var responseData = json.decode(response.body);
         var success = responseData['success'];
         final message = responseData['message'];
+        final role = responseData['role'];
         final data = responseData['data'];
-         print(message);
-         print(data);
-        print('Response body: ${response.body}');
+        print(data);
+        print(role);
+        print("Type$data");
         if (success == true) {
-        Navigator.push(
+          
+           localStorage.setItem('user', jsonEncode(data));
+           localStorage.setItem('role', jsonEncode(role));
+           alert();
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(message)));
+           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => HomeScreen()),
           );
-           ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(message)));
-           localStorage.setItem('user',  data);  // Assuming user contains the correct value
-
         } else {
-           ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(message)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(message)));
         }
         setState(() {
           msg = message; // Update the msg variable inside setState
         });
-       
       } catch (e) {
         ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text('Somthing Wants Wrong')));
+          context,
+        ).showSnackBar(SnackBar(content: Text('Somthing Wants Wrong Check Internet Connection')));
       }
     }
   }
@@ -148,7 +151,11 @@ class _createScreen extends State<CreateScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: 20),
-                Image.asset('assets/LogoMain.jpg', width: 100, height: 100),
+                Image.asset(
+                  'assets/images/LogoMain.jpg',
+                  width: 100,
+                  height: 100,
+                ),
                 SizedBox(height: 10),
                 Text(
                   "Sign-In",
@@ -306,23 +313,23 @@ class _createScreen extends State<CreateScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              child: 
-                            Text(
-                              "Don't Have Company?",
-                              style: TextStyle(color: Colors.black),
-                            ),),
+                              child: Text(
+                                "Don't Have Company?",
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            ),
                             Container(
-                              child: 
-                            TextButton(
-                              onPressed:
-                                  () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CreateCom(),
+                              child: TextButton(
+                                onPressed:
+                                    () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => CreateCom(),
+                                      ),
                                     ),
-                                  ),
-                              child: Text("Create Company"),
-                            ),)
+                                child: Text("Create Company"),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -373,11 +380,23 @@ class _createScreen extends State<CreateScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset('assets/images/facebook.jpg', width: 30, height: 30),
+                    Image.asset(
+                      'assets/images/facebook.jpg',
+                      width: 30,
+                      height: 30,
+                    ),
                     SizedBox(width: 20),
-                    Image.asset('assets/images/insta.jpg', width: 30, height: 30),
+                    Image.asset(
+                      'assets/images/insta.jpg',
+                      width: 30,
+                      height: 30,
+                    ),
                     SizedBox(width: 20),
-                    Image.asset('assets/images/tweeter.jpg', width: 30, height: 30),
+                    Image.asset(
+                      'assets/images/tweeter.jpg',
+                      width: 30,
+                      height: 30,
+                    ),
                     SizedBox(width: 20),
                   ],
                 ),

@@ -34,18 +34,18 @@ class CreateCom extends StatelessWidget {
       String CloginUserName = loginUserName.text;
       String Cwebsite = website.text;
       String CPanNo = PanNo.text;
-      final url = Uri.parse('http://192.168.29.249/emptrack/users');
+      final url = Uri.parse('https://testapi.rabadtechnology.com/create.php');
       final Map<String, dynamic> requestBody = {
-        "cname": ComName,
-        "tradname": Ctradename,
-        "keyperson": CkeyPerson,
-        "gstIn": GSTIN,
-        "panNo": CPanNo,
-        "mobile": Cmobile,
+        "company_name": ComName,
+        "trade_name": Ctradename,
+        "key_person": CkeyPerson,
+        "gstin_no": GSTIN,
+        "pan_card": CPanNo,
+        "mobile_no": Cmobile,
         "email": Cemail,
         "address": Caddress,
-        "weblink": Cwebsite,
-        "loginUser": CloginUserName,
+        "website_link": Cwebsite,
+        "username": CloginUserName,
         "password": Cpassword,
       };
       try {
@@ -76,10 +76,6 @@ class CreateCom extends StatelessWidget {
               context,
             ).showSnackBar(SnackBar(content: Text("Somthing Wants Wrong")));
       }
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => CreateScreen()),
-      );
     }
   }
 

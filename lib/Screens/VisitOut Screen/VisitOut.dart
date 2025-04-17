@@ -1,12 +1,11 @@
 import 'package:employee_tracker/Screens/Home%20Screen/Homescreen.dart';
-import 'package:employee_tracker/main.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart';
 import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
@@ -54,80 +53,91 @@ class VisitOutState extends State<VisitOut> {
     }
   }
 
-  void compLogin(context) async {
-    if (_formKey.currentState?.validate() ?? false) {
-      String Corganization = organization.text;
-      String CconcernedPerson = concernedPerson.text;
-      String Cphone = phone.text;
-      String Citem = item.text;
-      String Cvalue = value.text;
-      String Cprobability = probability.text;
-      String Caddress = address.text;
-      String Cremark = remark.text;
+ void compLogin(context) async {
+  if (_formKey.currentState?.validate() ?? false) {
+    String Corganization = organization.text;
+    String CconcernedPerson = concernedPerson.text;
+    String Cphone = phone.text;
+    String Citem = item.text;
+    String Cvalue = value.text;
+    String Cprobability = probability.text;
+    String Caddress = address.text;
+    String Cremark = remark.text;
 
-      // Mode of Transport
-      String modeOfTransport = '';
-      if (selectedTransportModes[0]) modeOfTransport += 'Air ';
-      if (selectedTransportModes[1]) modeOfTransport += 'Surface ';
-      if (selectedTransportModes[2]) modeOfTransport += 'Extrain ';
+    String modeOfTransport = '';
+    if (selectedTransportModes[0]) modeOfTransport += 'Air ';
+    if (selectedTransportModes[1]) modeOfTransport += 'Surface ';
+    if (selectedTransportModes[2]) modeOfTransport += 'Extrain ';
 
-      // Weather
-      String weather =
-          _selectedValue == 1
-              ? 'Hot'
-              : _selectedValue == 2
-              ? 'Ran'
-              : 'Cold';
+    String weather = _selectedValue == 1
+        ? 'Hot'
+        : _selectedValue == 2
+            ? 'Rain'
+            : 'Cold';
 
-      try {
-        var uri = Uri.parse(
-          'https://testapi.rabadtechnology.com/visit_out.php',
-        );
-        var request = http.MultipartRequest('POST', uri);
+    if (_imageFile == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please capture a photo')),
+      );
+      return;
+    }
 
-        request.fields['organization'] = Corganization;
-        request.fields['concerned_person'] = CconcernedPerson;
-        request.fields['phone'] = Cphone;
-        request.fields['item'] = Citem;
-        request.fields['value'] = Cvalue;
-        request.fields['mode_of_transport'] = modeOfTransport.trim();
-        request.fields['probability'] = Cprobability;
-        request.fields['weather'] = weather;
-        request.fields['address'] = Caddress;
-        request.fields['remark'] = Cremark;
-        var response = await request.send();
-final responseBody = await response.stream.bytesToString();
+    try {
+      // Read image file and convert to base64
+      File imageFile = File(_imageFile!.path);
+      List<int> imageBytes = await imageFile.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
 
-// Convert string to JSON (Map)
-final data = json.decode(responseBody);
+      var data = {
+        "organization": Corganization,
+        "concernedperson": CconcernedPerson,
+        "phoneno": Cphone,
+        "item": Citem,
+        "value": Cvalue,
+        "transport": modeOfTransport.trim(),
+        "Probablity": Cprobability,
+        "address": Caddress,
+        "Remark": Cremark,
+        "weather": weather,
+        "imagepunch": base64Image,
+      };
 
-// Now you can access values
-var success = data['success'];
-var message = data['message'];
-          localStorage.setItem('visitout', true);
-           Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+      var response = await http.post(
+        Uri.parse("https://testapi.rabadtechnology.com/visit_out.php"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(data),
+      );
+
+
+      if (response.statusCode == 200) {
+        var responseData = jsonDecode(response.body);
+        print(responseData);
+        if (responseData['success'] == true) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(responseData['message'])),
           );
-        if (success==true) {
-
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('You are Visited Out')));
-
+         localStorage.setItem('visitout', true);
+          Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+         
         } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Visit Out Failed')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(responseData['message'] ?? "Submission failed")),
+          );
         }
-      } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Something Went Wrong')));
-        print("Upload error: $e");
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Server error: ${response.statusCode}")),
+        );
       }
+    } catch (e) {
+      print("Upload error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Something went wrong")),
+      );
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +208,7 @@ var message = data['message'];
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       buildRadio("Hot", 1),
-                      buildRadio("Ran", 2),
+                      buildRadio("Rain", 2),
                       buildRadio("Cold", 3),
                     ],
                   ),

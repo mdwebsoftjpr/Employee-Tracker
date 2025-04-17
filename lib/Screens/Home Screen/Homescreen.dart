@@ -3,10 +3,12 @@ import 'dart:io'; // This is required to use the File class
 import 'package:employee_tracker/Screens/Profile%20Scree/Profile.dart';
 import 'package:employee_tracker/Screens/Reports/AttendanceRep.dart';
 import 'package:employee_tracker/Screens/VisitOut%20Screen/VisitOut.dart';
+import 'package:employee_tracker/Screens/create%20employee/createEmployee.dart';
 import 'package:employee_tracker/main.dart';
 import 'package:intl/intl.dart';
 // #docregion photo-picker-example
 import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
@@ -23,7 +25,6 @@ Future<void> _initializeLocalStorage() async {
 }
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
- 
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -33,33 +34,37 @@ class HomeScreen extends StatefulWidget {
 class _HomeRouteState extends State<HomeScreen> {
   int _selectedIndex = 0;
   bool drop = false;
-  String key_person="key_person";
-  String comName='Compamy';
+  String key_person = "key_person";
+  String comName = 'Compamy';
+  String role = '';
   bool visit = false;
 
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
-void initState() {
+  void initState() {
     super.initState();
     _loadUser();
   }
-   void _loadUser () {
-    final user = localStorage.getItem('user');
-    if (user != null) {
+
+  void _loadUser() {
+    var userJson = localStorage.getItem('user');
+    if (userJson != null) {
+      var user = jsonDecode(userJson);
+
       setState(() {
         comName = user['company_name'] ?? 'Default Company';
         key_person = user['key_person'] ?? 'Default User';
+        role = localStorage.getItem('role');
       });
     }
-    bool Visit = localStorage.getItem('visitout') ?? false;
-    if(Visit){
+    var Visit = localStorage.getItem('visitout') ?? false;
+    if (Visit == true) {
       setState(() {
-        visit:Visit;
+        visit:
+        Visit;
         print(Visit);
       });
     }
-    
-  
   }
 
   Future<void> _pickImageFromCamera() async {
@@ -74,7 +79,6 @@ void initState() {
     }
 
     print("addSds$ImageSource");
-   
   }
 
   // Notification method to navigate to Notification screen
@@ -111,24 +115,23 @@ void initState() {
 
   void dropdown() {
     print("Down");
-    print(user);
     setState(() {
       drop = false;
     });
   }
 
- void clearStorage(context) async {
-  try {
-    await localStorage.clear();
-    print('LocalStorage has been cleared!');
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => CreateScreen()),
-    );
-  } catch (e) {
-    print('Error clearing local storage: $e');
+  void clearStorage(context) async {
+    try {
+      await localStorage.clear();
+      print('LocalStorage has been cleared!');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => CreateScreen()),
+      );
+    } catch (e) {
+      print('Error clearing local storage: $e');
+    }
   }
-}
 
   void dropUp() {
     print("UP");
@@ -205,7 +208,6 @@ void initState() {
                   onPressed:
                       _openDropdown, // Call the function when button is pressed
                   child: Icon(Icons.logout, size: 30, color: Colors.black),
-                  style: ElevatedButton.styleFrom(),
                 ),
               ),
             ),
@@ -281,6 +283,25 @@ void initState() {
                       );
                     },
                   ),
+                  Column(
+                    children: [
+                      (role == 'employee')
+                          ? SizedBox():ListTile(
+                            leading: Icon(Icons.access_time),
+                            title: Text("Create Employee"),
+                            onTap: () {
+                              Navigator.pop(context); // Close the drawer first
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CreateEmployee(),
+                                ),
+                              );
+                            },
+                          )
+                          
+                    ],
+                  ),
 
                   ListTile(
                     leading: Icon(Icons.pause),
@@ -297,23 +318,29 @@ void initState() {
                     leading: Icon(Icons.exit_to_app),
                     title: Text("Punch out"),
                   ),
-                 visit
-  ? ListTile(
-      leading: Icon(Icons.person),
-      title: Text("Visit in"),
-      onTap: () {
-        Navigator.pop(context);
-        Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
-      },
-    )
-  : ListTile(
-      leading: Icon(Icons.exit_to_app),
-      title: Text("Visit out"),
-      onTap: () {
-        Navigator.pop(context);
-        Navigator.push(context, MaterialPageRoute(builder: (_) => VisitOut()));
-      },
-    ),
+                  visit
+                      ? ListTile(
+                        leading: Icon(Icons.person),
+                        title: Text("Visit in"),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => HomeScreen()),
+                          );
+                        },
+                      )
+                      : ListTile(
+                        leading: Icon(Icons.exit_to_app),
+                        title: Text("Visit in"),
+                        onTap: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => VisitOut()),
+                          );
+                        },
+                      ),
                   ListTile(
                     leading: Icon(Icons.exit_to_app),
                     title: Text("Logout"),
@@ -502,26 +529,98 @@ void initState() {
                                                         height: 30,
                                                         color: Colors.black,
                                                         child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                        children: [
-                                                          Text("View",style: TextStyle(color: Colors.white),),
-                                                           Text("Attendance",style: TextStyle(color: Colors.white)),
-                                                            Text("In",style: TextStyle(color: Colors.white)),
-                                                             Text("Out",style: TextStyle(color: Colors.white)),
-                                                        ],
-                                                      ),
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceEvenly,
+                                                          children: [
+                                                            Text(
+                                                              "View",
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors
+                                                                        .white,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              "Attendance",
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors
+                                                                        .white,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              "In",
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors
+                                                                        .white,
+                                                              ),
+                                                            ),
+                                                            Text(
+                                                              "Out",
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors
+                                                                        .white,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
                                                       Container(
                                                         child: Row(
-                                                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                        children: [
-                                                          TextButton(onPressed:()=> print("Row"), child: Icon(Icons.remove_red_eye,size: 30)),
-                                                          TextButton(onPressed:()=> print("Row"), child: Icon(Icons.remove_red_eye,size: 30)),
-                                                          TextButton(onPressed:()=> print("Row"), child: Icon(Icons.remove_red_eye,size: 30)),
-                                                          TextButton(onPressed:()=> print("Row"), child: Icon(Icons.remove_red_eye,size: 30)),
-                                                        ],
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceEvenly,
+                                                          children: [
+                                                            TextButton(
+                                                              onPressed:
+                                                                  () => print(
+                                                                    "Row",
+                                                                  ),
+                                                              child: Icon(
+                                                                Icons
+                                                                    .remove_red_eye,
+                                                                size: 30,
+                                                              ),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed:
+                                                                  () => print(
+                                                                    "Row",
+                                                                  ),
+                                                              child: Icon(
+                                                                Icons
+                                                                    .remove_red_eye,
+                                                                size: 30,
+                                                              ),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed:
+                                                                  () => print(
+                                                                    "Row",
+                                                                  ),
+                                                              child: Icon(
+                                                                Icons
+                                                                    .remove_red_eye,
+                                                                size: 30,
+                                                              ),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed:
+                                                                  () => print(
+                                                                    "Row",
+                                                                  ),
+                                                              child: Icon(
+                                                                Icons
+                                                                    .remove_red_eye,
+                                                                size: 30,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
                                                       ),
-                                                      )
                                                     ],
                                                   )
                                                   : Text(""),
@@ -605,42 +704,45 @@ void initState() {
                               ),
                             ),
                             Icon(Icons.add, size: 40),
-                            visit? ElevatedButton(
-                              onPressed:
-                                  () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => VisitOut(),
+                            visit
+                                ? ElevatedButton(
+                                  onPressed:
+                                      () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => VisitOut(),
+                                        ),
+                                      ),
+                                  child: Text(
+                                    "Visit Out",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
                                     ),
                                   ),
-                              child: Text(
-                                "Visit in",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
-                              )):ElevatedButton(
-                              onPressed:
-                                  () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => VisitOut(),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                  ),
+                                )
+                                : ElevatedButton(
+                                  onPressed:
+                                      () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => VisitOut(),
+                                        ),
+                                      ),
+                                  child: Text(
+                                    "Visit in",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
                                     ),
                                   ),
-                              child: Text(
-                                "Visit Out",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                  ),
                                 ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -678,10 +780,13 @@ void initState() {
                             ),
                             Icon(Icons.add, size: 40),
                             ElevatedButton(
-                              onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Attendancerep()),
-          ),
+                              onPressed:
+                                  () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Attendancerep(),
+                                    ),
+                                  ),
                               child: Text(
                                 "View",
                                 style: TextStyle(
