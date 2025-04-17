@@ -4,10 +4,19 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:employee_tracker/main.dart';
 import 'package:http/http.dart' as http;
+import 'package:localstorage/localstorage.dart';
 
-void main() {
+void main() async{
+    WidgetsFlutterBinding.ensureInitialized();
+  await _initializeLocalStorage();
   runApp(MaterialApp(home: CreateEmployee()));
 }
+
+Future<void> _initializeLocalStorage() async {
+  await localStorage.ready; // Wait for the localStorage to be ready
+}
+
+final LocalStorage localStorage = LocalStorage('employee_tracker');
 
 class CreateEmployee extends StatefulWidget {
   @override
@@ -15,6 +24,28 @@ class CreateEmployee extends StatefulWidget {
 }
 
 class CreateEmpState extends State<CreateEmployee> {
+
+  String comName = 'Compamy';
+
+  void initState(){
+    super.initState();
+    _loadUser();
+  }
+
+  void _loadUser() {
+    var userJson = localStorage.getItem('user');
+    if (userJson != null) {
+      var user = jsonDecode(userJson);
+
+      setState(() {
+        comName = user['company_name'] ?? 'Default Company';
+        print(comName);
+      });
+    }
+  
+  }
+
+
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController name = TextEditingController();
@@ -81,6 +112,7 @@ class CreateEmpState extends State<CreateEmployee> {
           'https://testapi.rabadtechnology.com/create_employees.php',
         );
         final Map<String, dynamic> requestBody = {
+          "company_name":comName,
           "name": EmpName,
           "age": EmpAge,
           "dob": EmpDob,
@@ -106,9 +138,16 @@ class CreateEmpState extends State<CreateEmployee> {
         print(message);
         print(requestBody);
         print(base64Image);
-        ScaffoldMessenger.of(
+        if(success==true){
+          ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
+        Navigator.pop(context);
+        }else{
+          ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+        }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Something went wrong: ${e.toString()}")),
@@ -177,7 +216,7 @@ class CreateEmpState extends State<CreateEmployee> {
       appBar: AppBar(
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
-          'Visit Out',
+          'Create Employee',
           style: TextStyle(
             color: Colors.white,
             fontSize: 24,
@@ -220,7 +259,7 @@ class CreateEmpState extends State<CreateEmployee> {
                 ElevatedButton(
                   onPressed: () => UploadImg(),
                   child: Container(
-                    width: MediaQuery.of(context).size.width * 0.35,
+                    width: MediaQuery.of(context).size.width * 0.37,
                     child: Row(
                       children: [
                         Text(

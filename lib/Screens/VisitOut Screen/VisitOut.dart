@@ -1,4 +1,4 @@
-import 'package:employee_tracker/Screens/Home%20Screen/Homescreen.dart';
+import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -117,7 +117,7 @@ class VisitOutState extends State<VisitOut> {
             SnackBar(content: Text(responseData['message'])),
           );
          localStorage.setItem('visitout', true);
-          Navigator.push(context, MaterialPageRoute(builder: (_) => HomeScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (_) => EmpHome()));
          
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

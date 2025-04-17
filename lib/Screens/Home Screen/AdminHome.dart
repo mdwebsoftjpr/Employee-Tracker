@@ -17,7 +17,7 @@ import 'package:localstorage/localstorage.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
-  runApp(HomeScreen());
+  runApp(AdminHome());
 }
 
 Future<void> _initializeLocalStorage() async {
@@ -26,12 +26,12 @@ Future<void> _initializeLocalStorage() async {
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
-class HomeScreen extends StatefulWidget {
+class AdminHome extends StatefulWidget {
   @override
-  _HomeRouteState createState() => _HomeRouteState();
+  AdminhomeState createState() => AdminhomeState();
 }
 
-class _HomeRouteState extends State<HomeScreen> {
+class AdminhomeState extends State<AdminHome> {
   int _selectedIndex = 0;
   bool drop = false;
   String key_person = "key_person";
@@ -159,7 +159,7 @@ class _HomeRouteState extends State<HomeScreen> {
                           () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => HomeScreen(),
+                              builder: (context) => AdminHome(),
                             ),
                           ),
                       child: Text(
@@ -273,21 +273,20 @@ class _HomeRouteState extends State<HomeScreen> {
                     ),
                   ),
                   ListTile(
-                    leading: Icon(Icons.access_time),
-                    title: Text("Punch in"),
+                    leading: Icon(Icons.calendar_today),
+                    title: Text("Attendance Report"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                        MaterialPageRoute(builder: (context) => AdminHome()),
                       );
                     },
                   ),
                   Column(
                     children: [
-                      (role == 'employee')
-                          ? SizedBox():ListTile(
-                            leading: Icon(Icons.access_time),
+                      ListTile(
+                            leading: Icon(Icons.person_outline),
                             title: Text("Create Employee"),
                             onTap: () {
                               Navigator.pop(context); // Close the drawer first
@@ -304,43 +303,16 @@ class _HomeRouteState extends State<HomeScreen> {
                   ),
 
                   ListTile(
-                    leading: Icon(Icons.pause),
-                    title: Text("Break Time"),
+                    leading: Icon(Icons.assignment_turned_in),
+                    title: Text("Break Time Report"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                        MaterialPageRoute(builder: (context) => AdminHome()),
                       );
                     },
                   ),
-                  ListTile(
-                    leading: Icon(Icons.exit_to_app),
-                    title: Text("Punch out"),
-                  ),
-                  visit
-                      ? ListTile(
-                        leading: Icon(Icons.person),
-                        title: Text("Visit in"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => HomeScreen()),
-                          );
-                        },
-                      )
-                      : ListTile(
-                        leading: Icon(Icons.exit_to_app),
-                        title: Text("Visit in"),
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => VisitOut()),
-                          );
-                        },
-                      ),
                   ListTile(
                     leading: Icon(Icons.exit_to_app),
                     title: Text("Logout"),
@@ -471,7 +443,7 @@ class _HomeRouteState extends State<HomeScreen> {
                                                   child: Row(
                                                     children: [
                                                       Text(
-                                                        'Today Report: $currentDate',
+                                                        '#@Today Report: $currentDate',
                                                         style: TextStyle(
                                                           fontSize: 15,
                                                           color: Colors.black,
@@ -639,117 +611,7 @@ class _HomeRouteState extends State<HomeScreen> {
                   ),
                 ],
               ),
-              Container(
-                //stop
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  // Set the background color here
-                  color: Color(0xFF03a9f4),
-                  borderRadius: BorderRadius.circular(
-                    10,
-                  ), // Optional: Adds rounded corners
-                ),
-                width: MediaQuery.of(context).size.width * 0.9,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Mark Attendance",
-                              style: TextStyle(fontSize: 15),
-                            ),
-                            Icon(Icons.add, size: 40),
-                            ElevatedButton(
-                              onPressed: () => _pickImageFromCamera(),
-                              child: Text(
-                                "Punch in",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Break Time",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Icon(Icons.add, size: 40),
-                            visit
-                                ? ElevatedButton(
-                                  onPressed:
-                                      () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => VisitOut(),
-                                        ),
-                                      ),
-                                  child: Text(
-                                    "Visit Out",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                  ),
-                                )
-                                : ElevatedButton(
-                                  onPressed:
-                                      () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => VisitOut(),
-                                        ),
-                                      ),
-                                  child: Text(
-                                    "Visit in",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                  ),
-                                ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              
               SizedBox(height: 10),
               Container(
                 padding: EdgeInsets.all(10),
@@ -778,7 +640,7 @@ class _HomeRouteState extends State<HomeScreen> {
                               "Attendance Report",
                               style: TextStyle(fontSize: 15),
                             ),
-                            Icon(Icons.add, size: 40),
+                            Icon(Icons.calendar_today, size: 40),
                             ElevatedButton(
                               onPressed:
                                   () => Navigator.push(
@@ -817,7 +679,7 @@ class _HomeRouteState extends State<HomeScreen> {
                               "Break Time Report",
                               style: TextStyle(fontSize: 15),
                             ),
-                            Icon(Icons.add, size: 40),
+                            Icon(Icons.access_time, size: 40),
                             ElevatedButton(
                               onPressed: () => print("View"),
                               child: Text(
@@ -863,7 +725,7 @@ class _HomeRouteState extends State<HomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text("Report", style: TextStyle(fontSize: 15)),
-                            Icon(Icons.add, size: 40),
+                            Icon(Icons.assignment_turned_in , size: 40),
                             ElevatedButton(
                               onPressed: () => print("Report"),
                               child: Text(
@@ -893,7 +755,7 @@ class _HomeRouteState extends State<HomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text("Report", style: TextStyle(fontSize: 15)),
-                            Icon(Icons.add, size: 40),
+                            Icon(Icons.assignment_turned_in , size: 40),
                             ElevatedButton(
                               onPressed: () => print("Report"),
                               child: Text(

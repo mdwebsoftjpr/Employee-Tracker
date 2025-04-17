@@ -1,5 +1,7 @@
 import 'dart:convert';
-import 'package:employee_tracker/Screens/Home%20Screen/Homescreen.dart';
+
+import 'package:employee_tracker/Screens/Home%20Screen/AdminHome.dart';
+import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
 import 'Screens/Create Company/CreateCom.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,25 +11,42 @@ import 'package:localstorage/localstorage.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
-  runApp(MyApp());
+
+  String? user = localStorage.getItem("user");
+  String? role = localStorage.getItem("role");
+
+  print('User: $user');
+  print('Role: $role');
+
+  // Clean up role string just in case it was jsonEncoded
+  role = role?.toString().replaceAll('"', '').trim().toLowerCase();
+
+  Widget homeScreen;
+
+  if (user != null && user != '') {
+    (role == 'admin') ?
+      homeScreen = AdminHome():
+    (role == 'employee') ?
+      homeScreen = EmpHome():
+      homeScreen = CreateScreen();
+  } else {
+    homeScreen = CreateScreen();
+  }
+
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: homeScreen,
+  ));
 }
 
+
 Future<void> _initializeLocalStorage() async {
-  await localStorage.ready; // Wait for the localStorage to be ready
+  await localStorage.ready;
 }
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
-class MyApp extends StatelessWidget {
-  String user = "";
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false, // Optional: remove the debug banner
-      home: (user != null) ? HomeScreen():CreateScreen(),
-    );
-  }
-}
+
 
 class CreateScreen extends StatefulWidget {
   @override
@@ -76,46 +95,74 @@ class _createScreen extends State<CreateScreen> {
       String Cpassword = password.text;
 
       final url = Uri.parse('https://testapi.rabadtechnology.com/login.php');
-      try {
-        final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode({"email": userid, "password": Cpassword}),
-        );
+      final Map<String, dynamic> requestBody={
+         "company_name": ComName,
+    "email": userid,
+    "password": Cpassword
+      };
+     try {
+  final response = await http.post(
+    url, // Your API endpoint
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode(requestBody),
+  );
 
-        var responseData = json.decode(response.body);
-        var success = responseData['success'];
-        final message = responseData['message'];
-        final role = responseData['role'];
-        final data = responseData['data'];
-        print(data);
-        print(role);
-        print("Type$data");
-        if (success == true) {
-          
-           localStorage.setItem('user', jsonEncode(data));
-           localStorage.setItem('role', jsonEncode(role));
-           alert();
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(message)));
-           Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
-        } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(message)));
-        }
-        setState(() {
-          msg = message; // Update the msg variable inside setState
-        });
-      } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Somthing Wants Wrong Check Internet Connection')));
-      }
+  print("sahil");
+
+  // Decode response
+  final responseData = jsonDecode(response.body);
+
+  final success = responseData['success'];
+  final message = responseData['message'];
+  final role = responseData['role'];
+  final data = responseData['data'];
+
+  print("Type: $data");
+
+  if (success == true) {
+    // Save to localStorage
+    await localStorage.setItem('user', jsonEncode(data));
+    await localStorage.setItem('role', jsonEncode(role));
+
+    // Optional alert function
+    alert();
+
+    // Show success message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+
+    // Navigate based on role
+    if (role.toString().toLowerCase() == "admin") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AdminHome()),
+      );
+    } else if (role.toString().toLowerCase() == "employee") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => EmpHome()),
+      );
+    }
+
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  // Update state (if needed)
+  setState(() {
+    msg = message;
+  });
+
+} catch (e) {
+  print("Error: $e");
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text('Something went wrong. Please check your internet connection.')),
+  );
+}
+
     }
   }
 
