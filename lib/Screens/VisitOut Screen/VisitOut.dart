@@ -53,7 +53,7 @@ class VisitOutState extends State<VisitOut> {
     }
   }
 
- void compLogin(context) async {
+ void VisitOut(context) async {
   if (_formKey.currentState?.validate() ?? false) {
     String Corganization = organization.text;
     String CconcernedPerson = concernedPerson.text;
@@ -241,7 +241,7 @@ class VisitOutState extends State<VisitOut> {
                   ),
                   SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: () => compLogin(context),
+                    onPressed: () => VisitOut(context),
                     child: Text("Visit Out"),
                   ),
                   SizedBox(height: 20),

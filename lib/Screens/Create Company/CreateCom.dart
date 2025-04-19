@@ -102,7 +102,7 @@ class CreateCom extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(height: 10),
-                  Image.asset('assets/LogoMain.jpg', width: 150, height: 150),
+                  Image.asset('assets/images/LogoMain.jpg', width: 150, height: 150),
                   Text(
                     "Create Your Company",
                     style: TextStyle(

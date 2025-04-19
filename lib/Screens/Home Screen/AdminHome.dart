@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:io'; // This is required to use the File class
-import 'package:employee_tracker/Screens/Profile%20Scree/Profile.dart';
-import 'package:employee_tracker/Screens/Reports/AttendanceRep.dart';
+import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
+import 'package:employee_tracker/Screens/Profile%20Scree/empProfile.dart';
+import 'package:employee_tracker/Screens/EmployeeReports/AttendanceRep.dart';
 import 'package:employee_tracker/Screens/VisitOut%20Screen/VisitOut.dart';
 import 'package:employee_tracker/Screens/create%20employee/createEmployee.dart';
 import 'package:employee_tracker/main.dart';
@@ -99,7 +100,7 @@ class AdminhomeState extends State<AdminHome> {
     } else if (index == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ProfileApp()),
+        MaterialPageRoute(builder: (context) => Adminprofile()),
       );
     }
   }

@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:io'; // This is required to use the File class
-import 'package:employee_tracker/Screens/Profile%20Scree/Profile.dart';
-import 'package:employee_tracker/Screens/Reports/AttendanceRep.dart';
+import 'dart:io'; 
+import 'package:employee_tracker/Screens/EmployeeReports/visitReport.dart';
+import 'package:employee_tracker/Screens/Profile%20Scree/empProfile.dart';
+import 'package:employee_tracker/Screens/EmployeeReports/AttendanceRep.dart';
 import 'package:employee_tracker/Screens/VisitOut%20Screen/VisitOut.dart';
-import 'package:employee_tracker/Screens/create%20employee/createEmployee.dart';
 import 'package:employee_tracker/main.dart';
 import 'package:intl/intl.dart';
 // #docregion photo-picker-example
@@ -13,6 +13,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:http/http.dart' as http;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,8 +37,13 @@ class _EmpHomeState extends State<EmpHome> {
   bool drop = false;
   String name = "key_person";
   String comName = 'Compamy';
+  String username="";
   String role = '';
   bool visit = false;
+  bool punch = false;
+  String startTime= '';
+  String endtime='';
+
 
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
@@ -46,8 +52,8 @@ class _EmpHomeState extends State<EmpHome> {
     _loadUser();
     loadAddress();
   }
-  
-  void loadAddress()async{
+
+  void loadAddress() async {
     await getCurrentLocation();
     await fetchAndPrintAddress();
   }
@@ -60,14 +66,14 @@ class _EmpHomeState extends State<EmpHome> {
       setState(() {
         comName = user['company_name'] ?? 'Default Company';
         name = user['name'] ?? 'Default User';
+        username = user['username'] ?? 'Default User';
         role = localStorage.getItem('role');
       });
     }
     var Visit = localStorage.getItem('visitout') ?? false;
     if (Visit == true) {
       setState(() {
-        visit:
-        Visit;
+        visit = Visit;
         print(Visit);
       });
     }
@@ -83,8 +89,6 @@ class _EmpHomeState extends State<EmpHome> {
         _imageFile = pickedFile;
       });
     }
-
-    print("addSds$ImageSource");
   }
 
   // Notification method to navigate to Notification screen
@@ -105,7 +109,7 @@ class _EmpHomeState extends State<EmpHome> {
     } else if (index == 3) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => ProfileApp()),
+        MaterialPageRoute(builder: (context) => Empprofile()),
       );
     }
   }
@@ -115,15 +119,137 @@ class _EmpHomeState extends State<EmpHome> {
   // List of options for the dropdown
   final List<String> _options = ['Option 1', 'Option 2', 'Option 3'];
 
-  String currentDate = DateFormat(
-    'dd-MM-yyyy',
-  ).format(DateTime.now()); // Make sure this is defined in your state
+  String currentDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
   void dropdown() {
     print("Down");
     setState(() {
       drop = false;
     });
+  }
+
+  void punchIn() async {
+    final url = Uri.parse(
+      'https://testapi.rabadtechnology.com/employee_attendence.php',
+    );
+  String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+    try {
+      final Map<String, dynamic> requestBody = {
+        "company_name": comName,
+        "name": name,
+        "time": currentTime,
+        "date": currentDate,
+        "latitude": latitude,
+        "longitude": longitude,
+      };
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      var success = responseData['success'];
+      var message = responseData['message'];
+      if (success == true) {
+        setState(() {
+          punch = true;
+          startTime=currentTime;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Somthing Wants Wrong")));
+    }
+  }
+
+  void punchOut() async {
+    final url = Uri.parse(
+      'https://testapi.rabadtechnology.com/employee_attendence_out.php',
+    );
+  String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+    try {
+      final Map<String, dynamic> requestBody = {
+        "company_name": comName,
+        "name": name,
+        "time": currentTime,
+        "date": currentDate,
+        "latitude": latitude,
+        "longitude": longitude,
+      };
+      final response = await http.post(
+        url, // Replace this with your endpoint
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      var success = responseData['success'];
+      var message = responseData['message'];
+      if (success == true) {
+        setState(() {
+          punch = false;
+          endtime=currentTime;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Somthing Wants Wrong")));
+    }
+  }
+
+  void visitIn() async {
+    final url = Uri.parse('https://testapi.rabadtechnology.com/visit_in.php');
+  String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+    try {
+      final Map<String, dynamic> requestBody = {
+        "company_name": comName,
+        "name": name,
+        "time": currentTime,
+        "date": currentDate,
+        "latitude": latitude,
+        "longitude": longitude,
+      };
+      final response = await http.post(
+        url, // Replace this with your endpoint
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      var success = responseData['success'];
+      var message = responseData['message'];
+      if (success == true) {
+        setState(() {
+          visit = false;
+          print(punch);
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Somthing Wants Wrong")));
+    }
   }
 
   void clearStorage(context) async {
@@ -145,95 +271,99 @@ class _EmpHomeState extends State<EmpHome> {
       drop = true;
     });
   }
-String latitude = '';
-String longitude = '';
-String status = 'Press the button to get your location';
- Future<void> getCurrentLocation() async {
-  bool serviceEnabled;
-  LocationPermission permission;
 
-  // Check if location services are enabled
-  serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    setState(() {
-      status = 'Location services are disabled.';
-    });
-    return;
-  }
+  String latitude = '';
+  String longitude = '';
+  String status = 'Press the button to get your location';
+  Future<void> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-  // Check location permission
-  permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
       setState(() {
-        status = 'Location permissions are denied';
+        status = 'Location services are disabled.';
       });
       return;
     }
-  }
 
-  if (permission == LocationPermission.deniedForever) {
-    setState(() {
-      status = 'Location permissions are permanently denied.';
-    });
-    return;
-  }
-
-  // Get the current location
-  try {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
-
-    setState(() {
-      latitude = position.latitude.toString();
-      longitude = position.longitude.toString();
-      status = 'Location found!';
-      print("Latitude: $latitude, Longitude: $longitude");
-    });
-
-    // Fetch and print the address
-    await fetchAndPrintAddress();
-  } catch (e) {
-    print("Error getting current location: $e");
-    setState(() {
-      status = 'Error retrieving location: $e';
-    });
-  }
-}
-
-Future<void> fetchAndPrintAddress() async {
-  double lat = double.tryParse(latitude) ?? 0.0;
-  double lng = double.tryParse(longitude) ?? 0.0;
-
-  if (lat == 0.0 && lng == 0.0) {
-    print("Invalid latitude and longitude.");
-    return;
-  }
-
-  String address = await getAddressFromLatLng(lat, lng);
-  print("📍 Address: $address");
-
-  // Optional: show on screen
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(address)));
-}
-
-Future<String> getAddressFromLatLng(double lat, double lng) async {
-  try {
-    List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
-
-    if (placemarks.isNotEmpty) {
-      Placemark place = placemarks[0];
-      return "${place.name}, ${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
-    } else {
-      return "No address available";
+    // Check location permission
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        setState(() {
+          status = 'Location permissions are denied';
+        });
+        return;
+      }
     }
-  } catch (e) {
-    print("Error getting address: $e");
-    return "Error retrieving address";
+
+    if (permission == LocationPermission.deniedForever) {
+      setState(() {
+        status = 'Location permissions are permanently denied.';
+      });
+      return;
+    }
+
+    // Get the current location
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+
+      setState(() {
+        latitude = position.latitude.toString();
+        longitude = position.longitude.toString();
+        status = 'Location found!';
+        print("Latitude: $latitude, Longitude: $longitude");
+      });
+
+      // Fetch and print the address
+      await fetchAndPrintAddress();
+    } catch (e) {
+      print("Error getting current location: $e");
+      setState(() {
+        status = 'Error retrieving location: $e';
+      });
+    }
   }
-}
+
+  Future<void> fetchAndPrintAddress() async {
+    double lat = double.tryParse(latitude) ?? 0.0;
+    double lng = double.tryParse(longitude) ?? 0.0;
+
+    if (lat == 0.0 && lng == 0.0) {
+      print("Invalid latitude and longitude.");
+      return;
+    }
+
+    String address = await getAddressFromLatLng(lat, lng);
+    print("📍 Address: $address");
+
+    // Optional: show on screen
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(address)));
+  }
+
+  Future<String> getAddressFromLatLng(double lat, double lng) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        return "${place.name}, ${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+      } else {
+        return "No address available";
+      }
+    } catch (e) {
+      print("Error getting address: $e");
+      return "Error retrieving address";
+    }
+  }
+
   // This is the value that will hold the selected item
   String _selectedItem = 'One';
 
@@ -345,8 +475,8 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                                   File(
                                     _imageFile!.path,
                                   ), // Convert XFile to File
-                                  width: 70,
-                                  height: 70,
+                                  width: 80,
+                                  height: 80,
                                   fit:
                                       BoxFit
                                           .cover, // Optional: Adjust how the image fits inside the container
@@ -364,17 +494,31 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                       ),
                     ),
                   ),
-                  ListTile(
-                    leading: Icon(Icons.access_time),
-                    title: Text("Punch in"),
-                    onTap: () {
-                      Navigator.pop(context); // Close the drawer first
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => EmpHome()),
-                      );
-                    },
-                  ),
+                  (punch == true)
+                      ? ListTile(
+                        leading: Icon(Icons.access_time),
+                        title: Text("Punch Out"),
+                        onTap: () {
+                          punchOut();
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => EmpHome()),
+                          );
+                        },
+                      )
+                      : ListTile(
+                        leading: Icon(Icons.access_time),
+                        title: Text("Punch in"),
+                        onTap: () {
+                          punchOut();
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => EmpHome()),
+                          );
+                        },
+                      ),
                   ListTile(
                     leading: Icon(Icons.pause),
                     title: Text("Break Time"),
@@ -386,31 +530,28 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                       );
                     },
                   ),
-                  ListTile(
-                    leading: Icon(Icons.exit_to_app),
-                    title: Text("Punch out"),
-                  ),
-                  visit
+                  (visit == true)
                       ? ListTile(
                         leading: Icon(Icons.person),
                         title: Text("Visit in"),
                         onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => EmpHome()),
-                          );
+                          visitIn();
+                          setState(() {
+                            visit==false;
+                          });
                         },
                       )
                       : ListTile(
                         leading: Icon(Icons.exit_to_app),
-                        title: Text("Visit in"),
+                        title: Text("Visit out"),
                         onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => VisitOut()),
-                          );
+                          if (punch == true) {
+                            Navigator.pop(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => VisitOut()),
+                            );
+                          }
                         },
                       ),
                   ListTile(
@@ -499,8 +640,8 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                                                   File(
                                                     _imageFile!.path,
                                                   ), // Convert XFile to File
-                                                  width: 70,
-                                                  height: 70,
+                                                  width: 80,
+                                                  height: 80,
                                                   fit:
                                                       BoxFit
                                                           .cover, // Optional: Adjust how the image fits inside the container
@@ -522,7 +663,6 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                               ],
                             ),
                             SizedBox(height: 10),
-                            Text("$latitude,$longitude"),
                             Container(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.end,
@@ -599,8 +739,7 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                                                   ? Column(
                                                     children: [
                                                       Container(
-                                                        height: 30,
-                                                        color: Colors.black,
+                                                        height: 20,
                                                         child: Row(
                                                           mainAxisAlignment:
                                                               MainAxisAlignment
@@ -611,7 +750,7 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                                                               style: TextStyle(
                                                                 color:
                                                                     Colors
-                                                                        .white,
+                                                                        .black,
                                                               ),
                                                             ),
                                                             Text(
@@ -619,23 +758,23 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                                                               style: TextStyle(
                                                                 color:
                                                                     Colors
-                                                                        .white,
+                                                                        .black,
                                                               ),
                                                             ),
                                                             Text(
-                                                              "In",
+                                                              "Work Start",
                                                               style: TextStyle(
                                                                 color:
                                                                     Colors
-                                                                        .white,
+                                                                        .black,
                                                               ),
                                                             ),
                                                             Text(
-                                                              "Out",
+                                                              "End",
                                                               style: TextStyle(
                                                                 color:
                                                                     Colors
-                                                                        .white,
+                                                                        .black,
                                                               ),
                                                             ),
                                                           ],
@@ -645,52 +784,81 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                                                         child: Row(
                                                           mainAxisAlignment:
                                                               MainAxisAlignment
-                                                                  .spaceEvenly,
+                                                                  .spaceBetween,
                                                           children: [
                                                             TextButton(
                                                               onPressed:
-                                                                  () => print(
-                                                                    "Row",
+                                                                  () =>  Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) => Attendancerep(),
+                                                ),
                                                                   ),
                                                               child: Icon(
                                                                 Icons
                                                                     .remove_red_eye,
-                                                                size: 30,
+                                                                size: 30,color: Colors.black,
                                                               ),
                                                             ),
-                                                            TextButton(
-                                                              onPressed:
-                                                                  () => print(
-                                                                    "Row",
+                                                            (punch == true )
+                                                                ? Container(
+                                                                  width: 60,
+                                                                  height: 20,
+                                                                  color:
+                                                                      Colors
+                                                                          .green,
+                                                                  child: Center(
+                                                                    child: Text(
+                                                                      "Present",
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            Colors.white,
+                                                                      ),
+                                                                    ),
                                                                   ),
-                                                              child: Icon(
-                                                                Icons
-                                                                    .remove_red_eye,
-                                                                size: 30,
-                                                              ),
-                                                            ),
-                                                            TextButton(
-                                                              onPressed:
-                                                                  () => print(
-                                                                    "Row",
+                                                                )
+                                                                : Text(
+                                                                  "Not Marked",
+                                                                ),
+                                                            (startTime != '')
+                                                                ? Container(
+                                                                  width: 60,
+                                                                  height: 20,
+                                                                  color:
+                                                                      Colors.white,
+                                                                  child: Center(
+                                                                    child: Text(
+                                                                      startTime,
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            Colors.black,
+                                                                      ),
+                                                                    ),
                                                                   ),
-                                                              child: Icon(
-                                                                Icons
-                                                                    .remove_red_eye,
-                                                                size: 30,
-                                                              ),
-                                                            ),
-                                                            TextButton(
-                                                              onPressed:
-                                                                  () => print(
-                                                                    "Row",
+                                                                )
+                                                                : Text(
+                                                                  "      -  ",
+                                                                ),
+                                                            (endtime != '')
+                                                                ? Container(
+                                                                  width: 60,
+                                                                  height: 20,
+                                                                  color:
+                                                                      Colors.white,
+                                                                  child: Center(
+                                                                    child: Text(
+                                                                      endtime,
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            Colors.black,
+                                                                      ),
+                                                                    ),
                                                                   ),
-                                                              child: Icon(
-                                                                Icons
-                                                                    .remove_red_eye,
-                                                                size: 30,
-                                                              ),
-                                                            ),
+                                                                )
+                                                                : Text(
+                                                                  "       -  ",
+                                                                ),
                                                           ],
                                                         ),
                                                       ),
@@ -741,22 +909,39 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                               style: TextStyle(fontSize: 15),
                             ),
                             Icon(Icons.add, size: 40),
-                            ElevatedButton(
-                              onPressed: () async {
-                                await _pickImageFromCamera();
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                "Punch in",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black,
+                            (punch == true)
+                                ? ElevatedButton(
+                                  onPressed: () async {
+                                    await _pickImageFromCamera();
+                                    punchOut();
+                                  },
+                                  child: Text(
+                                    "Punch Out",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                  ),
+                                )
+                                : ElevatedButton(
+                                  onPressed: () async {
+                                    await _pickImageFromCamera();
+                                    punchIn();
+                                  },
+                                  child: Text(
+                                    "Punch in",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                  ),
                                 ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -780,17 +965,14 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                               ),
                             ),
                             Icon(Icons.exit_to_app, size: 40),
-                            visit
+                            (visit == true)
                                 ? ElevatedButton(
-                                  onPressed:
-                                      () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => VisitOut(),
-                                        ),
-                                      ),
+                                  onPressed: () {visitIn();
+                                  setState(() {
+                            visit==false;
+                          });},
                                   child: Text(
-                                    "Visit Out",
+                                    "Visit in",
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.black,
@@ -802,14 +984,18 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                                 )
                                 : ElevatedButton(
                                   onPressed:
-                                      () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => VisitOut(),
-                                        ),
-                                      ),
+                                      () =>
+                                          (punch == true)
+                                              ? Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) => VisitOut(),
+                                                ),
+                                              )
+                                              : "",
                                   child: Text(
-                                    "Visit in",
+                                    "Visit Out",
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.black,
@@ -895,7 +1081,13 @@ Future<String> getAddressFromLatLng(double lat, double lng) async {
                             ),
                             Icon(Icons.access_time, size: 40),
                             ElevatedButton(
-                              onPressed: () => print("View"),
+                              onPressed:
+                                  () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => Visitreport(),
+                                    ),
+                                  ),
                               child: Text(
                                 "View",
                                 style: TextStyle(

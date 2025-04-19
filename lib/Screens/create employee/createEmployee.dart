@@ -467,7 +467,7 @@ class CreateEmpState extends State<CreateEmployee> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
                         30.0,
-                      ), // Set the border radius
+                      ),
                     ),
                     filled: true,
                     fillColor: Colors.grey[200],
