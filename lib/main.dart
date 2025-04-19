@@ -1,11 +1,9 @@
 import 'dart:convert';
-
 import 'package:employee_tracker/Screens/Home%20Screen/AdminHome.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
 import 'Screens/Create Company/CreateCom.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:localstorage/localstorage.dart';
 
 void main() async {

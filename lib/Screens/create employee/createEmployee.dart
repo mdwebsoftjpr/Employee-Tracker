@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:convert';
-import 'package:employee_tracker/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 
