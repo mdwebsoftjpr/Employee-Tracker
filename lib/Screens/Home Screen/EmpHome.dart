@@ -43,6 +43,9 @@ class _EmpHomeState extends State<EmpHome> {
   bool punch = false;
   String startTime= '';
   String endtime='';
+  int pcount=0;
+  int bcount=0;
+  bool BreakTime=false;
 
 
   final ImagePicker _picker = ImagePicker();
@@ -51,7 +54,18 @@ class _EmpHomeState extends State<EmpHome> {
     super.initState();
     _loadUser();
     loadAddress();
+    checkAutoPunchOut();
   }
+
+  void checkAutoPunchOut() {
+  final now = DateTime.now();
+  final endOfDay = DateTime(now.year, now.month, now.day, 24, 0); // 12 aM
+
+  if (now.isAfter(endOfDay)) {
+    // Auto punch out
+    punchOut();
+  }
+}
 
   void loadAddress() async {
     await getCurrentLocation();
@@ -128,6 +142,22 @@ class _EmpHomeState extends State<EmpHome> {
     });
   }
 
+
+  void BreakIn(){
+    setState(() {
+      BreakTime=true;
+      bcount++;
+      print(bcount);
+    });
+  }
+
+    void BreakOut(){
+    setState(() {
+      BreakTime=false;
+      print(BreakTime);
+    });
+  }
+
   void punchIn() async {
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/employee_attendence.php',
@@ -154,6 +184,8 @@ class _EmpHomeState extends State<EmpHome> {
         setState(() {
           punch = true;
           startTime=currentTime;
+          pcount++;
+          print(pcount);
         });
         ScaffoldMessenger.of(
           context,
@@ -507,27 +539,39 @@ class _EmpHomeState extends State<EmpHome> {
                           );
                         },
                       )
-                      : ListTile(
+                      :(pcount>=1)?ListTile(
                         leading: Icon(Icons.access_time),
                         title: Text("Punch in"),
                         onTap: () {
-                          punchOut();
                           Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => EmpHome()),
-                          );
+                        },
+                      ): ListTile(
+                        leading: Icon(Icons.access_time),
+                        title: Text("Punch in"),
+                        onTap: () {
+                          punchIn();
+                          Navigator.pop(context);
                         },
                       ),
-                  ListTile(
+                    (BreakTime)?ListTile(
                     leading: Icon(Icons.pause),
-                    title: Text("Break Time"),
+                    title: Text("Break Out"),
+                    onTap: () {
+                      BreakOut();
+                      Navigator.pop(context); // Close the drawer first
+                    },
+                  ):(bcount>=3)?ListTile(
+                    leading: Icon(Icons.pause),
+                    title: Text("Break Limit Over"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => EmpHome()),
-                      );
+                    },
+                  ):ListTile(
+                    leading: Icon(Icons.pause),
+                    title: Text("Break In"),
+                    onTap: () {
+                      BreakIn();
+                      Navigator.pop(context); // Close the drawer first
                     },
                   ),
                   (visit == true)
@@ -909,7 +953,7 @@ class _EmpHomeState extends State<EmpHome> {
                               style: TextStyle(fontSize: 15),
                             ),
                             Icon(Icons.add, size: 40),
-                            (punch == true)
+                            (punch)
                                 ? ElevatedButton(
                                   onPressed: () async {
                                     await _pickImageFromCamera();
@@ -926,7 +970,19 @@ class _EmpHomeState extends State<EmpHome> {
                                     backgroundColor: Color(0xFF03a9f4),
                                   ),
                                 )
-                                : ElevatedButton(
+                                :(pcount>=1)? ElevatedButton(
+                                  onPressed: () async {},
+                                  child: Text(
+                                    "Punch in",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                  ),
+                                ):ElevatedButton(
                                   onPressed: () async {
                                     await _pickImageFromCamera();
                                     punchIn();
@@ -958,7 +1014,7 @@ class _EmpHomeState extends State<EmpHome> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Break Time",
+                              "Visit Time",
                               style: TextStyle(
                                 fontSize: 15,
                                 color: Colors.black,
@@ -1130,12 +1186,36 @@ class _EmpHomeState extends State<EmpHome> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Report", style: TextStyle(fontSize: 15)),
-                            Icon(Icons.insert_chart_outlined, size: 40),
-                            ElevatedButton(
-                              onPressed: () => print("Report"),
+                            Text("Break Time", style: TextStyle(fontSize: 15)),
+                            Icon(Icons.breakfast_dining, size: 40),
+                            (BreakTime)?ElevatedButton(
+                              onPressed: () => BreakOut(),
                               child: Text(
-                                "Report",
+                                "Break Out",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF03a9f4),
+                              ),
+                            ):(bcount>=3)?ElevatedButton(
+                              onPressed: () => print("Break Limit Over"),
+                              child: Text(
+                                "Break Limit Over",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF03a9f4),
+                              ),
+                            ):ElevatedButton(
+                              onPressed: () => BreakIn(),
+                              child: Text(
+                                "Break In",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
