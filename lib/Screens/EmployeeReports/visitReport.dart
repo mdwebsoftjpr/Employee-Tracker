@@ -121,11 +121,11 @@ class VisitreportState extends State<Visitreport> {
               'Attendance Report',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: MediaQuery.of(context).size.width * 0.05,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(width: 10),
+            SizedBox(width: MediaQuery.of(context).size.width * 0.075),
             TextButton(
               onPressed: () => _pickDate(context),
               style: TextButton.styleFrom(backgroundColor: Colors.white),
@@ -134,40 +134,49 @@ class VisitreportState extends State<Visitreport> {
           ],
         ),
       ),
-      body: selectedDate != null
-    ? attendanceDeta.isEmpty
-        ? Center(
-            child: Text(
-              "No Data found",
-              style: TextStyle(fontFamily: 'MyFont', fontSize: 15),
-            ),
-          )
-        : ListView.builder(
-            itemCount: attendanceDeta.length,
-            itemBuilder: (context, index) {
-              final item = attendanceDeta[index];
-              return Container(
-                margin: EdgeInsets.only(top: 10,left:MediaQuery.of(context).size.width * 0.05,right: MediaQuery.of(context).size.width * 0.05 ),
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 215, 229, 241),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: ListTile(
-                  title: Text("Date: ${item['date']}"),
-                  subtitle: Text(
-                    "Time In: ${item['time']} | Time Out: ${item['time_out']} | Total Time: ${item['total_time']}",
+      body:
+          attendanceDeta.isEmpty
+              ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Please Select Date",
+                        style: TextStyle(
+                          fontFamily: 'Myfont',
+                          fontSize: MediaQuery.of(context).size.width * 0.075,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              );
-            },
-          )
-    : Center(
-        child: Text(
-          "Please Select Date",
-          style: TextStyle(fontFamily: 'MyFont', fontSize: 15),
-        ),
-      )
+                ],
+              )
+              : ListView.builder(
+                itemCount: attendanceDeta.length,
+                itemBuilder: (context, index) {
+                  final item = attendanceDeta[index];
+                  return Container(
+                    margin: EdgeInsets.only(
+                      top: 10,
+                      left: MediaQuery.of(context).size.width * 0.05,
+                      right: MediaQuery.of(context).size.width * 0.05,
+                    ),
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 215, 229, 241),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: ListTile(
+                      title: Text("Date: ${item['date']}"),
+                      subtitle: Text(
+                        "Time In: ${item['time']} | Time Out: ${item['time_out']} | Total Time: ${item['total_time']}",
+                      ),
+                    ),
+                  );
+                },
+              ),
     );
   }
 }

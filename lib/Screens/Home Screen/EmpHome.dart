@@ -64,6 +64,9 @@ class _EmpHomeState extends State<EmpHome> {
   if (now.isAfter(endOfDay)) {
     // Auto punch out
     punchOut();
+    setState(() {
+      pcount=0;
+    });
   }
 }
 
