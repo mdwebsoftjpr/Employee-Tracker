@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io'; 
+import 'dart:io';
 import 'package:employee_tracker/Screens/EmployeeReports/visitReport.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/empProfile.dart';
 import 'package:employee_tracker/Screens/EmployeeReports/AttendanceRep.dart';
@@ -37,16 +37,16 @@ class _EmpHomeState extends State<EmpHome> {
   bool drop = false;
   String name = "key_person";
   String comName = 'Compamy';
-  String username="";
+  String username = "";
   String role = '';
   bool visit = false;
   bool punch = false;
-  String startTime= '';
-  String endtime='';
-  int pcount=0;
-  int bcount=0;
-  bool BreakTime=false;
-
+  String startTime = '';
+  String endtime = '';
+  int pcount = 0;
+  int bcount = 0;
+  bool BreakTime = false;
+  String PSatatus = '';
 
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
@@ -58,17 +58,19 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   void checkAutoPunchOut() {
-  final now = DateTime.now();
-  final endOfDay = DateTime(now.year, now.month, now.day, 24, 0); // 12 aM
+    final now = DateTime.now();
+    final endOfDay = DateTime(now.year, now.month, now.day, 24, 0); // 12 aM
 
-  if (now.isAfter(endOfDay)) {
-    // Auto punch out
-    punchOut();
-    setState(() {
-      pcount=0;
-    });
+    if (now.isAfter(endOfDay)) {
+      // Auto punch out
+      punchOut();
+      setState(() {
+        PSatatus = 'Not Marke';
+        pcount = 0;
+        bcount=0;
+      });
+    }
   }
-}
 
   void loadAddress() async {
     await getCurrentLocation();
@@ -145,18 +147,18 @@ class _EmpHomeState extends State<EmpHome> {
     });
   }
 
-
-  void BreakIn(){
+  void BreakIn() {
     setState(() {
-      BreakTime=true;
+      BreakTime = true;
       bcount++;
       print(bcount);
     });
   }
 
-    void BreakOut(){
+  void BreakOut() {
     setState(() {
-      BreakTime=false;
+      bcount++;
+      BreakTime = false;
       print(BreakTime);
     });
   }
@@ -165,7 +167,7 @@ class _EmpHomeState extends State<EmpHome> {
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/employee_attendence.php',
     );
-  String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+    String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
     try {
       final Map<String, dynamic> requestBody = {
         "company_name": comName,
@@ -186,8 +188,9 @@ class _EmpHomeState extends State<EmpHome> {
       if (success == true) {
         setState(() {
           punch = true;
-          startTime=currentTime;
+          startTime = currentTime;
           pcount++;
+          PSatatus = 'Present';
           print(pcount);
         });
         ScaffoldMessenger.of(
@@ -209,7 +212,7 @@ class _EmpHomeState extends State<EmpHome> {
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/employee_attendence_out.php',
     );
-  String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+    String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
     try {
       final Map<String, dynamic> requestBody = {
         "company_name": comName,
@@ -230,7 +233,7 @@ class _EmpHomeState extends State<EmpHome> {
       if (success == true) {
         setState(() {
           punch = false;
-          endtime=currentTime;
+          endtime = currentTime;
         });
         ScaffoldMessenger.of(
           context,
@@ -249,7 +252,7 @@ class _EmpHomeState extends State<EmpHome> {
 
   void visitIn() async {
     final url = Uri.parse('https://testapi.rabadtechnology.com/visit_in.php');
-  String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+    String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
     try {
       final Map<String, dynamic> requestBody = {
         "company_name": comName,
@@ -542,13 +545,15 @@ class _EmpHomeState extends State<EmpHome> {
                           );
                         },
                       )
-                      :(pcount>=1)?ListTile(
+                      : (pcount >= 1)
+                      ? ListTile(
                         leading: Icon(Icons.access_time),
                         title: Text("Punch in"),
                         onTap: () {
                           Navigator.pop(context);
                         },
-                      ): ListTile(
+                      )
+                      : ListTile(
                         leading: Icon(Icons.access_time),
                         title: Text("Punch in"),
                         onTap: () {
@@ -556,41 +561,45 @@ class _EmpHomeState extends State<EmpHome> {
                           Navigator.pop(context);
                         },
                       ),
-                    (BreakTime)?ListTile(
-                    leading: Icon(Icons.pause),
-                    title: Text("Break Out"),
-                    onTap: () {
-                      BreakOut();
-                      Navigator.pop(context); // Close the drawer first
-                    },
-                  ):(bcount>=3)?ListTile(
-                    leading: Icon(Icons.pause),
-                    title: Text("Break Limit Over"),
-                    onTap: () {
-                      Navigator.pop(context); // Close the drawer first
-                    },
-                  ):ListTile(
-                    leading: Icon(Icons.pause),
-                    title: Text("Break In"),
-                    onTap: () {
-                      BreakIn();
-                      Navigator.pop(context); // Close the drawer first
-                    },
-                  ),
+                  (BreakTime)
+                      ? ListTile(
+                        leading: Icon(Icons.pause),
+                        title: Text("Break Out"),
+                        onTap: () {
+                          BreakOut();
+                          Navigator.pop(context); // Close the drawer first
+                        },
+                      )
+                      : (bcount >= 3)
+                      ? ListTile(
+                        leading: Icon(Icons.pause),
+                        title: Text("Break Limit Over"),
+                        onTap: () {
+                          Navigator.pop(context); // Close the drawer first
+                        },
+                      )
+                      : ListTile(
+                        leading: Icon(Icons.pause),
+                        title: Text("Break In"),
+                        onTap: () {
+                          BreakIn();
+                          Navigator.pop(context); // Close the drawer first
+                        },
+                      ),
                   (visit == true)
                       ? ListTile(
                         leading: Icon(Icons.person),
-                        title: Text("Visit in"),
+                        title: Text("Visit out"),
                         onTap: () {
                           visitIn();
                           setState(() {
-                            visit==false;
+                            visit == false;
                           });
                         },
                       )
                       : ListTile(
                         leading: Icon(Icons.exit_to_app),
-                        title: Text("Visit out"),
+                        title: Text("Visit in"),
                         onTap: () {
                           if (punch == true) {
                             Navigator.pop(context);
@@ -835,20 +844,27 @@ class _EmpHomeState extends State<EmpHome> {
                                                           children: [
                                                             TextButton(
                                                               onPressed:
-                                                                  () =>  Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder:
-                                                      (context) => Attendancerep(),
-                                                ),
+                                                                  () => Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder:
+                                                                          (
+                                                                            context,
+                                                                          ) =>
+                                                                              Attendancerep(),
+                                                                    ),
                                                                   ),
                                                               child: Icon(
                                                                 Icons
                                                                     .remove_red_eye,
-                                                                size: 30,color: Colors.black,
+                                                                size: 30,
+                                                                color:
+                                                                    Colors
+                                                                        .black,
                                                               ),
                                                             ),
-                                                            (punch == true )
+                                                            (PSatatus ==
+                                                                    'Present')
                                                                 ? Container(
                                                                   width: 60,
                                                                   height: 20,
@@ -857,7 +873,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                           .green,
                                                                   child: Center(
                                                                     child: Text(
-                                                                      "Present",
+                                                                      PSatatus,
                                                                       style: TextStyle(
                                                                         color:
                                                                             Colors.white,
@@ -873,7 +889,8 @@ class _EmpHomeState extends State<EmpHome> {
                                                                   width: 60,
                                                                   height: 20,
                                                                   color:
-                                                                      Colors.white,
+                                                                      Colors
+                                                                          .white,
                                                                   child: Center(
                                                                     child: Text(
                                                                       startTime,
@@ -892,7 +909,8 @@ class _EmpHomeState extends State<EmpHome> {
                                                                   width: 60,
                                                                   height: 20,
                                                                   color:
-                                                                      Colors.white,
+                                                                      Colors
+                                                                          .white,
                                                                   child: Center(
                                                                     child: Text(
                                                                       endtime,
@@ -973,7 +991,8 @@ class _EmpHomeState extends State<EmpHome> {
                                     backgroundColor: Color(0xFF03a9f4),
                                   ),
                                 )
-                                :(pcount>=1)? ElevatedButton(
+                                : (pcount >= 1)
+                                ? ElevatedButton(
                                   onPressed: () async {},
                                   child: Text(
                                     "Punch in",
@@ -985,7 +1004,8 @@ class _EmpHomeState extends State<EmpHome> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xFF03a9f4),
                                   ),
-                                ):ElevatedButton(
+                                )
+                                : ElevatedButton(
                                   onPressed: () async {
                                     await _pickImageFromCamera();
                                     punchIn();
@@ -1026,12 +1046,14 @@ class _EmpHomeState extends State<EmpHome> {
                             Icon(Icons.exit_to_app, size: 40),
                             (visit == true)
                                 ? ElevatedButton(
-                                  onPressed: () {visitIn();
-                                  setState(() {
-                            visit==false;
-                          });},
+                                  onPressed: () {
+                                    visitIn();
+                                    setState(() {
+                                      visit == false;
+                                    });
+                                  },
                                   child: Text(
-                                    "Visit in",
+                                    "Visit out",
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.black,
@@ -1054,7 +1076,7 @@ class _EmpHomeState extends State<EmpHome> {
                                               )
                                               : "",
                                   child: Text(
-                                    "Visit Out",
+                                    "Visit in",
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.black,
@@ -1135,7 +1157,7 @@ class _EmpHomeState extends State<EmpHome> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Break Time Report",
+                              "Daily Visit In Report",
                               style: TextStyle(fontSize: 15),
                             ),
                             Icon(Icons.access_time, size: 40),
@@ -1177,6 +1199,194 @@ class _EmpHomeState extends State<EmpHome> {
                 ),
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        // Set the background color here
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ), // Optional: Adds rounded corners
+                      ),
+                      child: Padding(padding: EdgeInsets.all(10),
+                      child:Column(
+                        children: [
+                          Text(
+                            "Break 1",
+                            style: TextStyle(fontSize: 12, color: Colors.black),
+                          ),
+                          Icon(Icons.coffee, size: 35),
+                          (bcount==0)?ElevatedButton(
+                            onPressed: () => {BreakIn()},
+                            child: Text(
+                              "Start",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF03a9f4),
+                            ),
+                          ):(bcount==1)?ElevatedButton(
+                            onPressed: () => {BreakOut()},
+                            child: Text(
+                              "End",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF03a9f4),
+                            ),
+                          ):ElevatedButton(
+                            onPressed: () => {},
+                            child: Text(
+                              "End",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                          )
+                        ],
+                      ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        // Set the background color here
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ), // Optional: Adds rounded corners
+                      ),
+                      child: Padding(padding: EdgeInsets.all(10),
+                      child:Column(
+                        children: [
+                          Text(
+                            "Break 2",
+                            style: TextStyle(fontSize: 12, color: Colors.black),
+                          ),
+                          Icon(Icons.dining, size: 35),
+                         (bcount==2)?ElevatedButton(
+                            onPressed: () => {BreakIn()},
+                            child: Text(
+                              "Start",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF03a9f4),
+                            ),
+                          ):(bcount==3)?ElevatedButton(
+                            onPressed: () => {BreakOut()},
+                            child: Text(
+                              "End",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF03a9f4),
+                            ),
+                          ):ElevatedButton(
+                            onPressed: () => {},
+                            child: Text(
+                              "End",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                          )
+                        ],
+                      ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        // Set the background color here
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ), // Optional: Adds rounded corners
+                      ),
+                      child: Padding(padding: EdgeInsets.all(10),
+                      child:Column(
+                        children: [
+                          Text(
+                            "Break 3",
+                            style: TextStyle(fontSize: 15, color: Colors.black),
+                          ),
+                          Icon(Icons.coffee, size: 35),
+                          (bcount==4)?ElevatedButton(
+                            onPressed: () => {BreakIn()},
+                            child: Text(
+                              "Start",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF03a9f4),
+                            ),
+                          ):(bcount==5)?ElevatedButton(
+                            onPressed: () => {BreakOut()},
+                            child: Text(
+                              "End",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF03a9f4),
+                            ),
+                          ):ElevatedButton(
+                            onPressed: () => {},
+                            child: Text(
+                              "End",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ),
+                          )
+                        ],
+                      ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10,),
+              Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  // Set the background color here
+                  color: Color(0xFF03a9f4),
+                  borderRadius: BorderRadius.circular(
+                    10,
+                  ), // Optional: Adds rounded corners
+                ),
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
@@ -1189,38 +1399,17 @@ class _EmpHomeState extends State<EmpHome> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Break Time", style: TextStyle(fontSize: 15)),
+                            Text(
+                              "Break Report",
+                              style: TextStyle(fontSize: 15),
+                            ),
                             Icon(Icons.breakfast_dining, size: 40),
-                            (BreakTime)?ElevatedButton(
+                            ElevatedButton(
                               onPressed: () => BreakOut(),
                               child: Text(
-                                "Break Out",
+                                "Break Report",
                                 style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
-                              ),
-                            ):(bcount>=3)?ElevatedButton(
-                              onPressed: () => print("Break Limit Over"),
-                              child: Text(
-                                "Break Limit Over",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
-                              ),
-                            ):ElevatedButton(
-                              onPressed: () => BreakIn(),
-                              child: Text(
-                                "Break In",
-                                style: TextStyle(
-                                  fontSize: 15,
+                                  fontSize: 13,
                                   color: Colors.black,
                                 ),
                               ),
