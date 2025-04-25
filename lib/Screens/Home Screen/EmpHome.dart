@@ -47,14 +47,79 @@ class _EmpHomeState extends State<EmpHome> {
   int bcount = 0;
   bool BreakTime = false;
   String PSatatus = '';
+  String Mainstatus = '';
+  int userid = 0;
+  String CurrentAddress = '';
+
+  /* Future<String?> getDeviceId() async {
+  final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+  if (Platform.isAndroid) {
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    return androidInfo.id; // or androidInfo.androidId (recommended)
+  } else if (Platform.isIOS) {
+    IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+    return iosInfo.identifierForVendor;
+  }
+
+  return null;
+} */
 
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
+
+  String latitude = '';
+  String longitude = '';
+  String status = 'Press the button to get your location';
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadAddress();
+    });
+    initializeApp();
+  }
+
+  void initializeApp() async {
+    await getApi();
     _loadUser();
-    loadAddress();
     checkAutoPunchOut();
+  }
+
+  Future<void> getApi() async {
+    print("SAhil");
+    final url = Uri.parse(
+      'https://testapi.rabadtechnology.com/getEmployeestatus.php',
+    );
+    try {
+      final Map<String, dynamic> requestBody = {"employee_id": 26};
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      var success = responseData['success'];
+      var message = responseData['message'];
+      var status = responseData['status'];
+      if (success == true) {
+        setState(() {
+          Mainstatus = status;
+        });
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Somthing Wants Wrong")));
+    }
   }
 
   void checkAutoPunchOut() {
@@ -67,14 +132,9 @@ class _EmpHomeState extends State<EmpHome> {
       setState(() {
         PSatatus = 'Not Marke';
         pcount = 0;
-        bcount=0;
+        bcount = 0;
       });
     }
-  }
-
-  void loadAddress() async {
-    await getCurrentLocation();
-    await fetchAndPrintAddress();
   }
 
   void _loadUser() {
@@ -86,14 +146,15 @@ class _EmpHomeState extends State<EmpHome> {
         comName = user['company_name'] ?? 'Default Company';
         name = user['name'] ?? 'Default User';
         username = user['username'] ?? 'Default User';
+        userid = user['id'] ?? 'Default User';
         role = localStorage.getItem('role');
       });
+      print("UserId$userid");
     }
     var Visit = localStorage.getItem('visitout') ?? false;
     if (Visit == true) {
       setState(() {
         visit = Visit;
-        print(Visit);
       });
     }
   }
@@ -163,50 +224,64 @@ class _EmpHomeState extends State<EmpHome> {
     });
   }
 
-  void punchIn() async {
-    final url = Uri.parse(
-      'https://testapi.rabadtechnology.com/employee_attendence.php',
-    );
-    String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
-    try {
-      final Map<String, dynamic> requestBody = {
-        "company_name": comName,
-        "name": name,
-        "time": currentTime,
-        "date": currentDate,
-        "latitude": latitude,
-        "longitude": longitude,
-      };
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(requestBody),
-      );
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+ void punchIn() async {
+  final url = Uri.parse('https://testapi.rabadtechnology.com/attendence.php');
+  String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+
+  try {
+    final request = http.MultipartRequest('POST', url);
+
+    // ✅ Make sure values are not null
+    request.fields['deviceid'] = '1226';
+    request.fields['address'] = CurrentAddress ?? '';
+    request.fields['employee_id'] = userid?.toString() ?? '0';
+    request.fields['location'] = jsonEncode([
+      {"latitude": latitude, "longitude": longitude}
+    ]);
+
+    // ✅ Attach image file if selected
+    if (_imageFile != null && _imageFile!.path.isNotEmpty) {
+      final file = File(_imageFile!.path);
+      if (await file.exists()) {
+        request.files.add(await http.MultipartFile.fromPath('image', file.path));
+        print("📸 Image attached: ${file.path}");
+      } else {
+        print("⚠️ Image file doesn't exist at: ${file.path}");
+      }
+    }
+
+    // ✅ Send request
+    print("📤 Sending punch-in...");
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    print("🧾 Response status: ${response.statusCode}");
+    print("🧾 Response body: ${response.body}");
+
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
+      final responseData = jsonDecode(response.body);
       var success = responseData['success'];
       var message = responseData['message'];
+
       if (success == true) {
         setState(() {
           punch = true;
           startTime = currentTime;
           pcount++;
           PSatatus = 'Present';
-          print(pcount);
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Somthing Wants Wrong")));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Server error. Try again.")));
     }
+  } catch (e) {
+    print("❌ Error: $e");
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Something went wrong.")));
   }
+}
 
   void punchOut() async {
     final url = Uri.parse(
@@ -227,6 +302,7 @@ class _EmpHomeState extends State<EmpHome> {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
+      print(response);
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       var success = responseData['success'];
       var message = responseData['message'];
@@ -310,96 +386,91 @@ class _EmpHomeState extends State<EmpHome> {
     });
   }
 
-  String latitude = '';
-  String longitude = '';
-  String status = 'Press the button to get your location';
-  Future<void> getCurrentLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Check if location services are enabled
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      setState(() {
-        status = 'Location services are disabled.';
-      });
-      return;
+  Future<void> loadAddress() async {
+    try {
+      await getCurrentLocation();
+      await fetchAndPrintAddress();
+    } catch (e) {
+      _showSnackBar("Error loading address: $e");
     }
+  }
 
-    // Check location permission
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
+  Future<void> getCurrentLocation() async {
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        print("Location services are disabled.");
+        await Geolocator.openLocationSettings();
+        final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.bestForNavigation,
+        ).timeout(
+          Duration(seconds: 30),
+          onTimeout: () {
+            throw Exception("Location request timed out.");
+          },
+        );
         setState(() {
-          status = 'Location permissions are denied';
+          latitude = position.latitude.toString();
+          longitude = position.longitude.toString();
         });
         return;
       }
-    }
 
-    if (permission == LocationPermission.deniedForever) {
-      setState(() {
-        status = 'Location permissions are permanently denied.';
-      });
-      return;
-    }
-
-    // Get the current location
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.bestForNavigation,
+      ).timeout(
+        Duration(seconds: 10),
+        onTimeout: () {
+          throw Exception("Location request timed out.");
+        },
       );
-
       setState(() {
         latitude = position.latitude.toString();
         longitude = position.longitude.toString();
-        status = 'Location found!';
-        print("Latitude: $latitude, Longitude: $longitude");
       });
-
-      // Fetch and print the address
-      await fetchAndPrintAddress();
+      _showSnackBar("Location found!");
     } catch (e) {
-      print("Error getting current location: $e");
-      setState(() {
-        status = 'Error retrieving location: $e';
-      });
+      _showSnackBar("Error retrieving location: $e");
     }
   }
 
   Future<void> fetchAndPrintAddress() async {
-    double lat = double.tryParse(latitude) ?? 0.0;
-    double lng = double.tryParse(longitude) ?? 0.0;
+    final lat = double.tryParse(latitude) ?? 0.0;
+    final lng = double.tryParse(longitude) ?? 0.0;
 
     if (lat == 0.0 && lng == 0.0) {
-      print("Invalid latitude and longitude.");
+      _showSnackBar("Invalid latitude and longitude.");
       return;
     }
 
-    String address = await getAddressFromLatLng(lat, lng);
-    print("📍 Address: $address");
-
-    // Optional: show on screen
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(address)));
+    try {
+      final address = await getAddressFromLatLng(lat, lng);
+      setState(() {
+        CurrentAddress = "$address";
+      });
+      _showSnackBar("📍 Address: $address");
+    } catch (e) {
+      _showSnackBar("Error fetching address: $e");
+    }
   }
 
   Future<String> getAddressFromLatLng(double lat, double lng) async {
     try {
-      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
-
+      final placemarks = await placemarkFromCoordinates(lat, lng);
       if (placemarks.isNotEmpty) {
-        Placemark place = placemarks[0];
+        final place = placemarks[0];
         return "${place.name}, ${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
-      } else {
-        return "No address available";
       }
+      return "No address available.";
     } catch (e) {
-      print("Error getting address: $e");
-      return "Error retrieving address";
+      return "Error retrieving address: $e";
     }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   // This is the value that will hold the selected item
@@ -545,11 +616,12 @@ class _EmpHomeState extends State<EmpHome> {
                           );
                         },
                       )
-                      : (pcount >= 1)
+                      : (Mainstatus == "")
                       ? ListTile(
                         leading: Icon(Icons.access_time),
                         title: Text("Punch in"),
                         onTap: () {
+                          punchIn();
                           Navigator.pop(context);
                         },
                       )
@@ -557,7 +629,6 @@ class _EmpHomeState extends State<EmpHome> {
                         leading: Icon(Icons.access_time),
                         title: Text("Punch in"),
                         onTap: () {
-                          punchIn();
                           Navigator.pop(context);
                         },
                       ),
@@ -991,9 +1062,12 @@ class _EmpHomeState extends State<EmpHome> {
                                     backgroundColor: Color(0xFF03a9f4),
                                   ),
                                 )
-                                : (pcount >= 1)
+                                : (Mainstatus == '')
                                 ? ElevatedButton(
-                                  onPressed: () async {},
+                                  onPressed: () async {
+                                    await _pickImageFromCamera();
+                                    punchIn();
+                                  },
                                   child: Text(
                                     "Punch in",
                                     style: TextStyle(
@@ -1006,10 +1080,7 @@ class _EmpHomeState extends State<EmpHome> {
                                   ),
                                 )
                                 : ElevatedButton(
-                                  onPressed: () async {
-                                    await _pickImageFromCamera();
-                                    punchIn();
-                                  },
+                                  onPressed: () async {},
                                   child: Text(
                                     "Punch in",
                                     style: TextStyle(
@@ -1105,6 +1176,219 @@ class _EmpHomeState extends State<EmpHome> {
                 ),
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        // Set the background color here
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ), // Optional: Adds rounded corners
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Break 1",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Icon(Icons.coffee, size: 35),
+                            (bcount == 0)
+                                ? ElevatedButton(
+                                  onPressed: () => {BreakIn()},
+                                  child: Text(
+                                    "Start",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                  ),
+                                )
+                                : (bcount == 1)
+                                ? ElevatedButton(
+                                  onPressed: () => {BreakOut()},
+                                  child: Text(
+                                    "End",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                  ),
+                                )
+                                : ElevatedButton(
+                                  onPressed: () => {},
+                                  child: Text(
+                                    "End",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        // Set the background color here
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ), // Optional: Adds rounded corners
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Break 2",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Icon(Icons.dining, size: 35),
+                            (bcount == 2)
+                                ? ElevatedButton(
+                                  onPressed: () => {BreakIn()},
+                                  child: Text(
+                                    "Start",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                  ),
+                                )
+                                : (bcount == 3)
+                                ? ElevatedButton(
+                                  onPressed: () => {BreakOut()},
+                                  child: Text(
+                                    "End",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                  ),
+                                )
+                                : ElevatedButton(
+                                  onPressed: () => {},
+                                  child: Text(
+                                    "End",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        // Set the background color here
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(
+                          10,
+                        ), // Optional: Adds rounded corners
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Column(
+                          children: [
+                            Text(
+                              "Break 3",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Icon(Icons.coffee, size: 35),
+                            (bcount == 4)
+                                ? ElevatedButton(
+                                  onPressed: () => {BreakIn()},
+                                  child: Text(
+                                    "Start",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                  ),
+                                )
+                                : (bcount == 5)
+                                ? ElevatedButton(
+                                  onPressed: () => {BreakOut()},
+                                  child: Text(
+                                    "End",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                  ),
+                                )
+                                : ElevatedButton(
+                                  onPressed: () => {},
+                                  child: Text(
+                                    "End",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.red,
+                                  ),
+                                ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: 10),
+              Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  // Set the background color here
+                  color: Color(0xFF03a9f4),
+                  borderRadius: BorderRadius.circular(
+                    10,
+                  ), // Optional: Adds rounded corners
+                ),
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
@@ -1188,194 +1472,6 @@ class _EmpHomeState extends State<EmpHome> {
                 ),
               ),
               SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  // Set the background color here
-                  color: Color(0xFF03a9f4),
-                  borderRadius: BorderRadius.circular(
-                    10,
-                  ), // Optional: Adds rounded corners
-                ),
-                width: MediaQuery.of(context).size.width * 0.9,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        // Set the background color here
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ), // Optional: Adds rounded corners
-                      ),
-                      child: Padding(padding: EdgeInsets.all(10),
-                      child:Column(
-                        children: [
-                          Text(
-                            "Break 1",
-                            style: TextStyle(fontSize: 12, color: Colors.black),
-                          ),
-                          Icon(Icons.coffee, size: 35),
-                          (bcount==0)?ElevatedButton(
-                            onPressed: () => {BreakIn()},
-                            child: Text(
-                              "Start",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF03a9f4),
-                            ),
-                          ):(bcount==1)?ElevatedButton(
-                            onPressed: () => {BreakOut()},
-                            child: Text(
-                              "End",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF03a9f4),
-                            ),
-                          ):ElevatedButton(
-                            onPressed: () => {},
-                            child: Text(
-                              "End",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
-                          )
-                        ],
-                      ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        // Set the background color here
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ), // Optional: Adds rounded corners
-                      ),
-                      child: Padding(padding: EdgeInsets.all(10),
-                      child:Column(
-                        children: [
-                          Text(
-                            "Break 2",
-                            style: TextStyle(fontSize: 12, color: Colors.black),
-                          ),
-                          Icon(Icons.dining, size: 35),
-                         (bcount==2)?ElevatedButton(
-                            onPressed: () => {BreakIn()},
-                            child: Text(
-                              "Start",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF03a9f4),
-                            ),
-                          ):(bcount==3)?ElevatedButton(
-                            onPressed: () => {BreakOut()},
-                            child: Text(
-                              "End",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF03a9f4),
-                            ),
-                          ):ElevatedButton(
-                            onPressed: () => {},
-                            child: Text(
-                              "End",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
-                          )
-                        ],
-                      ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        // Set the background color here
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ), // Optional: Adds rounded corners
-                      ),
-                      child: Padding(padding: EdgeInsets.all(10),
-                      child:Column(
-                        children: [
-                          Text(
-                            "Break 3",
-                            style: TextStyle(fontSize: 15, color: Colors.black),
-                          ),
-                          Icon(Icons.coffee, size: 35),
-                          (bcount==4)?ElevatedButton(
-                            onPressed: () => {BreakIn()},
-                            child: Text(
-                              "Start",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF03a9f4),
-                            ),
-                          ):(bcount==5)?ElevatedButton(
-                            onPressed: () => {BreakOut()},
-                            child: Text(
-                              "End",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF03a9f4),
-                            ),
-                          ):ElevatedButton(
-                            onPressed: () => {},
-                            child: Text(
-                              "End",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                              ),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ),
-                          )
-                        ],
-                      ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10,),
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(

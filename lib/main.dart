@@ -13,9 +13,6 @@ void main() async {
   String? user = localStorage.getItem("user");
   String? role = localStorage.getItem("role");
 
-  print('User: $user');
-  print('Role: $role');
-
   // Clean up role string just in case it was jsonEncoded
   role = role?.toString().replaceAll('"', '').trim().toLowerCase();
 
@@ -104,8 +101,6 @@ class _createScreen extends State<CreateScreen> {
         final message = responseData['message'];
         final role = responseData['role'];
         final data = responseData['data'];
-
-        print("Type: $data");
 
         if (success == true) {
           // Save to localStorage
