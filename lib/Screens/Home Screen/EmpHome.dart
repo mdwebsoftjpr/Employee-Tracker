@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
+import 'package:device_info_plus/device_info_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,45 +34,6 @@ class EmpHome extends StatefulWidget {
 }
 
 class _EmpHomeState extends State<EmpHome> {
-  int _selectedIndex = 0;
-  bool drop = false;
-  String name = "key_person";
-  String comName = 'Compamy';
-  String username = "";
-  String role = '';
-  bool visit = false;
-  bool punch = false;
-  String startTime = '';
-  String endtime = '';
-  int pcount = 0;
-  int bcount = 0;
-  bool BreakTime = false;
-  String PSatatus = '';
-  String Mainstatus = '';
-  int userid = 0;
-  String CurrentAddress = '';
-
-  /* Future<String?> getDeviceId() async {
-  final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-
-  if (Platform.isAndroid) {
-    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    return androidInfo.id; // or androidInfo.androidId (recommended)
-  } else if (Platform.isIOS) {
-    IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
-    return iosInfo.identifierForVendor;
-  }
-
-  return null;
-} */
-
-  final ImagePicker _picker = ImagePicker();
-  XFile? _imageFile;
-
-  String latitude = '';
-  String longitude = '';
-  String status = 'Press the button to get your location';
-
   @override
   void initState() {
     super.initState();
@@ -83,29 +45,95 @@ class _EmpHomeState extends State<EmpHome> {
 
   void initializeApp() async {
     await getApi();
-    _loadUser();
+    await getDeviceId();
     checkAutoPunchOut();
   }
 
+  int _selectedIndex = 0;
+  bool drop = false;
+  String name = "key_person";
+  String comName = 'Compamy';
+  String username = "";
+  String role = '';
+  bool visit = false;
+  int bcount = 0;
+  bool BreakTime = false;
+  String PSatatus = 'Present';
+  String Mainstatus = '';
+  int userid = 0;
+  String CurrentAddress = '';
+  final ImagePicker _picker = ImagePicker();
+  XFile? _imageFile;
+  String deviceId = '';
+  String latitude = '';
+  String longitude = '';
+  String status = 'Press the button to get your location';
+  String UserImage = '';
+  String punchIntime='';
+
+  Future<String?> getDeviceId() async {
+    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      ;
+      var DeviceId = androidInfo.id;
+      setState(() {
+        deviceId = DeviceId ?? 'unknown';
+      });
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      var DeviceId = iosInfo.identifierForVendor;
+      setState(() {
+        deviceId = DeviceId ?? 'unknown';
+      });
+    }
+
+    return null;
+  }
+
   Future<void> getApi() async {
-    print("SAhil");
+    var userJson = localStorage.getItem('user');
+    print(userJson);
+    if (userJson != null) {
+      var user = jsonDecode(userJson);
+      setState(() {
+        comName = user['company_name'] ?? 'Default Company';
+        name = user['name'] ?? 'Default User';
+        username = user['username'] ?? 'Default User';
+        userid = user['id'] ?? 'Default User';
+        role = localStorage.getItem('role');
+      });
+    }
+    var Visit = localStorage.getItem('visitout') ?? false;
+    if (Visit == true) {
+      setState(() {
+        visit = Visit;
+      });
+    }
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/getEmployeestatus.php',
     );
     try {
-      final Map<String, dynamic> requestBody = {"employee_id": 26};
+      final Map<String, dynamic> requestBody = {"employee_id": userid};
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      var responseData = jsonDecode(response.body);
+
       var success = responseData['success'];
       var message = responseData['message'];
-      var status = responseData['status'];
+      var data = responseData['data'];
+      var status = data[0]['status_PunchIn'];
+      var image = data[0]['image_path'];
+      var punchInTime = data[0]['time'];
       if (success == true) {
         setState(() {
           Mainstatus = status;
+          UserImage = image;
+          punchIntime=punchInTime;
         });
         ScaffoldMessenger.of(
           context,
@@ -116,45 +144,20 @@ class _EmpHomeState extends State<EmpHome> {
         ).showSnackBar(SnackBar(content: Text(message)));
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Somthing Wants Wrong")));
+      print("ihcauihhuih $e");
     }
   }
 
   void checkAutoPunchOut() {
     final now = DateTime.now();
-    final endOfDay = DateTime(now.year, now.month, now.day, 24, 0); // 12 aM
+    final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
     if (now.isAfter(endOfDay)) {
       // Auto punch out
       punchOut();
       setState(() {
         PSatatus = 'Not Marke';
-        pcount = 0;
         bcount = 0;
-      });
-    }
-  }
-
-  void _loadUser() {
-    var userJson = localStorage.getItem('user');
-    if (userJson != null) {
-      var user = jsonDecode(userJson);
-
-      setState(() {
-        comName = user['company_name'] ?? 'Default Company';
-        name = user['name'] ?? 'Default User';
-        username = user['username'] ?? 'Default User';
-        userid = user['id'] ?? 'Default User';
-        role = localStorage.getItem('role');
-      });
-      print("UserId$userid");
-    }
-    var Visit = localStorage.getItem('visitout') ?? false;
-    if (Visit == true) {
-      setState(() {
-        visit = Visit;
       });
     }
   }
@@ -224,64 +227,47 @@ class _EmpHomeState extends State<EmpHome> {
     });
   }
 
- void punchIn() async {
-  final url = Uri.parse('https://testapi.rabadtechnology.com/attendence.php');
-  String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
+  void punchIn() async {
+    if (_imageFile == null) return;
 
-  try {
+    final url = Uri.parse('https://testapi.rabadtechnology.com/attendence.php');
     final request = http.MultipartRequest('POST', url);
 
-    // ✅ Make sure values are not null
-    request.fields['deviceid'] = '1226';
-    request.fields['address'] = CurrentAddress ?? '';
-    request.fields['employee_id'] = userid?.toString() ?? '0';
-    request.fields['location'] = jsonEncode([
-      {"latitude": latitude, "longitude": longitude}
-    ]);
+    // Attach image
+    request.files.add(
+      await http.MultipartFile.fromPath('image', _imageFile!.path),
+    );
 
-    // ✅ Attach image file if selected
-    if (_imageFile != null && _imageFile!.path.isNotEmpty) {
-      final file = File(_imageFile!.path);
-      if (await file.exists()) {
-        request.files.add(await http.MultipartFile.fromPath('image', file.path));
-        print("📸 Image attached: ${file.path}");
+    // Optional: send extra fields
+    request.fields['multipoint'] = '${latitude}_${longitude}';
+    request.fields['diviceid'] = deviceId;
+    request.fields['address'] = CurrentAddress;
+    request.fields['employeeid'] = '$userid';
+
+    // Send request
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      print("✅ Image uploaded successfully");
+      final response1 = await http.Response.fromStream(response);
+
+      print(response1.body);
+      var data = jsonDecode(response1.body);
+      var success = data['success'];
+      var message = data['message'];
+      if (success) {
+        getApi();
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       } else {
-        print("⚠️ Image file doesn't exist at: ${file.path}");
-      }
-    }
-
-    // ✅ Send request
-    print("📤 Sending punch-in...");
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
-
-    print("🧾 Response status: ${response.statusCode}");
-    print("🧾 Response body: ${response.body}");
-
-    if (response.statusCode == 200 && response.body.isNotEmpty) {
-      final responseData = jsonDecode(response.body);
-      var success = responseData['success'];
-      var message = responseData['message'];
-
-      if (success == true) {
-        setState(() {
-          punch = true;
-          startTime = currentTime;
-          pcount++;
-          PSatatus = 'Present';
-        });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Server error. Try again.")));
+      print("❌ Upload failed with status: ${response.statusCode}");
     }
-  } catch (e) {
-    print("❌ Error: $e");
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Something went wrong.")));
   }
-}
 
   void punchOut() async {
     final url = Uri.parse(
@@ -308,9 +294,8 @@ class _EmpHomeState extends State<EmpHome> {
       var message = responseData['message'];
       if (success == true) {
         setState(() {
-          punch = false;
-          endtime = currentTime;
         });
+        getApi();
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
@@ -349,7 +334,6 @@ class _EmpHomeState extends State<EmpHome> {
       if (success == true) {
         setState(() {
           visit = false;
-          print(punch);
         });
         ScaffoldMessenger.of(
           context,
@@ -387,91 +371,90 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   Future<void> loadAddress() async {
-    try {
-      await getCurrentLocation();
-      await fetchAndPrintAddress();
-    } catch (e) {
-      _showSnackBar("Error loading address: $e");
-    }
+  await getCurrentLocation();
+}
+
+Future<void> getCurrentLocation() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  // Check if location services are enabled
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    _showSnackBar('Location services are disabled. Please enable.');
+    await Geolocator.openLocationSettings();
+    return;
   }
 
-  Future<void> getCurrentLocation() async {
-    try {
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        print("Location services are disabled.");
-        await Geolocator.openLocationSettings();
-        final position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.bestForNavigation,
-        ).timeout(
-          Duration(seconds: 30),
-          onTimeout: () {
-            throw Exception("Location request timed out.");
-          },
-        );
-        setState(() {
-          latitude = position.latitude.toString();
-          longitude = position.longitude.toString();
-        });
-        return;
-      }
-
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.bestForNavigation,
-      ).timeout(
-        Duration(seconds: 10),
-        onTimeout: () {
-          throw Exception("Location request timed out.");
-        },
-      );
-      setState(() {
-        latitude = position.latitude.toString();
-        longitude = position.longitude.toString();
-      });
-      _showSnackBar("Location found!");
-    } catch (e) {
-      _showSnackBar("Error retrieving location: $e");
-    }
-  }
-
-  Future<void> fetchAndPrintAddress() async {
-    final lat = double.tryParse(latitude) ?? 0.0;
-    final lng = double.tryParse(longitude) ?? 0.0;
-
-    if (lat == 0.0 && lng == 0.0) {
-      _showSnackBar("Invalid latitude and longitude.");
+  // Check permission
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      _showSnackBar('Location permission denied.');
       return;
     }
+  }
 
-    try {
-      final address = await getAddressFromLatLng(lat, lng);
+  if (permission == LocationPermission.deniedForever) {
+    _showSnackBar('Location permission permanently denied.');
+    return;
+  }
+
+  // ✅ Get the position now
+  try {
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.best,
+    );
+
+    setState(() {
+      latitude = position.latitude.toString();
+      longitude = position.longitude.toString();
+    });
+
+    _showSnackBar('Location fetched successfully.');
+
+    // Now fetch the address
+    await fetchAndPrintAddress();
+  } catch (e) {
+    _showSnackBar('Error getting location: $e');
+  }
+}
+
+Future<void> fetchAndPrintAddress() async {
+  double? lat = double.tryParse(latitude);
+  double? lng = double.tryParse(longitude);
+
+  if (lat == null || lng == null) {
+    _showSnackBar('Invalid latitude or longitude.');
+    return;
+  }
+
+  try {
+    final placemarks = await placemarkFromCoordinates(lat, lng);
+    if (placemarks.isNotEmpty) {
+      final place = placemarks.first;
+      String address = "${place.name}, ${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+
       setState(() {
-        CurrentAddress = "$address";
+        CurrentAddress = address;
       });
-      _showSnackBar("📍 Address: $address");
-    } catch (e) {
-      _showSnackBar("Error fetching address: $e");
-    }
-  }
 
-  Future<String> getAddressFromLatLng(double lat, double lng) async {
-    try {
-      final placemarks = await placemarkFromCoordinates(lat, lng);
-      if (placemarks.isNotEmpty) {
-        final place = placemarks[0];
-        return "${place.name}, ${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
-      }
-      return "No address available.";
-    } catch (e) {
-      return "Error retrieving address: $e";
+      _showSnackBar('📍 Address: $address');
+    } else {
+      _showSnackBar('No address found.');
     }
+  } catch (e) {
+    _showSnackBar('Error fetching address: $e');
   }
+}
 
-  void _showSnackBar(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
-  }
+void _showSnackBar(String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(message)),
+  );
+}
+
 
   // This is the value that will hold the selected item
   String _selectedItem = 'One';
@@ -575,23 +558,18 @@ class _EmpHomeState extends State<EmpHome> {
                         right: 10,
                       ),
                       child:
-                          _imageFile != null
+                          (UserImage != '')
                               ? ClipRRect(
                                 borderRadius: BorderRadius.circular(
-                                  20,
-                                ), // Apply border radius to the image
-                                child: Image.file(
-                                  File(
-                                    _imageFile!.path,
-                                  ), // Convert XFile to File
-                                  width: 80,
-                                  height: 80,
+                                  10,
+                                ),
+                                child: Image.network(
+                                  'https://testapi.rabadtechnology.com/uploads/$UserImage',
                                   fit:
-                                      BoxFit
-                                          .cover, // Optional: Adjust how the image fits inside the container
+                                      BoxFit.cover,
                                 ),
                               )
-                              : Text(" "),
+                              : SizedBox(),
                     ),
                   ),
                   ListTile(
@@ -603,32 +581,22 @@ class _EmpHomeState extends State<EmpHome> {
                       ),
                     ),
                   ),
-                  (punch == true)
-                      ? ListTile(
-                        leading: Icon(Icons.access_time),
-                        title: Text("Punch Out"),
-                        onTap: () {
-                          punchOut();
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => EmpHome()),
-                          );
-                        },
-                      )
-                      : (Mainstatus == "")
+                  (Mainstatus == "")
                       ? ListTile(
                         leading: Icon(Icons.access_time),
                         title: Text("Punch in"),
-                        onTap: () {
+                        onTap: () async {
+                          await _pickImageFromCamera();
                           punchIn();
                           Navigator.pop(context);
                         },
                       )
                       : ListTile(
                         leading: Icon(Icons.access_time),
-                        title: Text("Punch in"),
-                        onTap: () {
+                        title: Text("Punch Out"),
+                        onTap: () async {
+                          await _pickImageFromCamera();
+                          punchOut();
                           Navigator.pop(context);
                         },
                       ),
@@ -672,7 +640,7 @@ class _EmpHomeState extends State<EmpHome> {
                         leading: Icon(Icons.exit_to_app),
                         title: Text("Visit in"),
                         onTap: () {
-                          if (punch == true) {
+                          if (Mainstatus != '') {
                             Navigator.pop(context);
                             Navigator.push(
                               context,
@@ -758,23 +726,18 @@ class _EmpHomeState extends State<EmpHome> {
                                         right: 10,
                                       ),
                                       child:
-                                          _imageFile != null
+                                          (UserImage != '')
                                               ? ClipRRect(
-                                                borderRadius: BorderRadius.circular(
-                                                  20,
-                                                ), // Apply border radius to the image
-                                                child: Image.file(
-                                                  File(
-                                                    _imageFile!.path,
-                                                  ), // Convert XFile to File
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                child: Image.network(
+                                                  'https://testapi.rabadtechnology.com/uploads/$UserImage',
                                                   width: 80,
                                                   height: 80,
-                                                  fit:
-                                                      BoxFit
-                                                          .cover, // Optional: Adjust how the image fits inside the container
+                                                  fit: BoxFit.cover,
                                                 ),
                                               )
-                                              : Text(" "),
+                                              : SizedBox(),
                                     ),
 
                                     SizedBox(width: 10),
@@ -934,8 +897,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                         .black,
                                                               ),
                                                             ),
-                                                            (PSatatus ==
-                                                                    'Present')
+                                                            (Mainstatus!='')
                                                                 ? Container(
                                                                   width: 60,
                                                                   height: 20,
@@ -955,7 +917,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                 : Text(
                                                                   "Not Marked",
                                                                 ),
-                                                            (startTime != '')
+                                                            (punchIntime != '')
                                                                 ? Container(
                                                                   width: 60,
                                                                   height: 20,
@@ -964,7 +926,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                           .white,
                                                                   child: Center(
                                                                     child: Text(
-                                                                      startTime,
+                                                                      punchIntime,
                                                                       style: TextStyle(
                                                                         color:
                                                                             Colors.black,
@@ -975,7 +937,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                 : Text(
                                                                   "      -  ",
                                                                 ),
-                                                            (endtime != '')
+                                                            ('' != '')
                                                                 ? Container(
                                                                   width: 60,
                                                                   height: 20,
@@ -984,7 +946,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                           .white,
                                                                   child: Center(
                                                                     child: Text(
-                                                                      endtime,
+                                                                      'endtime',
                                                                       style: TextStyle(
                                                                         color:
                                                                             Colors.black,
@@ -1045,24 +1007,7 @@ class _EmpHomeState extends State<EmpHome> {
                               style: TextStyle(fontSize: 15),
                             ),
                             Icon(Icons.add, size: 40),
-                            (punch)
-                                ? ElevatedButton(
-                                  onPressed: () async {
-                                    await _pickImageFromCamera();
-                                    punchOut();
-                                  },
-                                  child: Text(
-                                    "Punch Out",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                  ),
-                                )
-                                : (Mainstatus == '')
+                            (Mainstatus == '')
                                 ? ElevatedButton(
                                   onPressed: () async {
                                     await _pickImageFromCamera();
@@ -1080,9 +1025,12 @@ class _EmpHomeState extends State<EmpHome> {
                                   ),
                                 )
                                 : ElevatedButton(
-                                  onPressed: () async {},
+                                  onPressed: () async {
+                                    await _pickImageFromCamera();
+                                    punchOut();
+                                  },
                                   child: Text(
-                                    "Punch in",
+                                    "Punch Out",
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.black,
@@ -1137,7 +1085,7 @@ class _EmpHomeState extends State<EmpHome> {
                                 : ElevatedButton(
                                   onPressed:
                                       () =>
-                                          (punch == true)
+                                          (Mainstatus != '')
                                               ? Navigator.push(
                                                 context,
                                                 MaterialPageRoute(

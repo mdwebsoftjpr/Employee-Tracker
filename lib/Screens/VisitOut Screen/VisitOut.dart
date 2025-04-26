@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +26,13 @@ class VisitOut extends StatefulWidget {
 }
 
 class VisitOutState extends State<VisitOut> {
+
+  void initState(){
+    super.initState();
+    getCurrentAddress();
+    autofillAddress();
+  }
+
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController organization = TextEditingController();
@@ -40,6 +49,26 @@ class VisitOutState extends State<VisitOut> {
 
   int? _selectedValue = 1;
   List<bool> selectedTransportModes = [false, false, false];
+
+Future<void> getCurrentAddress() async {
+  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+  List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+  Placemark place = placemarks[0];
+
+  String foundAddress = "${place.street}, ${place.locality}, ${place.country}";
+
+  setState(() {
+    address.text = foundAddress;
+  });
+}
+
+
+void autofillAddress() {
+  setState(() {
+    address.text = 'Address Automatically Picked';
+  });
+}
 
   Future<void> _pickImageFromCamera() async {
     final XFile? pickedFile = await _picker.pickImage(
