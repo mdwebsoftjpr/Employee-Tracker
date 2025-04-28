@@ -71,6 +71,8 @@ class _EmpHomeState extends State<EmpHome> {
   String UserImage = '';
   String punchIntime = '';
   String punchOuttime = '';
+  int VisitId=0;
+  
 
   Future<String?> getDeviceId() async {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -332,41 +334,43 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   void visitIn() async {
-    final url = Uri.parse('https://testapi.rabadtechnology.com/visit_in.php');
-    String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
     try {
-      final Map<String, dynamic> requestBody = {
-        "company_name": comName,
-        "name": name,
-        "time": currentTime,
-        "date": currentDate,
-        "latitude": latitude,
-        "longitude": longitude,
-      };
-      final response = await http.post(
-        url, // Replace this with your endpoint
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(requestBody),
+      if (_imageFile == null) return;
+      final url = Uri.parse(
+        'https://testapi.rabadtechnology.com/employee_activity.php',
       );
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
-      var success = responseData['success'];
-      var message = responseData['message'];
-      if (success == true) {
+      final request = http.MultipartRequest('POST', url);
+
+      request.files.add(
+        await http.MultipartFile.fromPath('image', _imageFile!.path),
+      );
+      request.fields['coordinate'] = '$latitude,$longitude';
+      request.fields['diviceid'] = deviceId;
+      request.fields['address'] = CurrentAddress;
+      request.fields['empid'] = '$userid';
+      // Send request
+      final response = await request.send();
+      final response1 = await http.Response.fromStream(response);
+      var data = jsonDecode(response1.body);
+      var success = data['success'] ?? '';
+      var message = data['message'] ?? '';
+      if (success) {
+        var status = data['status'] ?? '';
+        var id = status[0]['id'] ?? '';
         setState(() {
+          VisitId = id;
           visit = false;
         });
-        ScaffoldMessenger.of(
+         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
       } else {
-        ScaffoldMessenger.of(
+         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Somthing Wants Wrong")));
+      print(e);
     }
   }
 
@@ -645,8 +649,9 @@ class _EmpHomeState extends State<EmpHome> {
                   (visit == true)
                       ? ListTile(
                         leading: Icon(Icons.person),
-                        title: Text("Visit out"),
-                        onTap: () {
+                        title: Text("Visit In"),
+                        onTap: () async {
+                          await _pickImageFromCamera();
                           visitIn();
                           setState(() {
                             visit == false;
@@ -655,13 +660,15 @@ class _EmpHomeState extends State<EmpHome> {
                       )
                       : ListTile(
                         leading: Icon(Icons.exit_to_app),
-                        title: Text("Visit in"),
+                        title: Text("Visit Out"),
                         onTap: () {
-                          if (Mainstatus == '' && Mainstatus == 'punchout') {
-                            Navigator.pop(context);
+                          if (Mainstatus == '' || Mainstatus == 'punchout') {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => VisitOut()),
+                              MaterialPageRoute(
+                                builder:
+                                  (_) => VisitOut(VisitId),
+                                ),
                             );
                           }
                         },
@@ -669,19 +676,21 @@ class _EmpHomeState extends State<EmpHome> {
                   ListTile(
                     leading: Icon(Icons.assignment_turned_in),
                     title: Text("Attendance Report"),
-                    onTap: () { Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => Attendancerep()),
-                            );
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => Attendancerep()),
+                      );
                     },
                   ),
                   ListTile(
                     leading: Icon(Icons.access_time),
                     title: Text("Visit Report"),
-                    onTap: () { Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => Visitreport()),
-                            );
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => Visitreport()),
+                      );
                     },
                   ),
                   ListTile(
@@ -1100,14 +1109,15 @@ class _EmpHomeState extends State<EmpHome> {
                             Icon(Icons.exit_to_app, size: 40),
                             (visit == true)
                                 ? ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () async {
+                                    await _pickImageFromCamera();
                                     visitIn();
                                     setState(() {
                                       visit == false;
                                     });
                                   },
                                   child: Text(
-                                    "Visit out",
+                                    "Visit In",
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.black,
@@ -1120,17 +1130,17 @@ class _EmpHomeState extends State<EmpHome> {
                                 : ElevatedButton(
                                   onPressed:
                                       () =>
-                                          (Mainstatus == '' && Mainstatus == 'punchout')
+                                          (Mainstatus != '')
                                               ? Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
                                                   builder:
-                                                      (context) => VisitOut(),
+                                                      (context) => VisitOut(VisitId),
                                                 ),
                                               )
                                               : "",
                                   child: Text(
-                                    "Visit in",
+                                    "Visit Out",
                                     style: TextStyle(
                                       fontSize: 15,
                                       color: Colors.black,

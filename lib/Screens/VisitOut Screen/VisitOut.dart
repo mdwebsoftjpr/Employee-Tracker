@@ -7,11 +7,12 @@ import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:http/http.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
-  runApp(MaterialApp(home: VisitOut()));
 }
 
 Future<void> _initializeLocalStorage() async {
@@ -21,16 +22,24 @@ Future<void> _initializeLocalStorage() async {
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
 class VisitOut extends StatefulWidget {
+  final int VisitId;
+  VisitOut(this.VisitId);
   @override
   VisitOutState createState() => VisitOutState();
 }
 
 class VisitOutState extends State<VisitOut> {
-  void initState() {
-    super.initState();
-    getCurrentAddress();
-    autofillAddress();
-  }
+ void initState() {
+  super.initState();
+  print(widget.VisitId);
+  _initializeData();
+}
+
+Future<void> _initializeData() async {
+  getCurrentAddress();
+  autofillAddress();
+  await getCurrentLocation();
+}
 
   final _formKey = GlobalKey<FormState>();
 
@@ -48,6 +57,30 @@ class VisitOutState extends State<VisitOut> {
 
   int? _selectedValue = 1;
   List<bool> selectedTransportModes = [false, false, false];
+  String? latitude;
+  String? longitude;
+  String? deviceId;
+
+  Future<String?> getDeviceId() async {
+    final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      ;
+      var DeviceId = androidInfo.id;
+      setState(() {
+        deviceId = DeviceId ?? 'unknown';
+      });
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      var DeviceId = iosInfo.identifierForVendor;
+      setState(() {
+        deviceId = DeviceId ?? 'unknown';
+      });
+    }
+
+    return null;
+  }
 
   Future<void> getCurrentAddress() async {
     Position position = await Geolocator.getCurrentPosition(
@@ -59,7 +92,6 @@ class VisitOutState extends State<VisitOut> {
       position.longitude,
     );
     Placemark place = placemarks[0];
-
     String foundAddress =
         "${place.street}, ${place.locality}, ${place.country}";
 
@@ -67,6 +99,50 @@ class VisitOutState extends State<VisitOut> {
       address.text = foundAddress;
     });
   }
+
+  Future<void> getCurrentLocation() async {
+  bool serviceEnabled;
+  LocationPermission permission;
+
+  serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) {
+    print('Location services are disabled. Please enable them.');
+    await Geolocator.openLocationSettings();
+    return;
+  }
+
+  permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied) {
+    permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      print('Location permission denied.');
+      return;
+    }
+  }
+
+  if (permission == LocationPermission.deniedForever) {
+    print('Location permission permanently denied.');
+    return;
+  }
+
+  // ✅ Get the position now
+  try {
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.best,
+    );
+
+    // Get latitude and longitude
+    double latitude = position.latitude;
+    double longitude = position.longitude;
+    setState(() {
+      latitude=latitude;
+      longitude=longitude;
+    });
+    print('Latitude: $latitude, Longitude: $longitude');
+  } catch (e) {
+    print('Error getting location: $e');
+  }
+}
 
   void autofillAddress() {
     setState(() {
@@ -86,95 +162,97 @@ class VisitOutState extends State<VisitOut> {
     }
   }
 
-  void VisitOut(context) async {
-    if (_formKey.currentState?.validate() ?? false) {
-      String Corganization = organization.text;
-      String CconcernedPerson = concernedPerson.text;
-      String Cphone = phone.text;
-      String Citem = item.text;
-      String Cvalue = value.text;
-      String Cprobability = probability.text;
-      String Caddress = address.text;
-      String Cremark = remark.text;
+  void VisitOut(BuildContext context) async {
+  if (_formKey.currentState?.validate() ?? false) {
+    String Corganization = organization.text;
+    String CconcernedPerson = concernedPerson.text;
+    String Cphone = phone.text;
+    String Citem = item.text;
+    String Cvalue = value.text;
+    String Cprobability = probability.text;
+    String Caddress = address.text;
+    String Cremark = remark.text;
 
-      String modeOfTransport = '';
-      if (selectedTransportModes[0]) modeOfTransport += 'Air ';
-      if (selectedTransportModes[1]) modeOfTransport += 'Surface ';
-      if (selectedTransportModes[2]) modeOfTransport += 'Extrain ';
+    String modeOfTransport = '';
+    if (selectedTransportModes[0]) modeOfTransport += 'Air ';
+    if (selectedTransportModes[1]) modeOfTransport += 'Surface ';
+    if (selectedTransportModes[2]) modeOfTransport += 'Extrain ';
 
-      String weather =
-          _selectedValue == 1
-              ? 'Hot'
-              : _selectedValue == 2
-              ? 'Rain'
-              : 'Cold';
+    String weather =
+        _selectedValue == 1
+            ? 'Hot'
+            : _selectedValue == 2
+                ? 'Rain'
+                : 'Cold';
 
-      if (_imageFile == null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Please capture a photo')));
-        return;
-      }
+    if (_imageFile == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Please capture a photo')));
+      return;
+    }
 
-      try {
-        // Read image file and convert to base64
-        File imageFile = File(_imageFile!.path);
-        List<int> imageBytes = await imageFile.readAsBytes();
-        String base64Image = base64Encode(imageBytes);
+    try {
+      // Prepare the multipart request
+      var url = Uri.parse("https://testapi.rabadtechnology.com/employee_activity_update.php");
+      var request = http.MultipartRequest('POST', url);
 
-        var data = {
-          "organization": Corganization,
-          "concernedperson": CconcernedPerson,
-          "phoneno": Cphone,
-          "item": Citem,
-          "value": Cvalue,
-          "transport": modeOfTransport.trim(),
-          "Probablity": Cprobability,
-          "address": Caddress,
-          "Remark": Cremark,
-          "weather": weather,
-          "imagepunch": base64Image,
-        };
+      // Add the image file to the request
+      request.files.add(await http.MultipartFile.fromPath('image', _imageFile!.path));
 
-        var response = await http.post(
-          Uri.parse("https://testapi.rabadtechnology.com/visit_out.php"),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(data),
-        );
+      // Add other fields to the request
+      request.fields['NameOfCustomer'] = Corganization;
+      request.fields['concernedperson'] = CconcernedPerson;
+      request.fields['phoneno'] = Cphone;
+      request.fields['item'] = Citem;
+      request.fields['volume'] = Cvalue;
+      request.fields['transport'] = modeOfTransport.trim();
+      request.fields['Probablity'] = Cprobability;
+      request.fields['address'] = Caddress;
+      request.fields['Remark'] = Cremark;
+      request.fields['Prospects'] = weather;
+      request.fields['diviceid'] = "$deviceId";
+      request.fields['location'] = "$latitude,$longitude";
+      request.fields['id'] = widget.VisitId.toString(); // Assuming VisitId is an int
 
-        if (response.statusCode == 200) {
-          var responseData = jsonDecode(response.body);
-          print(responseData);
-          if (responseData['success'] == true) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(responseData['message'])));
-            localStorage.setItem('visitout', true);
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => EmpHome()),
-            );
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(responseData['message'] ?? "Submission failed"),
-              ),
-            );
-          }
+      // Send the request
+ var response = await request.send();
+
+// Get the response and handle it
+var responseData = await Response.fromStream(response);
+      var data = jsonDecode(responseData.body);
+      print(data);
+
+      if (response.statusCode == 200) {
+        if (data['success'] == true) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(data['message'])));
+          localStorage.setItem('visitout', true);
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => EmpHome()),
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Server error: ${response.statusCode}")),
+            SnackBar(
+              content: Text(data['message'] ?? "Submission failed"),
+            ),
           );
         }
-      } catch (e) {
-        print("Upload error: $e");
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Something went wrong")));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Server error: ${response.statusCode}")),
+        );
       }
+    } catch (e) {
+      print("Upload error: $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Something went wrong")));
     }
   }
-
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
