@@ -54,27 +54,26 @@ class CreateCom extends StatelessWidget {
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(requestBody),
         );
-          final Map<String, dynamic> responseData = jsonDecode(response.body);
-          var success = responseData['success'];
-          var message = responseData['message'];
-          if (success == true) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(message)));
-             Navigator.push(
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        var success = responseData['success'];
+        var message = responseData['message'];
+        if (success == true) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(message)));
+          Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => CreateScreen()),
           );
-          } else {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(message)));
-          }
-        
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(message)));
+        }
       } catch (e) {
         ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text("Somthing Wants Wrong")));
+          context,
+        ).showSnackBar(SnackBar(content: Text("Somthing Wants Wrong")));
       }
     }
   }
@@ -102,7 +101,11 @@ class CreateCom extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(height: 10),
-                  Image.asset('assets/images/LogoMain.jpg', width: 150, height: 150),
+                  Image.asset(
+                    'assets/images/LogoMain.jpg',
+                    width: 150,
+                    height: 150,
+                  ),
                   Text(
                     "Create Your Company",
                     style: TextStyle(
@@ -322,8 +325,8 @@ class CreateCom extends StatelessWidget {
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Enter Your Email';
-                                  } else if (!value.endsWith('@gmail.com')) {
-                                    return 'Email must end with @gmail.com';
+                                  } else if (!value.contains('@')) {
+                                    return 'Email must contain @';
                                   }
                                   return null;
                                 },

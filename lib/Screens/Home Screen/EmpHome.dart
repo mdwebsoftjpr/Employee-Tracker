@@ -69,7 +69,8 @@ class _EmpHomeState extends State<EmpHome> {
   String longitude = '';
   String status = 'Press the button to get your location';
   String UserImage = '';
-  String punchIntime='';
+  String punchIntime = '';
+  String punchOuttime = '';
 
   Future<String?> getDeviceId() async {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -125,20 +126,36 @@ class _EmpHomeState extends State<EmpHome> {
 
       var success = responseData['success'];
       var message = responseData['message'];
-      var data = responseData['data'];
-      var status = data[0]['status_PunchIn'];
-      var image = data[0]['image_path'];
-      var punchInTime = data[0]['time'];
+      print("GetApi $responseData");
       if (success == true) {
-        setState(() {
-          Mainstatus = status;
-          UserImage = image;
-          punchIntime=punchInTime;
-        });
+        var data = responseData['data'];
+        var statusin = data[0]['status_PunchIn'] ?? '';
+        var image = data[0]['image_path'] ?? '';
+        var punchInTime = data[0]['time'] ?? '';
+        var punchOutTime = data[0]['time_out'] ?? '';
+
+        if (statusin != '') {
+          setState(() {
+            Mainstatus = statusin;
+            UserImage = image;
+            punchIntime = punchInTime;
+            punchOuttime = punchOutTime;
+          });
+        } else {
+          setState(() {
+            Mainstatus = '';
+            UserImage = image;
+            punchIntime = punchInTime;
+          });
+        }
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
       } else {
+        setState(() {
+          Mainstatus = '';
+        });
+
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
@@ -249,12 +266,12 @@ class _EmpHomeState extends State<EmpHome> {
     if (response.statusCode == 200) {
       print("✅ Image uploaded successfully");
       final response1 = await http.Response.fromStream(response);
-
-      print(response1.body);
       var data = jsonDecode(response1.body);
       var success = data['success'];
       var message = data['message'];
+
       if (success) {
+        print("Success $success");
         getApi();
         ScaffoldMessenger.of(
           context,
@@ -270,31 +287,36 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   void punchOut() async {
+    if (_imageFile == null) return;
+
     final url = Uri.parse(
-      'https://testapi.rabadtechnology.com/employee_attendence_out.php',
+      'https://testapi.rabadtechnology.com/attendenceout.php',
     );
-    String currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
-    try {
-      final Map<String, dynamic> requestBody = {
-        "company_name": comName,
-        "name": name,
-        "time": currentTime,
-        "date": currentDate,
-        "latitude": latitude,
-        "longitude": longitude,
-      };
-      final response = await http.post(
-        url, // Replace this with your endpoint
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(requestBody),
-      );
-      print(response);
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
-      var success = responseData['success'];
-      var message = responseData['message'];
-      if (success == true) {
-        setState(() {
-        });
+    final request = http.MultipartRequest('POST', url);
+
+    // Attach image
+    request.files.add(
+      await http.MultipartFile.fromPath('image', _imageFile!.path),
+    );
+
+    // Optional: send extra fields
+    request.fields['multipoint'] = '${latitude}_${longitude}';
+    request.fields['diviceid'] = deviceId;
+    request.fields['address'] = CurrentAddress;
+    request.fields['employeeid'] = '$userid';
+    print("punch out vsonfon");
+    // Send request
+    final response = await request.send();
+    if (response.statusCode == 200) {
+      print("✅ Image uploaded successfully");
+      final response1 = await http.Response.fromStream(response);
+      var data = jsonDecode(response1.body);
+
+      var success = data['success'];
+      var message = data['message'];
+
+      if (success) {
+        print("hdauihidnh");
         getApi();
         ScaffoldMessenger.of(
           context,
@@ -304,10 +326,8 @@ class _EmpHomeState extends State<EmpHome> {
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
       }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Somthing Wants Wrong")));
+    } else {
+      print("❌ Upload failed with status: ${response.statusCode}");
     }
   }
 
@@ -371,90 +391,90 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   Future<void> loadAddress() async {
-  await getCurrentLocation();
-}
-
-Future<void> getCurrentLocation() async {
-  bool serviceEnabled;
-  LocationPermission permission;
-
-  // Check if location services are enabled
-  serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    _showSnackBar('Location services are disabled. Please enable.');
-    await Geolocator.openLocationSettings();
-    return;
+    await getCurrentLocation();
   }
 
-  // Check permission
-  permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
-      _showSnackBar('Location permission denied.');
+  Future<void> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showSnackBar('Location services are disabled. Please enable.');
+      await Geolocator.openLocationSettings();
       return;
     }
-  }
 
-  if (permission == LocationPermission.deniedForever) {
-    _showSnackBar('Location permission permanently denied.');
-    return;
-  }
+    // Check permission
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        _showSnackBar('Location permission denied.');
+        return;
+      }
+    }
 
-  // ✅ Get the position now
-  try {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.best,
-    );
+    if (permission == LocationPermission.deniedForever) {
+      _showSnackBar('Location permission permanently denied.');
+      return;
+    }
 
-    setState(() {
-      latitude = position.latitude.toString();
-      longitude = position.longitude.toString();
-    });
-
-    _showSnackBar('Location fetched successfully.');
-
-    // Now fetch the address
-    await fetchAndPrintAddress();
-  } catch (e) {
-    _showSnackBar('Error getting location: $e');
-  }
-}
-
-Future<void> fetchAndPrintAddress() async {
-  double? lat = double.tryParse(latitude);
-  double? lng = double.tryParse(longitude);
-
-  if (lat == null || lng == null) {
-    _showSnackBar('Invalid latitude or longitude.');
-    return;
-  }
-
-  try {
-    final placemarks = await placemarkFromCoordinates(lat, lng);
-    if (placemarks.isNotEmpty) {
-      final place = placemarks.first;
-      String address = "${place.name}, ${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+    // ✅ Get the position now
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best,
+      );
 
       setState(() {
-        CurrentAddress = address;
+        latitude = position.latitude.toString();
+        longitude = position.longitude.toString();
       });
 
-      _showSnackBar('📍 Address: $address');
-    } else {
-      _showSnackBar('No address found.');
+      _showSnackBar('Location fetched successfully.');
+
+      // Now fetch the address
+      await fetchAndPrintAddress();
+    } catch (e) {
+      _showSnackBar('Error getting location: $e');
     }
-  } catch (e) {
-    _showSnackBar('Error fetching address: $e');
   }
-}
 
-void _showSnackBar(String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(message)),
-  );
-}
+  Future<void> fetchAndPrintAddress() async {
+    double? lat = double.tryParse(latitude);
+    double? lng = double.tryParse(longitude);
 
+    if (lat == null || lng == null) {
+      _showSnackBar('Invalid latitude or longitude.');
+      return;
+    }
+
+    try {
+      final placemarks = await placemarkFromCoordinates(lat, lng);
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+        String address =
+            "${place.name}, ${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
+
+        setState(() {
+          CurrentAddress = address;
+        });
+
+        _showSnackBar('📍 Address: $address');
+      } else {
+        _showSnackBar('No address found.');
+      }
+    } catch (e) {
+      _showSnackBar('Error fetching address: $e');
+    }
+  }
+
+  void _showSnackBar(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
 
   // This is the value that will hold the selected item
   String _selectedItem = 'One';
@@ -560,13 +580,10 @@ void _showSnackBar(String message) {
                       child:
                           (UserImage != '')
                               ? ClipRRect(
-                                borderRadius: BorderRadius.circular(
-                                  10,
-                                ),
+                                borderRadius: BorderRadius.circular(10),
                                 child: Image.network(
                                   'https://testapi.rabadtechnology.com/uploads/$UserImage',
-                                  fit:
-                                      BoxFit.cover,
+                                  fit: BoxFit.cover,
                                 ),
                               )
                               : SizedBox(),
@@ -581,7 +598,7 @@ void _showSnackBar(String message) {
                       ),
                     ),
                   ),
-                  (Mainstatus == "")
+                  (Mainstatus == "" || Mainstatus == 'punchout')
                       ? ListTile(
                         leading: Icon(Icons.access_time),
                         title: Text("Punch in"),
@@ -640,7 +657,7 @@ void _showSnackBar(String message) {
                         leading: Icon(Icons.exit_to_app),
                         title: Text("Visit in"),
                         onTap: () {
-                          if (Mainstatus != '') {
+                          if (Mainstatus == '' && Mainstatus == 'punchout') {
                             Navigator.pop(context);
                             Navigator.push(
                               context,
@@ -649,6 +666,24 @@ void _showSnackBar(String message) {
                           }
                         },
                       ),
+                  ListTile(
+                    leading: Icon(Icons.assignment_turned_in),
+                    title: Text("Attendance Report"),
+                    onTap: () { Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => Attendancerep()),
+                            );
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.access_time),
+                    title: Text("Visit Report"),
+                    onTap: () { Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => Visitreport()),
+                            );
+                    },
+                  ),
                   ListTile(
                     leading: Icon(Icons.exit_to_app),
                     title: Text("Logout"),
@@ -897,7 +932,7 @@ void _showSnackBar(String message) {
                                                                         .black,
                                                               ),
                                                             ),
-                                                            (Mainstatus!='')
+                                                            (Mainstatus != "")
                                                                 ? Container(
                                                                   width: 60,
                                                                   height: 20,
@@ -937,7 +972,7 @@ void _showSnackBar(String message) {
                                                                 : Text(
                                                                   "      -  ",
                                                                 ),
-                                                            ('' != '')
+                                                            (punchOuttime != '')
                                                                 ? Container(
                                                                   width: 60,
                                                                   height: 20,
@@ -946,7 +981,7 @@ void _showSnackBar(String message) {
                                                                           .white,
                                                                   child: Center(
                                                                     child: Text(
-                                                                      'endtime',
+                                                                      punchOuttime,
                                                                       style: TextStyle(
                                                                         color:
                                                                             Colors.black,
@@ -955,7 +990,7 @@ void _showSnackBar(String message) {
                                                                   ),
                                                                 )
                                                                 : Text(
-                                                                  "       -  ",
+                                                                  "     -  ",
                                                                 ),
                                                           ],
                                                         ),
@@ -1007,7 +1042,7 @@ void _showSnackBar(String message) {
                               style: TextStyle(fontSize: 15),
                             ),
                             Icon(Icons.add, size: 40),
-                            (Mainstatus == '')
+                            (Mainstatus == "" || Mainstatus == 'punchout')
                                 ? ElevatedButton(
                                   onPressed: () async {
                                     await _pickImageFromCamera();
@@ -1085,7 +1120,7 @@ void _showSnackBar(String message) {
                                 : ElevatedButton(
                                   onPressed:
                                       () =>
-                                          (Mainstatus != '')
+                                          (Mainstatus == '' && Mainstatus == 'punchout')
                                               ? Navigator.push(
                                                 context,
                                                 MaterialPageRoute(

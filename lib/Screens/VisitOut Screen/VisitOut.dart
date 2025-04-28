@@ -26,8 +26,7 @@ class VisitOut extends StatefulWidget {
 }
 
 class VisitOutState extends State<VisitOut> {
-
-  void initState(){
+  void initState() {
     super.initState();
     getCurrentAddress();
     autofillAddress();
@@ -50,25 +49,30 @@ class VisitOutState extends State<VisitOut> {
   int? _selectedValue = 1;
   List<bool> selectedTransportModes = [false, false, false];
 
-Future<void> getCurrentAddress() async {
-  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  Future<void> getCurrentAddress() async {
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
-  List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
-  Placemark place = placemarks[0];
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
+    Placemark place = placemarks[0];
 
-  String foundAddress = "${place.street}, ${place.locality}, ${place.country}";
+    String foundAddress =
+        "${place.street}, ${place.locality}, ${place.country}";
 
-  setState(() {
-    address.text = foundAddress;
-  });
-}
+    setState(() {
+      address.text = foundAddress;
+    });
+  }
 
-
-void autofillAddress() {
-  setState(() {
-    address.text = 'Address Automatically Picked';
-  });
-}
+  void autofillAddress() {
+    setState(() {
+      address.text = 'Address Automatically Picked';
+    });
+  }
 
   Future<void> _pickImageFromCamera() async {
     final XFile? pickedFile = await _picker.pickImage(
@@ -82,91 +86,94 @@ void autofillAddress() {
     }
   }
 
- void VisitOut(context) async {
-  if (_formKey.currentState?.validate() ?? false) {
-    String Corganization = organization.text;
-    String CconcernedPerson = concernedPerson.text;
-    String Cphone = phone.text;
-    String Citem = item.text;
-    String Cvalue = value.text;
-    String Cprobability = probability.text;
-    String Caddress = address.text;
-    String Cremark = remark.text;
+  void VisitOut(context) async {
+    if (_formKey.currentState?.validate() ?? false) {
+      String Corganization = organization.text;
+      String CconcernedPerson = concernedPerson.text;
+      String Cphone = phone.text;
+      String Citem = item.text;
+      String Cvalue = value.text;
+      String Cprobability = probability.text;
+      String Caddress = address.text;
+      String Cremark = remark.text;
 
-    String modeOfTransport = '';
-    if (selectedTransportModes[0]) modeOfTransport += 'Air ';
-    if (selectedTransportModes[1]) modeOfTransport += 'Surface ';
-    if (selectedTransportModes[2]) modeOfTransport += 'Extrain ';
+      String modeOfTransport = '';
+      if (selectedTransportModes[0]) modeOfTransport += 'Air ';
+      if (selectedTransportModes[1]) modeOfTransport += 'Surface ';
+      if (selectedTransportModes[2]) modeOfTransport += 'Extrain ';
 
-    String weather = _selectedValue == 1
-        ? 'Hot'
-        : _selectedValue == 2
-            ? 'Rain'
-            : 'Cold';
+      String weather =
+          _selectedValue == 1
+              ? 'Hot'
+              : _selectedValue == 2
+              ? 'Rain'
+              : 'Cold';
 
-    if (_imageFile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please capture a photo')),
-      );
-      return;
-    }
+      if (_imageFile == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Please capture a photo')));
+        return;
+      }
 
-    try {
-      // Read image file and convert to base64
-      File imageFile = File(_imageFile!.path);
-      List<int> imageBytes = await imageFile.readAsBytes();
-      String base64Image = base64Encode(imageBytes);
+      try {
+        // Read image file and convert to base64
+        File imageFile = File(_imageFile!.path);
+        List<int> imageBytes = await imageFile.readAsBytes();
+        String base64Image = base64Encode(imageBytes);
 
-      var data = {
-        "organization": Corganization,
-        "concernedperson": CconcernedPerson,
-        "phoneno": Cphone,
-        "item": Citem,
-        "value": Cvalue,
-        "transport": modeOfTransport.trim(),
-        "Probablity": Cprobability,
-        "address": Caddress,
-        "Remark": Cremark,
-        "weather": weather,
-        "imagepunch": base64Image,
-      };
+        var data = {
+          "organization": Corganization,
+          "concernedperson": CconcernedPerson,
+          "phoneno": Cphone,
+          "item": Citem,
+          "value": Cvalue,
+          "transport": modeOfTransport.trim(),
+          "Probablity": Cprobability,
+          "address": Caddress,
+          "Remark": Cremark,
+          "weather": weather,
+          "imagepunch": base64Image,
+        };
 
-      var response = await http.post(
-        Uri.parse("https://testapi.rabadtechnology.com/visit_out.php"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(data),
-      );
+        var response = await http.post(
+          Uri.parse("https://testapi.rabadtechnology.com/visit_out.php"),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(data),
+        );
 
-
-      if (response.statusCode == 200) {
-        var responseData = jsonDecode(response.body);
-        print(responseData);
-        if (responseData['success'] == true) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(responseData['message'])),
-          );
-         localStorage.setItem('visitout', true);
-          Navigator.push(context, MaterialPageRoute(builder: (_) => EmpHome()));
-         
+        if (response.statusCode == 200) {
+          var responseData = jsonDecode(response.body);
+          print(responseData);
+          if (responseData['success'] == true) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+            localStorage.setItem('visitout', true);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => EmpHome()),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(responseData['message'] ?? "Submission failed"),
+              ),
+            );
+          }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(responseData['message'] ?? "Submission failed")),
+            SnackBar(content: Text("Server error: ${response.statusCode}")),
           );
         }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Server error: ${response.statusCode}")),
-        );
+      } catch (e) {
+        print("Upload error: $e");
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Something went wrong")));
       }
-    } catch (e) {
-      print("Upload error: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Something went wrong")),
-      );
     }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +206,19 @@ void autofillAddress() {
                     controller: concernedPerson,
                     label: 'Enter Concerned Person',
                   ),
-                  buildTextField(controller: phone, label: 'Enter Phone No.'),
+                  buildTextField(
+                    controller: phone,
+                    label: 'Enter Phone No.',
+                    keyboardType: TextInputType.phone,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Enter Your Mobile No.';
+                      } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                        return 'Mobile number must be exactly 10 digits';
+                      }
+                      return null;
+                    },
+                  ),
                   Row(
                     children: [
                       Expanded(
@@ -287,6 +306,8 @@ void autofillAddress() {
   Widget buildTextField({
     required TextEditingController controller,
     required String label,
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -298,8 +319,8 @@ void autofillAddress() {
           fillColor: Colors.grey[200],
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
         ),
-        validator:
-            (value) => value == null || value.isEmpty ? 'Required' : null,
+        validator: validator,
+        keyboardType: keyboardType,
       ),
     );
   }

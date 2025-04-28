@@ -118,7 +118,7 @@ class VisitreportState extends State<Visitreport> {
         title: Row(
           children: [
             Text(
-              'Attendance Report',
+              'Visit in Report',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: MediaQuery.of(context).size.width * 0.05,
