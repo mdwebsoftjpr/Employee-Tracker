@@ -5,8 +5,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 
-void main() async{
-    WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
   runApp(MaterialApp(home: CreateEmployee()));
 }
@@ -23,10 +23,9 @@ class CreateEmployee extends StatefulWidget {
 }
 
 class CreateEmpState extends State<CreateEmployee> {
-
   String comName = 'Compamy';
 
-  void initState(){
+  void initState() {
     super.initState();
     _loadUser();
   }
@@ -41,9 +40,7 @@ class CreateEmpState extends State<CreateEmployee> {
         print(comName);
       });
     }
-  
   }
-
 
   final _formKey = GlobalKey<FormState>();
 
@@ -111,7 +108,7 @@ class CreateEmpState extends State<CreateEmployee> {
           'https://testapi.rabadtechnology.com/create_employees.php',
         );
         final Map<String, dynamic> requestBody = {
-          "company_name":comName,
+          "company_name": comName,
           "name": EmpName,
           "age": EmpAge,
           "dob": EmpDob,
@@ -137,15 +134,15 @@ class CreateEmpState extends State<CreateEmployee> {
         print(message);
         print(requestBody);
         print(base64Image);
-        if(success==true){
+        if (success == true) {
           ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
-        Navigator.pop(context);
-        }else{
+            context,
+          ).showSnackBar(SnackBar(content: Text(message)));
+          Navigator.pop(context);
+        } else {
           ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+            context,
+          ).showSnackBar(SnackBar(content: Text(message)));
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -218,7 +215,7 @@ class CreateEmpState extends State<CreateEmployee> {
           'Create Employee',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 24,
+            fontSize:  8 * MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -239,7 +236,7 @@ class CreateEmpState extends State<CreateEmployee> {
                 _imageFile != null
                     ? CircleAvatar(
                       radius:
-                          60, // Size of the avatar, this is half the diameter
+                          MediaQuery.of(context).size.width * 0.18, // Size of the avatar, this is half the diameter
                       backgroundImage: FileImage(
                         File(_imageFile!.path),
                       ), // If you are using an image
@@ -248,8 +245,8 @@ class CreateEmpState extends State<CreateEmployee> {
                               .grey, // Background color if no image is provided
                     )
                     : Container(
-                      width: 120,
-                      height: 120,
+                      width: MediaQuery.of(context).size.width * 0.32,
+                      height: MediaQuery.of(context).size.width * 0.32,
                       decoration: BoxDecoration(
                         color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(50),
@@ -276,10 +273,17 @@ class CreateEmpState extends State<CreateEmployee> {
                   controller: name,
                   decoration: InputDecoration(
                     labelText: 'Enter Your Name',
-                    labelStyle: TextStyle(color: Colors.black),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
-                        30.0,
+                        4 * MediaQuery.of(context).devicePixelRatio,
                       ), // Set the border radius
                     ),
                     filled: true,
@@ -299,10 +303,17 @@ class CreateEmpState extends State<CreateEmployee> {
                   controller: age,
                   decoration: InputDecoration(
                     labelText: 'Enter Your Age',
-                    labelStyle: TextStyle(color: Colors.black),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
-                        30.0,
+                        4 * MediaQuery.of(context).devicePixelRatio,
                       ), // Set the border radius
                     ),
                     filled: true,
@@ -322,10 +333,17 @@ class CreateEmpState extends State<CreateEmployee> {
                   controller: dob,
                   decoration: InputDecoration(
                     labelText: 'Enter Your Date Of Birth',
-                    labelStyle: TextStyle(color: Colors.black),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
-                        30.0,
+                        4 * MediaQuery.of(context).devicePixelRatio,
                       ), // Set the border radius
                     ),
                     filled: true,
@@ -346,10 +364,17 @@ class CreateEmpState extends State<CreateEmployee> {
                   controller: mobile,
                   decoration: InputDecoration(
                     labelText: 'Enter Your Mobile No.',
-                    labelStyle: TextStyle(color: Colors.black),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
-                        30.0,
+                        4 * MediaQuery.of(context).devicePixelRatio,
                       ), // Set the border radius
                     ),
                     filled: true,
@@ -369,10 +394,17 @@ class CreateEmpState extends State<CreateEmployee> {
                   controller: email,
                   decoration: InputDecoration(
                     labelText: 'Enter Your Email',
-                    labelStyle: TextStyle(color: Colors.black),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
-                        30.0,
+                        4 * MediaQuery.of(context).devicePixelRatio,
                       ), // Set the border radius
                     ),
                     filled: true,
@@ -392,10 +424,17 @@ class CreateEmpState extends State<CreateEmployee> {
                   controller: panNo,
                   decoration: InputDecoration(
                     labelText: 'Enter Your PAN Card No.',
-                    labelStyle: TextStyle(color: Colors.black),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
-                        30.0,
+                        4 * MediaQuery.of(context).devicePixelRatio,
                       ), // Set the border radius
                     ),
                     filled: true,
@@ -416,10 +455,17 @@ class CreateEmpState extends State<CreateEmployee> {
                   controller: address,
                   decoration: InputDecoration(
                     labelText: 'Enter Your Address',
-                    labelStyle: TextStyle(color: Colors.black),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
-                        30.0,
+                        4 * MediaQuery.of(context).devicePixelRatio,
                       ), // Set the border radius
                     ),
                     filled: true,
@@ -439,10 +485,17 @@ class CreateEmpState extends State<CreateEmployee> {
                   controller: username,
                   decoration: InputDecoration(
                     labelText: 'Enter Your User Name',
-                    labelStyle: TextStyle(color: Colors.black),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
-                        30.0,
+                        4 * MediaQuery.of(context).devicePixelRatio,
                       ), // Set the border radius
                     ),
                     filled: true,
@@ -462,11 +515,18 @@ class CreateEmpState extends State<CreateEmployee> {
                   controller: password,
                   decoration: InputDecoration(
                     labelText: 'Enter Your Password',
-                    labelStyle: TextStyle(color: Colors.black),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
-                        30.0,
-                      ),
+                        4 * MediaQuery.of(context).devicePixelRatio,
+                      ), // Set the border radius
                     ),
                     filled: true,
                     fillColor: Colors.grey[200],
