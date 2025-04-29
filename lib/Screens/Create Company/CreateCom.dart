@@ -144,7 +144,7 @@ class CreateCom extends StatelessWidget {
                         TextFormField(
                           controller: Tradename,
                           decoration: InputDecoration(
-                            labelText: 'Enter Your Trad Name',
+                            labelText: 'Enter your 6 Digit Id',
                             labelStyle: TextStyle(color: Colors.black),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
@@ -200,13 +200,6 @@ class CreateCom extends StatelessWidget {
                             fillColor: Colors.grey[200],
                             prefixIcon: Icon(Icons.account_balance),
                           ),
-
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Enter Your GSTIN No.';
-                            }
-                            return null;
-                          },
                         ),
                         SizedBox(height: 10),
                         Row(
@@ -389,13 +382,6 @@ class CreateCom extends StatelessWidget {
                             fillColor: Colors.grey[200],
                             prefixIcon: Icon(Icons.web),
                           ),
-
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Enter Your Website Link';
-                            }
-                            return null;
-                          },
                         ),
                         SizedBox(height: 10),
                         TextFormField(

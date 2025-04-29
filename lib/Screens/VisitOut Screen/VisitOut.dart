@@ -57,8 +57,8 @@ Future<void> _initializeData() async {
 
   int? _selectedValue = 1;
   List<bool> selectedTransportModes = [false, false, false];
-  String? latitude;
-  String? longitude;
+  String? lat;
+  String? long;
   String? deviceId;
 
   Future<String?> getDeviceId() async {
@@ -78,7 +78,6 @@ Future<void> _initializeData() async {
         deviceId = DeviceId ?? 'unknown';
       });
     }
-
     return null;
   }
 
@@ -135,9 +134,9 @@ Future<void> _initializeData() async {
     double latitude = position.latitude;
     double longitude = position.longitude;
     setState(() {
-      latitude=latitude;
-      longitude=longitude;
-    });
+    lat = latitude.toString();   
+    long = longitude.toString(); 
+  });
     print('Latitude: $latitude, Longitude: $longitude');
   } catch (e) {
     print('Error getting location: $e');
@@ -212,7 +211,7 @@ Future<void> _initializeData() async {
       request.fields['Remark'] = Cremark;
       request.fields['Prospects'] = weather;
       request.fields['diviceid'] = "$deviceId";
-      request.fields['location'] = "$latitude,$longitude";
+      request.fields['location'] = "$lat,$long";
       request.fields['id'] = widget.VisitId.toString(); // Assuming VisitId is an int
 
       // Send the request
