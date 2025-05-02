@@ -201,7 +201,10 @@ class _EmpHomeState extends State<EmpHome> {
 
     // Perform actions based on the selected index
     if (index == 0) {
-      print('Search tab tapped');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => EmpHome()),
+      );
     } else if (index == 1) {
       // Search Tab
       print('Search tab tapped');

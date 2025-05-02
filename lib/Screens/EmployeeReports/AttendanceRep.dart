@@ -68,23 +68,27 @@ class AttendancerepState extends State<Attendancerep> {
     }
   }
 
-  void attendance() async {
-    final url = Uri.parse(
-      'https://testapi.rabadtechnology.com/attendence_report.php',
+void attendance() async {
+  final url = Uri.parse(
+    'https://testapi.rabadtechnology.com/attendence_report.php',
+  );
+  try {
+    final Map<String, dynamic> requestBody = {
+      "date": formattedDate,
+      "username": name,
+      "company_name": comName,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestBody),
     );
-    try {
-      final Map<String, dynamic> requestBody = {
-        "date": formattedDate,
-        "username": name,
-        "company_name": comName,
-      };
 
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(requestBody),
-      );
+    print("Status Code: ${response.statusCode}");
+    print("Raw Response Body: ${response.body}");
 
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       var success = responseData['success'];
       var message = responseData['message'];
@@ -94,21 +98,23 @@ class AttendancerepState extends State<Attendancerep> {
         setState(() {
           attendanceDeta = List<Map<String, dynamic>>.from(data);
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
-    } catch (e) {
-      print("Error: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Something went wrong")));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Invalid or empty response from server")),
+      );
     }
+  } catch (e) {
+    print("Error: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Something went wrong: $e")),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
