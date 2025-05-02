@@ -392,9 +392,21 @@ var responseData = await Response.fromStream(response);
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
+          contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        4 * MediaQuery.of(context).devicePixelRatio,
+                      ), // Set the border radius
+                    ),
           filled: true,
           fillColor: Colors.grey[200],
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
         ),
         validator: validator,
         keyboardType: keyboardType,

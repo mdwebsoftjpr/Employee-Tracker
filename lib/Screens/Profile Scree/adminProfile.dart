@@ -142,13 +142,3 @@ class AdminprofileState extends State<Adminprofile> {
     );
   }
 }
-/* 
-Text('Company: ${userdata!['company_name']}',style: TextStyle(fontFamily: 'MyFont',fontSize: 25),),
-                Text('Role Of This company: ${userdata!['role']}'),
-                Text('Name: ${userdata!['name']}'),
-                Text('Email: ${userdata!['db_email']}'),
-                Text('Mobile No.: ${userdata!['mobile_no']}'),
-                Text('Pan Card No.: ${userdata!['pan_card']}'),
-                Text('User Name: ${userdata!['username']}'),
-                Text('Join Date And Time: ${userdata!['create_at']}'),
- */

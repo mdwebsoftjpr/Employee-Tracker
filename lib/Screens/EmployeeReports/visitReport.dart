@@ -68,23 +68,27 @@ class VisitreportState extends State<Visitreport> {
     }
   }
 
-  void attendance() async {
-    final url = Uri.parse(
-      'https://testapi.rabadtechnology.com/attendence_report.php',
+void attendance() async {
+  final url = Uri.parse(
+    'https://testapi.rabadtechnology.com/attendence_report.php',
+  );
+  try {
+    final Map<String, dynamic> requestBody = {
+      "date": formattedDate,
+      "username": name,
+      "company_name": comName,
+    };
+
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestBody),
     );
-    try {
-      final Map<String, dynamic> requestBody = {
-        "date": formattedDate,
-        "username": name,
-        "company_name": comName,
-      };
 
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(requestBody),
-      );
+    print("Status Code: ${response.statusCode}");
+    print("Raw Response Body: ${response.body}");
 
+    if (response.statusCode == 200 && response.body.isNotEmpty) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       var success = responseData['success'];
       var message = responseData['message'];
@@ -94,21 +98,23 @@ class VisitreportState extends State<Visitreport> {
         setState(() {
           attendanceDeta = List<Map<String, dynamic>>.from(data);
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
-    } catch (e) {
-      print("Error: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Something went wrong")));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Invalid or empty response from server")),
+      );
     }
+  } catch (e) {
+    print("Error: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Something went wrong: $e")),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -118,14 +124,14 @@ class VisitreportState extends State<Visitreport> {
         title: Row(
           children: [
             Text(
-              'Visit in Report',
+              'Visit Report',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: MediaQuery.of(context).size.width * 0.05,
+                fontSize: MediaQuery.of(context).size.width * 0.06,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(width: MediaQuery.of(context).size.width * 0.075),
+            SizedBox(width: MediaQuery.of(context).size.width * 0.18),
             TextButton(
               onPressed: () => _pickDate(context),
               style: TextButton.styleFrom(backgroundColor: Colors.white),
@@ -135,7 +141,7 @@ class VisitreportState extends State<Visitreport> {
         ),
       ),
       body:
-          attendanceDeta.isEmpty
+          attendanceDeta.isNotEmpty
               ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -171,7 +177,7 @@ class VisitreportState extends State<Visitreport> {
                     child: ListTile(
                       title: Text("Date: ${item['date']}"),
                       subtitle: Text(
-                        "Time In: ${item['time']} | Time Out: ${item['time_out']} | Total Time: ${item['total_time']}",
+                        "Time In:masmd /* ${item['time']} */ | Time Out:sfs/*  ${item['time_out']} */ | Total Time: nbadia/* ${item['total_time']} */",
                       ),
                     ),
                   );

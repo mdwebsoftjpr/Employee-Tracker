@@ -141,7 +141,7 @@ void attendance() async {
         ),
       ),
       body:
-          attendanceDeta.isEmpty
+          attendanceDeta.isNotEmpty
               ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -177,7 +177,7 @@ void attendance() async {
                     child: ListTile(
                       title: Text("Date: ${item['date']}"),
                       subtitle: Text(
-                        "Time In: ${item['time']} | Time Out: ${item['time_out']} | Total Time: ${item['total_time']}",
+                        "Time In:masmd /* ${item['time']} */ | Time Out:sfs/*  ${item['time_out']} */ | Total Time: nbadia/* ${item['total_time']} */",
                       ),
                     ),
                   );

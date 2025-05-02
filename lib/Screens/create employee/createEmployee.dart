@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
+import 'package:intl/intl.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +25,11 @@ class CreateEmployee extends StatefulWidget {
 
 class CreateEmpState extends State<CreateEmployee> {
   String comName = 'Compamy';
-
+  int? comId;
+  File? _imageFile;
+  DateTime? selectedDate;
+  String? formattedDate;
+  bool _obscureText = true;
   void initState() {
     super.initState();
     _loadUser();
@@ -34,10 +39,11 @@ class CreateEmpState extends State<CreateEmployee> {
     var userJson = localStorage.getItem('user');
     if (userJson != null) {
       var user = jsonDecode(userJson);
-
+  
       setState(() {
         comName = user['company_name'] ?? 'Default Company';
-        print(comName);
+         comId = user['id'] ?? 0;
+        print("comId $comId");
       });
     }
   }
@@ -51,11 +57,11 @@ class CreateEmpState extends State<CreateEmployee> {
   final TextEditingController mobile = TextEditingController();
   final TextEditingController address = TextEditingController();
   final TextEditingController email = TextEditingController();
+  final TextEditingController designation = TextEditingController();
   final TextEditingController panNo = TextEditingController();
   final TextEditingController password = TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
-  File? _imageFile;
 
   Future<void> _pickImageFromCamera() async {
     final XFile? pickedFile = await _picker.pickImage(
@@ -82,10 +88,37 @@ class CreateEmpState extends State<CreateEmployee> {
     }
   }
 
+  Future<void> _pickDate(BuildContext context) async {
+    print("object");
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(1947),
+      lastDate: DateTime(2101),
+    );
+    print("picked $picked");
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        formattedDate = DateFormat('dd-MM-yyyy').format(selectedDate!);
+        dob.text = formattedDate!;
+      });
+    }
+  }
+
   void createEmp() async {
     if (_formKey.currentState?.validate() ?? false) {
+      // Calculate age inside setState
+      DateTime today = DateTime.now();
+      int age = today.year - selectedDate!.year;
+      if (today.month < selectedDate!.month ||
+          (today.month == selectedDate!.month &&
+              today.day < selectedDate!.day)) {
+        age--;
+        print("Age: $age years");
+      }
       String EmpName = name.text;
-      String EmpAge = age.text;
+      String EmpAge = age.toString();
       String EmpDob = dob.text;
       String EmpPassword = password.text;
       String EmpEmail = email.text;
@@ -93,6 +126,7 @@ class CreateEmpState extends State<CreateEmployee> {
       String EmpMobile = mobile.text;
       String EmapAddress = address.text;
       String EmpUser = username.text;
+      String Designation=designation.text;
 
       if (_imageFile == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -108,6 +142,8 @@ class CreateEmpState extends State<CreateEmployee> {
           'https://testapi.rabadtechnology.com/create_employees.php',
         );
         final Map<String, dynamic> requestBody = {
+          "company_id":comId,
+          "designation":Designation,
           "company_name": comName,
           "name": EmpName,
           "age": EmpAge,
@@ -215,7 +251,7 @@ class CreateEmpState extends State<CreateEmployee> {
           'Create Employee',
           style: TextStyle(
             color: Colors.white,
-            fontSize:  8 * MediaQuery.of(context).devicePixelRatio,
+            fontSize: 8 * MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -236,7 +272,8 @@ class CreateEmpState extends State<CreateEmployee> {
                 _imageFile != null
                     ? CircleAvatar(
                       radius:
-                          MediaQuery.of(context).size.width * 0.18, // Size of the avatar, this is half the diameter
+                          MediaQuery.of(context).size.width *
+                          0.18, // Size of the avatar, this is half the diameter
                       backgroundImage: FileImage(
                         File(_imageFile!.path),
                       ), // If you are using an image
@@ -299,10 +336,10 @@ class CreateEmpState extends State<CreateEmployee> {
                   },
                 ),
                 SizedBox(height: 10),
-                TextFormField(
-                  controller: age,
+                 TextFormField(
+                  controller: designation,
                   decoration: InputDecoration(
-                    labelText: 'Enter Your Age',
+                    labelText: 'Enter Your Designation',
                     contentPadding: EdgeInsets.symmetric(
                       vertical: 4 * MediaQuery.of(context).devicePixelRatio,
                       horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
@@ -318,12 +355,12 @@ class CreateEmpState extends State<CreateEmployee> {
                     ),
                     filled: true,
                     fillColor: Colors.grey[200],
-                    prefixIcon: Icon(Icons.calendar_today),
+                    prefixIcon: Icon(Icons.person),
                   ),
 
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Enter Your Age';
+                      return 'Enter Your Designayion';
                     }
                     return null;
                   },
@@ -349,6 +386,10 @@ class CreateEmpState extends State<CreateEmployee> {
                     filled: true,
                     fillColor: Colors.grey[200],
                     prefixIcon: Icon(Icons.date_range),
+                    suffixIcon: IconButton(
+                      onPressed: () => _pickDate(context),
+                      icon: Icon(Icons.calendar_month),
+                    ),
                   ),
 
                   validator: (value) {
@@ -381,10 +422,12 @@ class CreateEmpState extends State<CreateEmployee> {
                     fillColor: Colors.grey[200],
                     prefixIcon: Icon(Icons.phone),
                   ),
-
+                  keyboardType: TextInputType.phone,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Enter Your Mobile No.';
+                    } else if (value.length != 10) {
+                      return 'Mobile number must be 10 digits';
                     }
                     return null;
                   },
@@ -513,6 +556,7 @@ class CreateEmpState extends State<CreateEmployee> {
                 SizedBox(height: 10),
                 TextFormField(
                   controller: password,
+                  obscureText: _obscureText,
                   decoration: InputDecoration(
                     labelText: 'Enter Your Password',
                     contentPadding: EdgeInsets.symmetric(
@@ -526,13 +570,22 @@ class CreateEmpState extends State<CreateEmployee> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
                         4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
+                      ),
                     ),
                     filled: true,
                     fillColor: Colors.grey[200],
                     prefixIcon: Icon(Icons.lock),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                    ),
                   ),
-
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Enter Your Password';

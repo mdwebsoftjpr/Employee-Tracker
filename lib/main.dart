@@ -43,6 +43,7 @@ class CreateScreen extends StatefulWidget {
 }
 
 class _createScreen extends State<CreateScreen> {
+  bool _obscureText = true;
   void initState() {
     super.initState();
     _loadUserData();
@@ -84,9 +85,9 @@ class _createScreen extends State<CreateScreen> {
 
       final url = Uri.parse('https://testapi.rabadtechnology.com/login.php');
       final Map<String, dynamic> requestBody = {
-         "company_name": ComName,
-    "email": userid,
-    "password": Cpassword
+        "company_name": ComName,
+        "email": userid,
+        "password": Cpassword,
       };
       try {
         final response = await http.post(
@@ -247,19 +248,29 @@ class _createScreen extends State<CreateScreen> {
                       // Password field
                       TextFormField(
                         controller: password,
+                        obscureText: _obscureText,
                         decoration: InputDecoration(
                           labelText: 'Enter Your Password',
                           labelStyle: TextStyle(color: Colors.black),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(
-                              30.0,
-                            ), // Set the border radius
+                            borderRadius: BorderRadius.circular(30.0),
                           ),
                           filled: true,
                           fillColor: Colors.grey[200],
                           prefixIcon: Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureText
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              });
+                            },
+                          ),
                         ),
-                        obscureText: true, // Hides the password text
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Enter Your Password';
@@ -267,6 +278,7 @@ class _createScreen extends State<CreateScreen> {
                           return null;
                         },
                       ),
+
                       SizedBox(height: 10),
                       Row(
                         children: [

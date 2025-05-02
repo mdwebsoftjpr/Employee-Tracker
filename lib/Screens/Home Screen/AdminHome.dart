@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:io'; // This is required to use the File class
+import 'package:employee_tracker/Screens/Admin%20Report/Attendance.dart';
+import 'package:employee_tracker/Screens/Admin%20Report/VisitRep.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
 import 'package:employee_tracker/Screens/EmployeeReports/AttendanceRep.dart';
+import 'package:employee_tracker/Screens/create%20employee/Master.dart';
 import 'package:employee_tracker/Screens/create%20employee/createEmployee.dart';
 import 'package:employee_tracker/main.dart';
 import 'package:intl/intl.dart';
@@ -272,6 +275,31 @@ class AdminhomeState extends State<AdminHome> {
                     ),
                   ),
                   ListTile(
+                    leading: Icon(Icons.person_outline),
+                    title: Text("Create Employee"),
+                    onTap: () {
+                      Navigator.pop(context); // Close the drawer first
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreateEmployee(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  ListTile(
+                    leading: Icon(Icons.person_outline),
+                    title: Text("Enter Master"),
+                    onTap: () {
+                      Navigator.pop(context); // Close the drawer first
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Master()),
+                      );
+                    },
+                  ),
+                  ListTile(
                     leading: Icon(Icons.calendar_today),
                     title: Text("Attendance Report"),
                     onTap: () {
@@ -282,25 +310,6 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
-                  Column(
-                    children: [
-                      ListTile(
-                            leading: Icon(Icons.person_outline),
-                            title: Text("Create Employee"),
-                            onTap: () {
-                              Navigator.pop(context); // Close the drawer first
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CreateEmployee(),
-                                ),
-                              );
-                            },
-                          )
-                          
-                    ],
-                  ),
-
                   ListTile(
                     leading: Icon(Icons.assignment_turned_in),
                     title: Text("Break Time Report"),
@@ -610,7 +619,7 @@ class AdminhomeState extends State<AdminHome> {
                   ),
                 ],
               ),
-              
+
               SizedBox(height: 10),
               Container(
                 padding: EdgeInsets.all(10),
@@ -645,7 +654,7 @@ class AdminhomeState extends State<AdminHome> {
                                   () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => Attendancerep(),
+                                      builder: (context) => Attendance(),
                                     ),
                                   ),
                               child: Text(
@@ -680,7 +689,12 @@ class AdminhomeState extends State<AdminHome> {
                             ),
                             Icon(Icons.access_time, size: 40),
                             ElevatedButton(
-                              onPressed: () => print("View"),
+                              onPressed: () =>Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => VisitRep(),
+                                    ),
+                                  ),
                               child: Text(
                                 "View",
                                 style: TextStyle(
@@ -723,12 +737,17 @@ class AdminhomeState extends State<AdminHome> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Report", style: TextStyle(fontSize: 15)),
-                            Icon(Icons.assignment_turned_in , size: 40),
+                            Text("Create Employee", style: TextStyle(fontSize: 15)),
+                            Icon(Icons.assignment_turned_in, size: 40),
                             ElevatedButton(
-                              onPressed: () => print("Report"),
+                              onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CreateEmployee(),
+                                    ),
+                                  ),
                               child: Text(
-                                "Report",
+                                "Create",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
@@ -753,12 +772,17 @@ class AdminhomeState extends State<AdminHome> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Report", style: TextStyle(fontSize: 15)),
-                            Icon(Icons.assignment_turned_in , size: 40),
+                            Text("Create Master", style: TextStyle(fontSize: 15)),
+                            Icon(Icons.assignment_turned_in, size: 40),
                             ElevatedButton(
-                              onPressed: () => print("Report"),
+                              onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Master(),
+                                    ),
+                                  ),
                               child: Text(
-                                "Report",
+                                "Create",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,

@@ -7,7 +7,13 @@ void main() {
   runApp(CreateCom());
 }
 
-class CreateCom extends StatelessWidget {
+class CreateCom extends StatefulWidget {
+  @override
+  CreateComState createState() => CreateComState();
+}
+
+class CreateComState extends State<CreateCom> {
+  bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController cname = TextEditingController();
   final TextEditingController email = TextEditingController();
@@ -116,7 +122,7 @@ class CreateCom extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.9                                                 ,
+                    width: MediaQuery.of(context).size.width * 0.9,
                     child: Column(
                       children: [
                         TextFormField(
@@ -124,18 +130,21 @@ class CreateCom extends StatelessWidget {
                           decoration: InputDecoration(
                             labelText: 'Enter Your Company Name',
                             contentPadding: EdgeInsets.symmetric(
-                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
-                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
-                    ),
+                              vertical:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                              horizontal:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize:
+                                  5 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                4 * MediaQuery.of(context).devicePixelRatio,
+                              ), // Set the border radius
+                            ),
                             filled: true,
                             fillColor: Colors.grey[200],
                             prefixIcon: Icon(Icons.person),
@@ -153,18 +162,21 @@ class CreateCom extends StatelessWidget {
                           decoration: InputDecoration(
                             labelText: 'Enter your 6 Digit Id',
                             contentPadding: EdgeInsets.symmetric(
-                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
-                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
-                    ),
+                              vertical:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                              horizontal:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize:
+                                  5 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                4 * MediaQuery.of(context).devicePixelRatio,
+                              ), // Set the border radius
+                            ),
                             filled: true,
                             fillColor: Colors.grey[200],
                             prefixIcon: Icon(Icons.apartment),
@@ -182,18 +194,21 @@ class CreateCom extends StatelessWidget {
                           decoration: InputDecoration(
                             labelText: 'Enter Your Key Person',
                             contentPadding: EdgeInsets.symmetric(
-                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
-                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
-                    ),
+                              vertical:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                              horizontal:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize:
+                                  5 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                4 * MediaQuery.of(context).devicePixelRatio,
+                              ), // Set the border radius
+                            ),
                             filled: true,
                             fillColor: Colors.grey[200],
                             prefixIcon: Icon(Icons.person),
@@ -212,18 +227,21 @@ class CreateCom extends StatelessWidget {
                           decoration: InputDecoration(
                             labelText: 'Enter Your GSTIN No.',
                             contentPadding: EdgeInsets.symmetric(
-                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
-                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
-                    ),
+                              vertical:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                              horizontal:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize:
+                                  5 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                4 * MediaQuery.of(context).devicePixelRatio,
+                              ), // Set the border radius
+                            ),
                             filled: true,
                             fillColor: Colors.grey[200],
                             prefixIcon: Icon(Icons.account_balance),
@@ -238,8 +256,16 @@ class CreateCom extends StatelessWidget {
                                 controller: PanNo,
                                 decoration: InputDecoration(
                                   labelText: 'Enter Your Pan Card No.',
-                                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-                                 labelStyle: TextStyle(color: Colors.black,fontSize: 5 *MediaQuery.of(context).devicePixelRatio),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 10.0,
+                                    horizontal: 5.0,
+                                  ),
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontSize:
+                                        5 *
+                                        MediaQuery.of(context).devicePixelRatio,
+                                  ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(
                                       10.0,
@@ -285,8 +311,16 @@ class CreateCom extends StatelessWidget {
                                 controller: mobile,
                                 decoration: InputDecoration(
                                   labelText: 'Enter Your Mobile No.',
-                                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-                                 labelStyle: TextStyle(color: Colors.black,fontSize: 5 *MediaQuery.of(context).devicePixelRatio),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 10.0,
+                                    horizontal: 5.0,
+                                  ),
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontSize:
+                                        5 *
+                                        MediaQuery.of(context).devicePixelRatio,
+                                  ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(
                                       10.0,
@@ -334,8 +368,16 @@ class CreateCom extends StatelessWidget {
                                 controller: email,
                                 decoration: InputDecoration(
                                   labelText: 'Enter Your Email.',
-                                  contentPadding: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
-                                 labelStyle: TextStyle(color: Colors.black,fontSize: 5 *MediaQuery.of(context).devicePixelRatio),
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 10.0,
+                                    horizontal: 5.0,
+                                  ),
+                                  labelStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontSize:
+                                        5 *
+                                        MediaQuery.of(context).devicePixelRatio,
+                                  ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(
                                       10.0,
@@ -380,18 +422,21 @@ class CreateCom extends StatelessWidget {
                           decoration: InputDecoration(
                             labelText: 'Enter Your Company Address.',
                             contentPadding: EdgeInsets.symmetric(
-                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
-                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
-                    ),
+                              vertical:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                              horizontal:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize:
+                                  5 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                4 * MediaQuery.of(context).devicePixelRatio,
+                              ), // Set the border radius
+                            ),
                             filled: true,
                             fillColor: Colors.grey[200],
                             prefixIcon: Icon(Icons.location_on),
@@ -411,18 +456,21 @@ class CreateCom extends StatelessWidget {
                           decoration: InputDecoration(
                             labelText: 'Enter Your Website Link',
                             contentPadding: EdgeInsets.symmetric(
-                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
-                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
-                    ),
+                              vertical:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                              horizontal:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize:
+                                  5 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                4 * MediaQuery.of(context).devicePixelRatio,
+                              ), // Set the border radius
+                            ),
                             filled: true,
                             fillColor: Colors.grey[200],
                             prefixIcon: Icon(Icons.web),
@@ -434,18 +482,21 @@ class CreateCom extends StatelessWidget {
                           decoration: InputDecoration(
                             labelText: 'Enter Your Login User Name',
                             contentPadding: EdgeInsets.symmetric(
-                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
-                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
-                    ),
+                              vertical:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                              horizontal:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize:
+                                  5 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                4 * MediaQuery.of(context).devicePixelRatio,
+                              ), // Set the border radius
+                            ),
                             filled: true,
                             fillColor: Colors.grey[200],
                             prefixIcon: Icon(Icons.account_circle),
@@ -461,26 +512,41 @@ class CreateCom extends StatelessWidget {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: password,
+                          obscureText: _obscureText,
                           decoration: InputDecoration(
                             labelText: 'Enter Your Password',
                             contentPadding: EdgeInsets.symmetric(
-                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
-                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
-                    ),
+                              vertical:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                              horizontal:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                              fontSize:
+                                  5 * MediaQuery.of(context).devicePixelRatio,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                4 * MediaQuery.of(context).devicePixelRatio,
+                              ),
+                            ),
                             filled: true,
                             fillColor: Colors.grey[200],
-                            prefixIcon: Icon(Icons.password),
+                            prefixIcon: Icon(Icons.lock),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _obscureText
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              },
+                            ),
                           ),
-                          obscureText: true, // Hides the password text
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Enter Your Password';
@@ -488,6 +554,7 @@ class CreateCom extends StatelessWidget {
                             return null;
                           },
                         ),
+
                         SizedBox(height: 10),
                         // Submit button
                         ElevatedButton(
