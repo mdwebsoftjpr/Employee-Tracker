@@ -1,3 +1,4 @@
+import 'package:employee_tracker/Screens/Detail%20Screen/AttendanceDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
@@ -148,7 +149,7 @@ class AttendanceState extends State<Attendance> {
           child: Column(
             children: [
                SizedBox(height: 10),
-              Container(
+              TextButton(onPressed: ()=>Navigator.push(context,MaterialPageRoute(builder: (context)=>AttendanceDetail())), child: Container(
                 width: MediaQuery.of(context).size.width * 0.95,
                 height: 80,
                 decoration: BoxDecoration(
@@ -204,124 +205,8 @@ class AttendanceState extends State<Attendance> {
                     ],
                   ),
                 ),
-              ),
-               SizedBox(height: 10),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.95,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 215, 229, 241),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(5),
-                  child: Row(
-                    children: [
-                      Column(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(
-                        'assets/images/bird.jpg',width: 60,
-                      ),
-                          ),
-                         SizedBox(height: 5,),
-                      Text("Sahil Nawariya")
-                        ],
-                      ),
-                      SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Time In:11:00"),
-                          SizedBox(height: 10,),
-                          Text("Time Out:20:00"),
-                        ],
-                      ),
-                      SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              color: Colors.green, // Background color
-                              width: 30,
-                              height: 30,
-                              child: Center(
-                                child: Text(
-                                  'P',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Text("Totel Hours:20:00"),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-               SizedBox(height: 10),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.95,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 215, 229, 241),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(5),
-                  child: Row(
-                    children: [
-                      Column(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(
-                        'assets/images/bird.jpg',width: 60,
-                      ),
-                          ),
-                         SizedBox(height: 5,),
-                      Text("Sahil Nawariya")
-                        ],
-                      ),
-                      SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Time In:11:00"),
-                          SizedBox(height: 10,),
-                          Text("Time Out:20:00"),
-                        ],
-                      ),
-                      SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              color: Colors.green, // Background color
-                              width: 30,
-                              height: 30,
-                              child: Center(
-                                child: Text(
-                                  'P',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Text("Totel Hours:20:00"),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+              ),),
+               SizedBox(height: 10),],
           ),
         ),
       ),

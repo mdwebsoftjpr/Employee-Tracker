@@ -45,7 +45,23 @@ String name = "key_person";
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    throw UnimplementedError();
+    return Scaffold(
+        appBar: AppBar(
+        backgroundColor: Color(0xFF03a9f4),
+        title:Text(
+              'Attendance  Detail',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: MediaQuery.of(context).size.width * 0.06,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+      ),
+      body: Padding(padding: EdgeInsets.all(10),
+      child: Container(
+        child: Text("Attendance Detail"),
+      ),
+      ),
+    );
   }
 }
