@@ -65,8 +65,8 @@ class _createScreen extends State<CreateScreen> {
   String msg = 'msg';
   String user = 'Demo';
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController Uname = TextEditingController();
-  final TextEditingController userId = TextEditingController();
+  final TextEditingController tradename = TextEditingController();
+  final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   void login(context) async {
     if (_formKey.currentState?.validate() ?? false) {
@@ -81,16 +81,17 @@ class _createScreen extends State<CreateScreen> {
         return; // Exit the function without proceeding further
       }
 
-      String ComName = Uname.text;
-      String userid = userId.text;
+      String Tradename = tradename.text;
+      String Email = email.text;
       String Cpassword = password.text;
 
       final url = Uri.parse('https://testapi.rabadtechnology.com/login.php');
       final Map<String, dynamic> requestBody = {
-        "company_name": ComName,
-        "email": userid,
+        "trade_name": Tradename,
+        "email": Email,
         "password": Cpassword,
       };
+      print(requestBody);
       try {
         final response = await http.post(
           url, // Your API endpoint
@@ -186,7 +187,7 @@ class _createScreen extends State<CreateScreen> {
                   child: Column(
                     children: [
                       TextFormField(
-                        controller: Uname,
+                        controller: tradename,
                         inputFormatters: [
                             FilteringTextInputFormatter.deny(
                               RegExp(r'\s'),
@@ -213,7 +214,7 @@ class _createScreen extends State<CreateScreen> {
                       ),
                       SizedBox(height: 20),
                       TextFormField(
-                        controller: userId,
+                        controller: email,
                         decoration: InputDecoration(
                           labelText: 'Your User Id',
                           labelStyle: TextStyle(color: Colors.black),

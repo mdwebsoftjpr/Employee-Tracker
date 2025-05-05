@@ -1111,27 +1111,8 @@ class _EmpHomeState extends State<EmpHome> {
                               ),
                             ),
                             Icon(Icons.exit_to_app, size: 40),
-                            (visit == true)
+                            (visit==false)
                                 ? ElevatedButton(
-                                  onPressed: () async {
-                                    await _pickImageFromCamera();
-                                    visitIn();
-                                    setState(() {
-                                      visit == false;
-                                    });
-                                  },
-                                  child: Text(
-                                    "Visit In",
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                  ),
-                                )
-                                : ElevatedButton(
                                   onPressed:
                                       () =>
                                           (Mainstatus != '')
@@ -1154,7 +1135,26 @@ class _EmpHomeState extends State<EmpHome> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xFF03a9f4),
                                   ),
+                                ):ElevatedButton(
+                                  onPressed: () async {
+                                    await _pickImageFromCamera();
+                                    visitIn();
+                                    setState(() {
+                                      visit == false;
+                                    });
+                                  },
+                                  child: Text(
+                                    "Visit In",
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                  ),
                                 ),
+                                
                           ],
                         ),
                       ),

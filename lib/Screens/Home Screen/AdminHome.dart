@@ -38,7 +38,7 @@ class AdminhomeState extends State<AdminHome> {
   bool drop = false;
   String key_person = "key_person";
   String comName = 'Compamy';
-  String role = '';
+  String image = '';
   bool visit = false;
 
   final ImagePicker _picker = ImagePicker();
@@ -56,8 +56,9 @@ class AdminhomeState extends State<AdminHome> {
       setState(() {
         comName = user['company_name'] ?? 'Default Company';
         key_person = user['key_person'] ?? 'Default User';
-        role = localStorage.getItem('role');
+        image = user['image'] ?? 'Default User';
       });
+      print(image);
     }
     var Visit = localStorage.getItem('visitout') ?? false;
     if (Visit == true) {
@@ -290,7 +291,7 @@ class AdminhomeState extends State<AdminHome> {
 
                   ListTile(
                     leading: Icon(Icons.person_outline),
-                    title: Text("Enter Master"),
+                    title: Text("Create Designation"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
@@ -384,49 +385,25 @@ class AdminhomeState extends State<AdminHome> {
                           children: [
                             Column(
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      margin: EdgeInsets.only(
-                                        top: 10,
-                                        bottom: 0,
-                                        left: 10,
-                                        right: 10,
-                                      ),
-                                      child:
-                                          _imageFile != null
-                                              ? ClipRRect(
-                                                borderRadius: BorderRadius.circular(
-                                                  20,
-                                                ), // Apply border radius to the image
-                                                child: Image.file(
-                                                  File(
-                                                    _imageFile!.path,
-                                                  ), // Convert XFile to File
-                                                  width: 70,
-                                                  height: 70,
-                                                  fit:
-                                                      BoxFit
-                                                          .cover, // Optional: Adjust how the image fits inside the container
-                                                ),
-                                              )
-                                              : Text(" "),
-                                    ),
+                                    SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Image.network(
+                                          'https://testapi.rabadtechnology.com/$image',
+                                          width: 70,
+                                          height: 70,
+                                        ),
 
-                                    SizedBox(width: 10),
-                                    Text(
-                                      key_person,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                        Text(
+                                          key_person,
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
                               ],
                             ),
                             SizedBox(height: 10),
@@ -689,7 +666,8 @@ class AdminhomeState extends State<AdminHome> {
                             ),
                             Icon(Icons.access_time, size: 40),
                             ElevatedButton(
-                              onPressed: () =>Navigator.push(
+                              onPressed:
+                                  () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => VisitRep(),
@@ -737,10 +715,14 @@ class AdminhomeState extends State<AdminHome> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Create Employee", style: TextStyle(fontSize: 15)),
+                            Text(
+                              "Create Employee",
+                              style: TextStyle(fontSize: 15),
+                            ),
                             Icon(Icons.assignment_turned_in, size: 40),
                             ElevatedButton(
-                              onPressed: () => Navigator.push(
+                              onPressed:
+                                  () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => CreateEmployee(),
@@ -772,10 +754,14 @@ class AdminhomeState extends State<AdminHome> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Create Master", style: TextStyle(fontSize: 15)),
+                            Text(
+                              "Create Designation",
+                              style: TextStyle(fontSize: 15),
+                            ),
                             Icon(Icons.assignment_turned_in, size: 40),
                             ElevatedButton(
-                              onPressed: () => Navigator.push(
+                              onPressed:
+                                  () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => Master(),
