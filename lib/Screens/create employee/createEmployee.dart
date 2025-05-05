@@ -33,18 +33,50 @@ class CreateEmpState extends State<CreateEmployee> {
   void initState() {
     super.initState();
     _loadUser();
+    ShowMaster();
   }
 
   void _loadUser() {
     var userJson = localStorage.getItem('user');
     if (userJson != null) {
       var user = jsonDecode(userJson);
-  
+
       setState(() {
         comName = user['company_name'] ?? 'Default Company';
-         comId = user['id'] ?? 0;
+        comId = user['id'] ?? 0;
         print("comId $comId");
       });
+    }
+  }
+
+  void ShowMaster() async {
+    final url = Uri.parse(
+      'https://testapi.rabadtechnology.com/getdesignation.php',
+    );
+    final Map<String, dynamic> requestBody = {"company_id": comId.toString()};
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      final responseData = jsonDecode(response.body);
+      if (responseData['success']) {
+        setState(() {
+          designationList = List<Map<String, dynamic>>.from(
+            responseData['data'],
+          );
+        });
+      } else {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Something went wrong: ${e.toString()}')),
+      );
     }
   }
 
@@ -57,9 +89,11 @@ class CreateEmpState extends State<CreateEmployee> {
   final TextEditingController mobile = TextEditingController();
   final TextEditingController address = TextEditingController();
   final TextEditingController email = TextEditingController();
-  final TextEditingController designation = TextEditingController();
   final TextEditingController panNo = TextEditingController();
   final TextEditingController password = TextEditingController();
+  TextEditingController designation = TextEditingController();
+  List<Map<String, dynamic>> designationList = [];
+  String? selectedValue;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -126,7 +160,7 @@ class CreateEmpState extends State<CreateEmployee> {
       String EmpMobile = mobile.text;
       String EmapAddress = address.text;
       String EmpUser = username.text;
-      String Designation=designation.text;
+      String Designation = designation.text;
 
       if (_imageFile == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -142,8 +176,8 @@ class CreateEmpState extends State<CreateEmployee> {
           'https://testapi.rabadtechnology.com/create_employees.php',
         );
         final Map<String, dynamic> requestBody = {
-          "company_id":comId,
-          "designation":Designation,
+          "company_id": comId,
+          "designation": Designation,
           "company_name": comName,
           "name": EmpName,
           "age": EmpAge,
@@ -336,10 +370,11 @@ class CreateEmpState extends State<CreateEmployee> {
                   },
                 ),
                 SizedBox(height: 10),
-                 TextFormField(
+                TextFormField(
                   controller: designation,
+                  readOnly: true,
                   decoration: InputDecoration(
-                    labelText: 'Enter Your Designation',
+                    labelText: 'Choose Designation',
                     contentPadding: EdgeInsets.symmetric(
                       vertical: 4 * MediaQuery.of(context).devicePixelRatio,
                       horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
@@ -351,20 +386,49 @@ class CreateEmpState extends State<CreateEmployee> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(
                         4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
+                      ),
                     ),
                     filled: true,
                     fillColor: Colors.grey[200],
-                    prefixIcon: Icon(Icons.person),
+                    suffixIcon: Icon(Icons.arrow_drop_down),
                   ),
+                  onTap: () async {
+                    final selected = await showDialog<String>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return SimpleDialog(
+                          title: Text('Choose Designation'),
+                          children:
+                              designationList.map((option) {
+                                return SimpleDialogOption(
+                                  onPressed: () {
+                                    Navigator.pop(
+                                      context,
+                                      option['designationname'],
+                                    );
+                                  },
+                                  child: Text(option['designationname']),
+                                );
+                              }).toList(),
+                        );
+                      },
+                    );
 
+                    if (selected != null) {
+                      designation.text = selected;
+                      setState(() {
+                        selectedValue = selected;
+                      });
+                    }
+                  },
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Enter Your Designayion';
+                      return 'Please select an option';
                     }
                     return null;
                   },
                 ),
+
                 SizedBox(height: 10),
                 TextFormField(
                   controller: dob,

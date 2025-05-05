@@ -52,7 +52,7 @@ class AdminhomeState extends State<AdminHome> {
     var userJson = localStorage.getItem('user');
     if (userJson != null) {
       var user = jsonDecode(userJson);
-
+      print(user);
       setState(() {
         comName = user['company_name'] ?? 'Default Company';
         key_person = user['key_person'] ?? 'Default User';
@@ -306,7 +306,7 @@ class AdminhomeState extends State<AdminHome> {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AdminHome()),
+                        MaterialPageRoute(builder: (context) => Attendance()),
                       );
                     },
                   ),

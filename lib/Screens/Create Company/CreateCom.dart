@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:employee_tracker/main.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(CreateCom());
@@ -13,6 +14,8 @@ class CreateCom extends StatefulWidget {
 }
 
 class CreateComState extends State<CreateCom> {
+  bool TermCondition = false;
+  bool privacyPolicy = false;
   bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
   final TextEditingController cname = TextEditingController();
@@ -29,6 +32,25 @@ class CreateComState extends State<CreateCom> {
 
   void compLogin(context) async {
     if (_formKey.currentState?.validate() ?? false) {
+      if (!TermCondition) {
+        // Show an error message if checkbox is not checked
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please accept the terms and conditions.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return; // Exit the function without proceeding further
+      } else if (!privacyPolicy) {
+        // Show an error message if checkbox is not checked
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please accept Privacy And Policy.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return; // Exit the function without proceeding further
+      }
       String ComName = cname.text;
       String Cemail = email.text;
       String Cmobile = mobile.text;
@@ -157,10 +179,17 @@ class CreateComState extends State<CreateCom> {
                           },
                         ),
                         SizedBox(height: 10),
+
+                        // Make sure this is imported
                         TextFormField(
                           controller: Tradename,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.deny(
+                              RegExp(r'\s'),
+                            ), 
+                          ],
                           decoration: InputDecoration(
-                            labelText: 'Enter your 6 Digit Id',
+                            labelText: 'Enter your 10 Digit Id',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
                                   4 * MediaQuery.of(context).devicePixelRatio,
@@ -175,7 +204,7 @@ class CreateComState extends State<CreateCom> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
                                 4 * MediaQuery.of(context).devicePixelRatio,
-                              ), // Set the border radius
+                              ),
                             ),
                             filled: true,
                             fillColor: Colors.grey[200],
@@ -183,11 +212,14 @@ class CreateComState extends State<CreateCom> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Enter Your Trad Name';
+                              return 'Enter your ID';
+                            } else if (!RegExp(r'^\d{6,15}$').hasMatch(value)) {
+                              return 'ID must be 6 to 15 digits';
                             }
                             return null;
                           },
                         ),
+
                         SizedBox(height: 10),
                         TextFormField(
                           controller: keyPerson,
@@ -554,7 +586,46 @@ class CreateComState extends State<CreateCom> {
                             return null;
                           },
                         ),
-
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: TermCondition,
+                              onChanged: (bool? newValue) {
+                                setState(() {
+                                  TermCondition = newValue!;
+                                });
+                              },
+                            ),
+                            Text(
+                              "I accept",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            TextButton(
+                              onPressed: () => print("term Com"),
+                              child: Text("Term And Condition"),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: privacyPolicy,
+                              onChanged: (bool? newValue) {
+                                setState(() {
+                                  privacyPolicy = newValue!;
+                                });
+                              },
+                            ),
+                            Text(
+                              "I accept",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            TextButton(
+                              onPressed: () => print("privacy"),
+                              child: Text("Privacy Policy"),
+                            ),
+                          ],
+                        ),
                         SizedBox(height: 10),
                         // Submit button
                         ElevatedButton(

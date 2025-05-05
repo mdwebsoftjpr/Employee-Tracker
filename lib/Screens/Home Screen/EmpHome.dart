@@ -71,8 +71,8 @@ class _EmpHomeState extends State<EmpHome> {
   String UserImage = '';
   String punchIntime = '';
   String punchOuttime = '';
-  int VisitId=0;
-  
+  int VisitId = 0;
+  int? Comid;
 
   Future<String?> getDeviceId() async {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -102,6 +102,7 @@ class _EmpHomeState extends State<EmpHome> {
       var user = jsonDecode(userJson);
       setState(() {
         comName = user['company_name'] ?? 'Default Company';
+        Comid = user['company_id'] ?? 0;
         name = user['name'] ?? 'Default User';
         username = user['username'] ?? 'Default User';
         userid = user['id'] ?? 'Default User';
@@ -265,7 +266,7 @@ class _EmpHomeState extends State<EmpHome> {
     request.fields['diviceid'] = deviceId;
     request.fields['address'] = CurrentAddress;
     request.fields['employeeid'] = '$userid';
-
+    request.fields['company_id'] = Comid.toString();
     // Send request
     final response = await request.send();
     if (response.statusCode == 200) {
@@ -303,12 +304,13 @@ class _EmpHomeState extends State<EmpHome> {
     request.files.add(
       await http.MultipartFile.fromPath('image', _imageFile!.path),
     );
-
+    print(Comid);
     // Optional: send extra fields
     request.fields['multipoint'] = '${latitude}_${longitude}';
     request.fields['diviceid'] = deviceId;
     request.fields['address'] = CurrentAddress;
     request.fields['employeeid'] = '$userid';
+    request.fields['company_id'] = Comid.toString();
     print("punch out vsonfon");
     // Send request
     final response = await request.send();
@@ -364,11 +366,11 @@ class _EmpHomeState extends State<EmpHome> {
           VisitId = id;
           visit = false;
         });
-         ScaffoldMessenger.of(
+        ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
       } else {
-         ScaffoldMessenger.of(
+        ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
       }
@@ -669,9 +671,8 @@ class _EmpHomeState extends State<EmpHome> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder:
-                                  (_) => VisitOut(VisitId),
-                                ),
+                                builder: (_) => VisitOut(VisitId),
+                              ),
                             );
                           }
                         },
@@ -1138,7 +1139,8 @@ class _EmpHomeState extends State<EmpHome> {
                                                 context,
                                                 MaterialPageRoute(
                                                   builder:
-                                                      (context) => VisitOut(VisitId),
+                                                      (context) =>
+                                                          VisitOut(VisitId),
                                                 ),
                                               )
                                               : "",

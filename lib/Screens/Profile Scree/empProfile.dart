@@ -84,50 +84,50 @@ class EmpprofileState extends State<Empprofile> {
               Image.asset('assets/images/LogoMain.jpg',width: MediaQuery.of(context).size.width * 0.4,height: MediaQuery.of(context).size.width * 0.4,),
               Row(
               children: [
-                Expanded(child: Text('Company Name:',style: TextStyle(fontFamily: 'MyFont',fontSize: 25),),),
-                Expanded(child: Expanded(child: Text('${userdata!['company_name']}',style: TextStyle(fontFamily: 'MyFont',fontSize: 25),),),)
+                Expanded(child: Text('Company Name:',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
+                Expanded(child: Expanded(child: Text('${userdata!['company_name']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
               ],
             ),
              Row(
               children: [
-                Expanded(child: Text('Role Of This company: ${userdata!['role']}',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),
-                Expanded(child: Expanded(child: Text(' ${userdata!['role']}',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),)
+                Expanded(child: Text('Role Of This company: ${userdata!['role']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
+                Expanded(child: Expanded(child: Text(' ${userdata!['role']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
               ],
             ),
             Row(
               children: [
-                Expanded(child:Text('Name: ',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),
-                Expanded(child: Expanded(child: Text('${userdata!['name']}',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),)
+                Expanded(child:Text('Name: ',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
+                Expanded(child: Expanded(child: Text('${userdata!['name']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
               ],
             ),
             Row(
               children: [
-                Expanded(child: Text('Email: ',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),
-                Expanded(child: Expanded(child: Text(' ${userdata!['db_email']}',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),)
+                Expanded(child: Text('Email: ',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
+                Expanded(child: Expanded(child: Text(' ${userdata!['db_email']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
               ],
             ),
             Row(
               children: [
-                Expanded(child: Text('Mobile No.: ',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),
-                Expanded(child: Expanded(child: Text(' ${userdata!['mobile_no']}',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),)
+                Expanded(child: Text('Mobile No.: ',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
+                Expanded(child: Expanded(child: Text(' ${userdata!['mobile_no']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
               ],
             ),
             Row(
               children: [
                 Expanded(child: Text('Pan Card No.: ',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),
-                Expanded(child: Expanded(child: Text('  ${userdata!['pan_card']}',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),)
+                Expanded(child: Expanded(child: Text('  ${userdata!['pan_card']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
               ],
             ),
             Row(
               children: [
-                Expanded(child: Text('User Name: ',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),
-                Expanded(child: Expanded(child: Text('${userdata!['username']}',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),)
+                Expanded(child: Text('User Name: ',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
+                Expanded(child: Expanded(child: Text('${userdata!['username']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
               ],
             ),
             Row(
               children: [
-                Expanded(child: Text('Join Date And Time: ',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),
-                Expanded(child: Expanded(child: Text('${userdata!['create_at']}',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),)
+                Expanded(child: Text('Join Date And Time: ',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
+                Expanded(child: Expanded(child: Text('${userdata!['create_at']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
               ],
             ),
             ],

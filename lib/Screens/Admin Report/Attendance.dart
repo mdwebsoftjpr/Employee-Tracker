@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:intl/intl.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,22 +17,19 @@ Future<void> _initializeLocalStorage() async {
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
 class Attendance extends StatefulWidget {
-  @override
   AttendanceState createState() => AttendanceState();
 }
 
 class AttendanceState extends State<Attendance> {
-  DateTime? selectedDate;
   String name = "key_person";
   String comName = 'Company';
-  String username = "";
-  String formattedDate = '';
-  List<Map<String, dynamic>> attendanceDeta = [];
-
+  int? comId;
+  List<Map<String, dynamic>> attendanceData = [];
   @override
   void initState() {
     super.initState();
     _loadUser();
+    ShowMaster();
   }
 
   void _loadUser() {
@@ -43,7 +39,7 @@ class AttendanceState extends State<Attendance> {
       setState(() {
         comName = user['company_name'] ?? 'Default Company';
         name = user['name'] ?? 'Default User';
-        username = user['username'] ?? 'Default User';
+        comId = user['id'] ?? 'Default User';
       });
     }
     var visit = localStorage.getItem('visitout') ?? false;
@@ -52,71 +48,33 @@ class AttendanceState extends State<Attendance> {
     }
   }
 
-  Future<void> _pickDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-        formattedDate = DateFormat('yyyy-MM-dd').format(selectedDate!);
-      });
-      attendance();
-    }
-  }
-
-  void attendance() async {
+  void ShowMaster() async {
     final url = Uri.parse(
-      'https://testapi.rabadtechnology.com/attendence_report.php',
+      'https://testapi.rabadtechnology.com/allemployeeattendence.php',
     );
-    try {
-      final Map<String, dynamic> requestBody = {
-        "date": formattedDate,
-        "username": name,
-        "company_name": comName,
-      };
+    final Map<String, dynamic> requestBody = {"company_id": comId};
 
+    try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
-
-      print("Status Code: ${response.statusCode}");
-      print("Raw Response Body: ${response.body}");
-
-      if (response.statusCode == 200 && response.body.isNotEmpty) {
-        final Map<String, dynamic> responseData = jsonDecode(response.body);
-        var success = responseData['success'];
-        var message = responseData['message'];
-        var data = responseData['data'];
-
-        if (success == true) {
-          setState(() {
-            attendanceDeta = List<Map<String, dynamic>>.from(data);
-          });
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(message)));
-        } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(message)));
-        }
+      final responseData = jsonDecode(response.body);
+      if (responseData['success']) {
+       setState(() {
+    attendanceData = List<Map<String, dynamic>>.from(responseData['data']);
+  });
+        print(attendanceData);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Invalid or empty response from server")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(responseData['message'])));
       }
     } catch (e) {
-      print("Error: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Something went wrong: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Something went wrong: ${e.toString()}')),
+      );
     }
   }
 
@@ -125,95 +83,17 @@ class AttendanceState extends State<Attendance> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF03a9f4),
-        title: Row(
-          children: [
-            Text(
-              'Attendance Report',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: MediaQuery.of(context).size.width * 0.05,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(width: MediaQuery.of(context).size.width * 0.075),
-            TextButton(
-              onPressed: () => _pickDate(context),
-              style: TextButton.styleFrom(backgroundColor: Colors.white),
-              child: Text('Pick a Date'),
-            ),
-          ],
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-               SizedBox(height: 10),
-              TextButton(onPressed: ()=>Navigator.push(context,MaterialPageRoute(builder: (context)=>AttendanceDetail())), child: Container(
-                width: MediaQuery.of(context).size.width * 0.95,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 215, 229, 241),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(5),
-                  child: Row(
-                    children: [
-                      Column(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(
-                        'assets/images/bird.jpg',width: 60,
-                      ),
-                          ),
-                         SizedBox(height: 5,),
-                      Text("Sahil Nawariya")
-                        ],
-                      ),
-                      SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Time In:11:00"),
-                          SizedBox(height: 10,),
-                          Text("Time Out:20:00"),
-                        ],
-                      ),
-                      SizedBox(width: MediaQuery.of(context).size.width * 0.02),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              color: Colors.green, // Background color
-                              width: 30,
-                              height: 30,
-                              child: Center(
-                                child: Text(
-                                  'P',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Text("Totel Hours:20:00"),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),),
-               SizedBox(height: 10),],
+        title: Text(
+          'Attendance  Detail',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: MediaQuery.of(context).size.width * 0.06,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
-    );
-  }
-}
-/*  attendanceDeta.isNotEmpty
+      body:
+          attendanceData.isEmpty
               ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -231,27 +111,143 @@ class AttendanceState extends State<Attendance> {
                   ),
                 ],
               )
-              : ListView.builder(
-                itemCount: attendanceDeta.length,
-                itemBuilder: (context, index) {
-                  final item = attendanceDeta[index];
-                  return Container(
-                    margin: EdgeInsets.only(
-                      top: 10,
-                      left: MediaQuery.of(context).size.width * 0.05,
-                      right: MediaQuery.of(context).size.width * 0.05,
-                    ),
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 215, 229, 241),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: ListTile(
-                      title: Text("Date: ${item['date']}"),
-                      subtitle: Text(
-                        "Time In:masmd /* ${item['time']} */ | Time Out:sfs/*  ${item['time_out']} */ | Total Time: nbadia/* ${item['total_time']} */",
+              :ListView.builder(
+  itemCount: attendanceData.length,
+  itemBuilder: (context, index) {
+    final item = attendanceData[index];
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AttendanceDetail(item['id']),
+          ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(
+          top: 5,
+          left: MediaQuery.of(context).size.width * 0.05,
+          right: MediaQuery.of(context).size.width * 0.05,
+        ),
+        padding: EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 215, 229, 241),
+          borderRadius: BorderRadius.circular(
+            2 * MediaQuery.of(context).devicePixelRatio,
+          ),
+        ),
+        child: ListTile(
+          subtitle: Padding(
+            padding: EdgeInsets.all(
+             0.1 * MediaQuery.of(context).devicePixelRatio,
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width:MediaQuery.of(context).size.width * 0.06 ,
+                  height:MediaQuery.of(context).size.width * 0.06,
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(35),color:Colors.white),
+                  child:Center(
+                    child:  Text('${index + 1}',style: TextStyle(fontSize: 4 * MediaQuery.of(context).devicePixelRatio,color: Colors.black)),
+                  ),
+                ),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.04),
+                Column(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(
+                        4 * MediaQuery.of(context).devicePixelRatio,
+                      ),
+                      child: Image.network(
+                        'https://testapi.rabadtechnology.com/uploads/${item['image'] ?? ''}',
+                        width: 25 * MediaQuery.of(context).devicePixelRatio,
+                        height: 20 * MediaQuery.of(context).devicePixelRatio,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  );
-                },
-              ), */
+                    SizedBox(height: 5,),
+                    Text(
+                      item['empname'] ?? '',
+                      style: TextStyle(
+                        fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.04),
+                Column(
+                  children: [
+                    Text("Punch In:-",
+                        style: TextStyle(
+                            fontSize: 4 *
+                                MediaQuery.of(context).devicePixelRatio,
+                            color: Colors.black)),
+                    Text(item['time_in'] ?? '',
+                        style: TextStyle(
+                            fontSize: 4 *
+                                MediaQuery.of(context).devicePixelRatio,
+                            color: Colors.black)),
+                    Text("Punch Out:-",
+                        style: TextStyle(
+                            fontSize: 4 *
+                                MediaQuery.of(context).devicePixelRatio,
+                            color: Colors.black)),
+                    Text(item['time_out'] ?? '',
+                        style: TextStyle(
+                            fontSize: 4 *
+                                MediaQuery.of(context).devicePixelRatio,
+                            color: Colors.black)),
+                  ],
+                ),
+                SizedBox(width: MediaQuery.of(context).size.width * 0.05),
+                Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(35),
+                        color: (item['attendance_status'] == 'P' ||
+                                item['attendance_status'] == 'p')
+                            ? Color(0xFF03a9f4)
+                            : Colors.red,
+                      ),
+                      padding: EdgeInsets.all(
+                          3 * MediaQuery.of(context).devicePixelRatio),
+                      width: MediaQuery.of(context).size.width * 0.10,
+                      child: Center(
+                        child: Text(
+                          item['attendance_status'] ?? '',
+                          style: TextStyle(
+                            fontSize: 5 *
+                                MediaQuery.of(context).devicePixelRatio,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 5),
+                    Text("Total Hours:-",
+                        style: TextStyle(
+                            fontSize: 3 *
+                                MediaQuery.of(context).devicePixelRatio,
+                            color: Colors.black)),
+                    Text(item['hours']?.toString() ?? '0',
+                        style: TextStyle(
+                            fontSize: 5 *
+                                MediaQuery.of(context).devicePixelRatio,
+                            color: Colors.black)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  },
+)
+
+    );
+  }
+}

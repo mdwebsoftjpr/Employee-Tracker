@@ -1,10 +1,12 @@
 import 'dart:convert';
+/* import 'package:employee_tracker/Screens/Forget%20Password/ForgetPass.dart'; */
 import 'package:employee_tracker/Screens/Home%20Screen/AdminHome.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
 import 'Screens/Create Company/CreateCom.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,19 +15,20 @@ void main() async {
   String? user = localStorage.getItem("user");
   String? role = localStorage.getItem("role");
 
-  // Clean up role string just in case it was jsonEncoded
   role = role?.toString().replaceAll('"', '').trim().toLowerCase();
 
   Widget homeScreen;
 
   if (user != null && user != '') {
-    (role == 'admin')
-        ? homeScreen = AdminHome()
-        : (role == 'employee')
-        ? homeScreen = EmpHome()
-        : homeScreen = CreateScreen();
+    if (role == 'admin') {
+      homeScreen = AdminHome();
+    } else if (role == 'employee') {
+      homeScreen = EmpHome();
+    } else {
+      homeScreen = CreateScreen(); // fallback if role is unknown
+    }
   } else {
-    homeScreen = CreateScreen();
+    homeScreen = CreateScreen(); // if user is not found
   }
 
   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: homeScreen));
@@ -59,7 +62,6 @@ class _createScreen extends State<CreateScreen> {
   }
 
   bool TermCondition = false;
-  bool privacyPolicy = false;
   String msg = 'msg';
   String user = 'Demo';
   final _formKey = GlobalKey<FormState>();
@@ -68,11 +70,11 @@ class _createScreen extends State<CreateScreen> {
   final TextEditingController password = TextEditingController();
   void login(context) async {
     if (_formKey.currentState?.validate() ?? false) {
-      if (!TermCondition || !privacyPolicy) {
+      if (!TermCondition) {
         // Show an error message if checkbox is not checked
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Please accept the terms and conditions.'),
+            content: Text('Please accept Remembers'),
             backgroundColor: Colors.red,
           ),
         );
@@ -107,10 +109,6 @@ class _createScreen extends State<CreateScreen> {
           // Save to localStorage
           await localStorage.setItem('user', jsonEncode(data));
           await localStorage.setItem('role', jsonEncode(role));
-
-          // Optional alert function
-          alert();
-
           // Show success message
           ScaffoldMessenger.of(
             context,
@@ -118,20 +116,24 @@ class _createScreen extends State<CreateScreen> {
 
           // Navigate based on role
           if (role.toString().toLowerCase() == "admin") {
-            Navigator.push(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => AdminHome()),
+              (route) => false,
             );
           } else if (role.toString().toLowerCase() == "employee") {
-            Navigator.push(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => EmpHome()),
+              (route) => false,
             );
           }
         } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(message)));
+          if (mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
+          }
         }
 
         // Update state (if needed)
@@ -139,31 +141,13 @@ class _createScreen extends State<CreateScreen> {
           msg = message;
         });
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Something went wrong: ${e.toString()}')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Something went wrong: ${e.toString()}')),
+          );
+        }
       }
     }
-  }
-
-  void alert() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Login Message:'),
-          content: Text(msg),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -203,8 +187,13 @@ class _createScreen extends State<CreateScreen> {
                     children: [
                       TextFormField(
                         controller: Uname,
+                        inputFormatters: [
+                            FilteringTextInputFormatter.deny(
+                              RegExp(r'\s'),
+                            ), 
+                          ],
                         decoration: InputDecoration(
-                          labelText: 'Enter Your Company Name',
+                          labelText: 'Reg. Company 10 Digit Id',
                           labelStyle: TextStyle(color: Colors.black),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(
@@ -217,7 +206,7 @@ class _createScreen extends State<CreateScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Enter Your Company Name';
+                            return 'Reg. Company 10 Digit Id';
                           }
                           return null;
                         },
@@ -226,7 +215,7 @@ class _createScreen extends State<CreateScreen> {
                       TextFormField(
                         controller: userId,
                         decoration: InputDecoration(
-                          labelText: 'Enter Your User Id',
+                          labelText: 'Your User Id',
                           labelStyle: TextStyle(color: Colors.black),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(
@@ -239,7 +228,7 @@ class _createScreen extends State<CreateScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Enter Your User Id';
+                            return 'Your User Id';
                           }
                           return null;
                         },
@@ -250,7 +239,7 @@ class _createScreen extends State<CreateScreen> {
                         controller: password,
                         obscureText: _obscureText,
                         decoration: InputDecoration(
-                          labelText: 'Enter Your Password',
+                          labelText: 'Your Password',
                           labelStyle: TextStyle(color: Colors.black),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(30.0),
@@ -273,13 +262,15 @@ class _createScreen extends State<CreateScreen> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Enter Your Password';
+                            return 'Your Password';
                           }
                           return null;
                         },
                       ),
-
-                      SizedBox(height: 10),
+                      /* TextButton(onPressed: ()=>Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ForgetPassword())), child: Text("Forget Password")), */
                       Row(
                         children: [
                           Checkbox(
@@ -290,17 +281,16 @@ class _createScreen extends State<CreateScreen> {
                               });
                             },
                           ),
-                          Text(
-                            "I accept",
-                            style: TextStyle(color: Colors.black),
-                          ),
                           TextButton(
                             onPressed: () => print("term Com"),
-                            child: Text("Terms & Conditions"),
+                            child: Text(
+                              "I Remember",
+                              style: TextStyle(color: Colors.black),
+                            ),
                           ),
                         ],
                       ),
-                      Row(
+                      /*  Row(
                         children: [
                           Checkbox(
                             value: privacyPolicy,
@@ -319,7 +309,7 @@ class _createScreen extends State<CreateScreen> {
                             child: Text("Privacy Policy"),
                           ),
                         ],
-                      ),
+                      ), */
                       // Submit button
                       ElevatedButton(
                         onPressed: () => login(context),
@@ -337,7 +327,7 @@ class _createScreen extends State<CreateScreen> {
                           ),
                         ),
                         child: Text(
-                          'Login User',
+                          'Login',
                           style: TextStyle(
                             fontSize: 17,
                             color: Colors.black,
@@ -375,8 +365,7 @@ class _createScreen extends State<CreateScreen> {
                         padding: EdgeInsets.all(5),
                         child: Row(
                           mainAxisAlignment:
-                              MainAxisAlignment
-                                  .center, // Center the Row content
+                              MainAxisAlignment.center, // Cthe Row content
                           children: [
                             // Left line (Container)
                             Container(

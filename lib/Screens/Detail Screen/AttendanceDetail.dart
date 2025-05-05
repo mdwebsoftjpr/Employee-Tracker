@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
-  runApp(AttendanceDetail());
 }
 Future<void> _initializeLocalStorage() async {
   await localStorage.ready;
@@ -15,9 +14,13 @@ Future<void> _initializeLocalStorage() async {
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 class AttendanceDetail extends StatefulWidget{
   AttendanceDetailState createState()=>AttendanceDetailState();
+  final int id;
+
+   const AttendanceDetail(this.id);
 }
 
 class AttendanceDetailState extends State<AttendanceDetail>{
+    
 String name = "key_person";
   String comName = 'Company';
   String username = "";
@@ -28,6 +31,7 @@ String name = "key_person";
   }
 
   void _loadUser() {
+    print(widget.id);
     var userJson = localStorage.getItem('user');
     if (userJson != null) {
       var user = jsonDecode(userJson);

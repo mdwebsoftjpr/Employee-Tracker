@@ -93,7 +93,7 @@ void attendance() async {
       var success = responseData['success'];
       var message = responseData['message'];
       var data = responseData['data'];
-
+      print(data);
       if (success == true) {
         setState(() {
           attendanceDeta = List<Map<String, dynamic>>.from(data);
@@ -129,7 +129,7 @@ void attendance() async {
                 color: Colors.white,
                 fontSize: MediaQuery.of(context).size.width * 0.05,
                 fontWeight: FontWeight.bold,
-              ),
+              ), 
             ),
             SizedBox(width: MediaQuery.of(context).size.width * 0.075),
             TextButton(
