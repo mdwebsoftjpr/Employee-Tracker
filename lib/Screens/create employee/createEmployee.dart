@@ -1,10 +1,14 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,8 +16,23 @@ void main() async {
   runApp(MaterialApp(home: CreateEmployee()));
 }
 
+
+class UpperCaseTextFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return newValue.copyWith(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
+  }
+}
+
+
 Future<void> _initializeLocalStorage() async {
-  await localStorage.ready; // Wait for the localStorage to be ready
+  await localStorage.ready;
 }
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
@@ -24,32 +43,95 @@ class CreateEmployee extends StatefulWidget {
 }
 
 class CreateEmpState extends State<CreateEmployee> {
-  String comName = 'Compamy';
+  String comName = 'Company';
   int? comId;
   File? _imageFile;
   DateTime? selectedDate;
   String? formattedDate;
   bool _obscureText = true;
+  final _formKey = GlobalKey<FormState>();
+  String? TradeName;
+
+  final TextEditingController name = TextEditingController();
+  final TextEditingController dob = TextEditingController();
+  final TextEditingController panNo = TextEditingController();
+  final TextEditingController mobile = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController address = TextEditingController();
+  final TextEditingController username = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  TextEditingController designation = TextEditingController();
+  List<Map<String, dynamic>> designationList = [];
+  final TextEditingController adharNo = TextEditingController();
+  final TextEditingController salary = TextEditingController();
+  final TextEditingController hours = TextEditingController();
+  final TextEditingController joinOfDate = TextEditingController();
+
+  String? selectedValue;
+
+  final ImagePicker _picker = ImagePicker();
+
+  @override
   void initState() {
     super.initState();
     _loadUser();
-    ShowMaster();
+    ShowMaster(context);
   }
 
   void _loadUser() {
     var userJson = localStorage.getItem('user');
     if (userJson != null) {
       var user = jsonDecode(userJson);
-
       setState(() {
         comName = user['company_name'] ?? 'Default Company';
         comId = user['id'] ?? 0;
-        print("comId $comId");
+        TradeName = user['trade_name'] ?? '';
       });
     }
   }
 
-  void ShowMaster() async {
+  Future<File?> compressImage(XFile xFile) async {
+    final File file = File(xFile.path);
+    final dir = await getTemporaryDirectory();
+    final targetPath = join(dir.path, 'compressed_${basename(file.path)}');
+
+    int quality = 70;
+    File? compressedFile;
+    const int maxSizeInBytes = 100 * 1024; // 100 KB
+
+    for (int q = quality; q >= 10; q -= 10) {
+      final result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        targetPath,
+        quality: q,
+        format: CompressFormat.jpeg,
+      );
+
+      if (result != null && await result.length() <= maxSizeInBytes) {
+        compressedFile = File(result.path);
+        break;
+      }
+    }
+
+    return compressedFile;
+  }
+
+  Future<void> _pickImageFromCamera() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.camera,
+      preferredCameraDevice: CameraDevice.front,
+    );
+
+    if (pickedFile != null) {
+      File? compressed = await compressImage(pickedFile);
+
+      setState(() {
+        _imageFile = compressed ?? File(pickedFile.path);
+      });
+    }
+  }
+
+  void ShowMaster(context) async {
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/getdesignation.php',
     );
@@ -61,6 +143,7 @@ class CreateEmpState extends State<CreateEmployee> {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
+
       final responseData = jsonDecode(response.body);
       if (responseData['success']) {
         setState(() {
@@ -75,144 +158,102 @@ class CreateEmpState extends State<CreateEmployee> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong: ${e.toString()}')),
+        SnackBar(content: Text("Something went wrong: ${e.toString()}")),
       );
     }
   }
 
-  final _formKey = GlobalKey<FormState>();
-
-  final TextEditingController name = TextEditingController();
-  final TextEditingController age = TextEditingController();
-  final TextEditingController dob = TextEditingController();
-  final TextEditingController username = TextEditingController();
-  final TextEditingController mobile = TextEditingController();
-  final TextEditingController address = TextEditingController();
-  final TextEditingController email = TextEditingController();
-  final TextEditingController panNo = TextEditingController();
-  final TextEditingController password = TextEditingController();
-  TextEditingController designation = TextEditingController();
-  List<Map<String, dynamic>> designationList = [];
-  String? selectedValue;
-
-  final ImagePicker _picker = ImagePicker();
-
-  Future<void> _pickImageFromCamera() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
-    );
-
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
-    }
-  }
-
-  Future<void> _pickImageFromGallery() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-    );
-
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
-    }
-  }
-
-  Future<void> _pickDate(BuildContext context) async {
-    print("object");
+  Future<void> _pickDateDob(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: selectedDate ?? DateTime.now(),
       firstDate: DateTime(1947),
       lastDate: DateTime(2101),
     );
-    print("picked $picked");
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        formattedDate = DateFormat('dd-MM-yyyy').format(selectedDate!);
+        formattedDate = DateFormat('yyyy-MM-dd').format(picked);
+
         dob.text = formattedDate!;
       });
     }
   }
 
-  void createEmp() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      // Calculate age inside setState
-      DateTime today = DateTime.now();
-      int age = today.year - selectedDate!.year;
-      if (today.month < selectedDate!.month ||
-          (today.month == selectedDate!.month &&
-              today.day < selectedDate!.day)) {
-        age--;
-        print("Age: $age years");
-      }
-      String EmpName = name.text;
-      String EmpAge = age.toString();
-      String EmpDob = dob.text;
-      String EmpPassword = password.text;
-      String EmpEmail = email.text;
-      String EmpPanNo = panNo.text;
-      String EmpMobile = mobile.text;
-      String EmapAddress = address.text;
-      String EmpUser = username.text;
-      String Designation = designation.text;
+  Future<void> _pickDateJoin(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(1975),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        formattedDate = DateFormat('yyyy-MM-dd').format(picked);
 
+        joinOfDate.text = formattedDate!;
+      });
+    }
+  }
+
+  Future<void> createEmp(BuildContext context) async {
+    if (_formKey.currentState?.validate() ?? false) {
       if (_imageFile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Please select a profile image")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Select Image")));
         return;
       }
-      File imageFile = File(_imageFile!.path);
-      List<int> imageBytes = await imageFile.readAsBytes();
-      String base64Image = base64Encode(imageBytes);
-      try {
-        final url = Uri.parse(
-          'https://testapi.rabadtechnology.com/create_employees.php',
-        );
-        final Map<String, dynamic> requestBody = {
-          "company_id": comId,
-          "designation": Designation,
-          "company_name": comName,
-          "name": EmpName,
-          "age": EmpAge,
-          "dob": EmpDob,
-          "pan_card": EmpPanNo,
-          "mobile_no": EmpMobile,
-          "email": EmpEmail,
-          "address": EmapAddress,
-          "username": EmpUser,
-          "password": EmpPassword,
-          "image": base64Image,
-        };
+      File? compressedImage = await compressImage(XFile(_imageFile!.path));
+      if (compressedImage == null) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Image compression failed")));
+        return;
+      }
 
-        final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(requestBody),
+      try {
+        final request = http.MultipartRequest(
+          'POST',
+          Uri.parse('https://testapi.rabadtechnology.com/create_employees.php'),
         );
-        print("success");
+
+        request.fields.addAll({
+          "company_id": comId.toString(),
+          "trade_name": TradeName.toString(),
+          "name": name.text,
+          'dob': dob.text,
+          "pan_card": panNo.text,
+          "mobile_no": mobile.text,
+          "email": email.text,
+          "address": address.text,
+          "username": username.text,
+          "password": password.text,
+          "designation": designation.text,
+          "aadharcard": adharNo.text,
+          "salary": salary.text,
+          "hours": hours.text,
+          "joinofdate": joinOfDate.text,
+        });
+
+        request.files.add(
+          await http.MultipartFile.fromPath('image', compressedImage.path),
+        );
+        print(request.fields);
+        final streamedResponse = await request.send();
+        final response = await http.Response.fromStream(streamedResponse);
         final responseData = jsonDecode(response.body);
-        bool success = responseData['success'];
-        String message = responseData['message'];
-        print(success);
-        print(message);
-        print(requestBody);
-        print(base64Image);
-        if (success == true) {
+
+        if (responseData['success']) {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(message)));
+          ).showSnackBar(SnackBar(content: Text(responseData['message'])));
           Navigator.pop(context);
         } else {
           ScaffoldMessenger.of(
             context,
-          ).showSnackBar(SnackBar(content: Text(message)));
+          ).showSnackBar(SnackBar(content: Text(responseData['message'])));
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -220,60 +261,6 @@ class CreateEmpState extends State<CreateEmployee> {
         );
       }
     }
-  }
-
-  void UploadImg() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Profile Image'),
-          content: Container(
-            height: 100,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _pickImageFromCamera(),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Take Profile Picture",
-                        style: TextStyle(fontSize: 15, color: Colors.black),
-                      ),
-                      SizedBox(width: 10),
-                      Icon(Icons.photo_camera, color: Colors.black),
-                    ],
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () => _pickImageFromGallery(),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Upload From Gallery",
-                        style: TextStyle(fontSize: 15, color: Colors.black),
-                      ),
-                      SizedBox(width: 10),
-                      Icon(Icons.photo, color: Colors.black),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK', style: TextStyle(color: Colors.black)),
-            ),
-          ],
-          backgroundColor: Colors.grey[300],
-        );
-      },
-    );
   }
 
   @override
@@ -305,15 +292,9 @@ class CreateEmpState extends State<CreateEmployee> {
                 SizedBox(height: 20),
                 _imageFile != null
                     ? CircleAvatar(
-                      radius:
-                          MediaQuery.of(context).size.width *
-                          0.18, // Size of the avatar, this is half the diameter
-                      backgroundImage: FileImage(
-                        File(_imageFile!.path),
-                      ), // If you are using an image
-                      backgroundColor:
-                          Colors
-                              .grey, // Background color if no image is provided
+                      radius: MediaQuery.of(context).size.width * 0.18,
+                      backgroundImage: FileImage(_imageFile!),
+                      backgroundColor: Colors.grey,
                     )
                     : Container(
                       width: MediaQuery.of(context).size.width * 0.32,
@@ -323,8 +304,9 @@ class CreateEmpState extends State<CreateEmployee> {
                         borderRadius: BorderRadius.circular(50),
                       ),
                     ),
+
                 ElevatedButton(
-                  onPressed: () => UploadImg(),
+                  onPressed: () => _pickImageFromCamera(),
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.37,
                     child: Row(
@@ -342,8 +324,9 @@ class CreateEmpState extends State<CreateEmployee> {
                 SizedBox(height: 10),
                 TextFormField(
                   controller: name,
+                  textCapitalization: TextCapitalization.words,
                   decoration: InputDecoration(
-                    labelText: 'Enter Your Name',
+                    labelText: 'Enter Name',
                     contentPadding: EdgeInsets.symmetric(
                       vertical: 4 * MediaQuery.of(context).devicePixelRatio,
                       horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
@@ -364,7 +347,41 @@ class CreateEmpState extends State<CreateEmployee> {
 
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Enter Your Name';
+                      return 'Enter Name';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: dob,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Date Of Birth',
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        4 * MediaQuery.of(context).devicePixelRatio,
+                      ), // Set the border radius
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    prefixIcon: Icon(Icons.date_range),
+                    suffixIcon: IconButton(
+                      onPressed: () => _pickDateDob(context),
+                      icon: Icon(Icons.calendar_month),
+                    ),
+                  ),
+
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter Date Of Birth';
                     }
                     return null;
                   },
@@ -390,6 +407,7 @@ class CreateEmpState extends State<CreateEmployee> {
                     ),
                     filled: true,
                     fillColor: Colors.grey[200],
+                    prefixIcon: Icon(Icons.badge),
                     suffixIcon: Icon(Icons.arrow_drop_down),
                   ),
                   onTap: () async {
@@ -428,109 +446,12 @@ class CreateEmpState extends State<CreateEmployee> {
                     return null;
                   },
                 ),
-
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: dob,
-                  decoration: InputDecoration(
-                    labelText: 'Enter Your Date Of Birth',
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
-                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    prefixIcon: Icon(Icons.date_range),
-                    suffixIcon: IconButton(
-                      onPressed: () => _pickDate(context),
-                      icon: Icon(Icons.calendar_month),
-                    ),
-                  ),
-
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Enter Your Date Of Birth';
-                    }
-                    return null;
-                  },
-                ),
-
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: mobile,
-                  decoration: InputDecoration(
-                    labelText: 'Enter Your Mobile No.',
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
-                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    prefixIcon: Icon(Icons.phone),
-                  ),
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Enter Your Mobile No.';
-                    } else if (value.length != 10) {
-                      return 'Mobile number must be 10 digits';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  controller: email,
-                  decoration: InputDecoration(
-                    labelText: 'Enter Your Email',
-                    contentPadding: EdgeInsets.symmetric(
-                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
-                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
-                    ),
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    prefixIcon: Icon(Icons.email),
-                  ),
-
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Enter Your Email';
-                    }
-                    return null;
-                  },
-                ),
                 SizedBox(height: 10),
                 TextFormField(
                   controller: panNo,
+                  inputFormatters: [UpperCaseTextFormatter()],
                   decoration: InputDecoration(
-                    labelText: 'Enter Your PAN Card No.',
+                    labelText: 'Enter PAN Card No.',
                     contentPadding: EdgeInsets.symmetric(
                       vertical: 4 * MediaQuery.of(context).devicePixelRatio,
                       horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
@@ -551,7 +472,72 @@ class CreateEmpState extends State<CreateEmployee> {
 
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Enter Your PAN Card No.';
+                      return 'Enter Pan Card No.';
+                    } else if (value.length != 10) {
+                      return 'Pan Card No. must be 10 digits';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+
+                TextFormField(
+                  controller: mobile,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Mobile No.',
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        4 * MediaQuery.of(context).devicePixelRatio,
+                      ), // Set the border radius
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    prefixIcon: Icon(Icons.phone),
+                  ),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter Mobile No.';
+                    } else if (value.length != 10) {
+                      return 'Mobile number must be 10 digits';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: email,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Email',
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        4 * MediaQuery.of(context).devicePixelRatio,
+                      ), // Set the border radius
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    prefixIcon: Icon(Icons.email),
+                  ),
+
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter Email';
                     }
                     return null;
                   },
@@ -561,7 +547,7 @@ class CreateEmpState extends State<CreateEmployee> {
                 TextFormField(
                   controller: address,
                   decoration: InputDecoration(
-                    labelText: 'Enter Your Address',
+                    labelText: 'Enter Address',
                     contentPadding: EdgeInsets.symmetric(
                       vertical: 4 * MediaQuery.of(context).devicePixelRatio,
                       horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
@@ -582,7 +568,135 @@ class CreateEmpState extends State<CreateEmployee> {
 
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Enter Your Address';
+                      return 'Enter Address';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: adharNo,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Addhar Card No.',
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        4 * MediaQuery.of(context).devicePixelRatio,
+                      ), // Set the border radius
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    prefixIcon: Icon(Icons.credit_card),
+                  ),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter Addhar Card No.';
+                    } else if (value.length != 12) {
+                      return 'Addhar Card No. must be 12 digits';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+
+                TextFormField(
+                  controller: salary,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Salary',
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        4 * MediaQuery.of(context).devicePixelRatio,
+                      ), // Set the border radius
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    prefixIcon: Icon(Icons.attach_money),
+                  ),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter Salary';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+
+                TextFormField(
+                  controller: hours,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Working Hours',
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        4 * MediaQuery.of(context).devicePixelRatio,
+                      ), // Set the border radius
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    prefixIcon: Icon(Icons.access_time),
+                  ),
+                  keyboardType: TextInputType.phone,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter Working Hours';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 10),
+                TextFormField(
+                  controller: joinOfDate,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Joinning Date',
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    labelStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(
+                        4 * MediaQuery.of(context).devicePixelRatio,
+                      ), // Set the border radius
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    prefixIcon: Icon(Icons.date_range),
+                    suffixIcon: IconButton(
+                      onPressed: () => _pickDateJoin(context),
+                      icon: Icon(Icons.calendar_today),
+                    ),
+                  ),
+
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter Joinning Date';
                     }
                     return null;
                   },
@@ -591,7 +705,7 @@ class CreateEmpState extends State<CreateEmployee> {
                 TextFormField(
                   controller: username,
                   decoration: InputDecoration(
-                    labelText: 'Enter Your User Name',
+                    labelText: 'Enter User Name',
                     contentPadding: EdgeInsets.symmetric(
                       vertical: 4 * MediaQuery.of(context).devicePixelRatio,
                       horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
@@ -612,7 +726,7 @@ class CreateEmpState extends State<CreateEmployee> {
 
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Enter Your User Name';
+                      return 'Enter User Name';
                     }
                     return null;
                   },
@@ -622,7 +736,7 @@ class CreateEmpState extends State<CreateEmployee> {
                   controller: password,
                   obscureText: _obscureText,
                   decoration: InputDecoration(
-                    labelText: 'Enter Your Password',
+                    labelText: 'Enter Password',
                     contentPadding: EdgeInsets.symmetric(
                       vertical: 4 * MediaQuery.of(context).devicePixelRatio,
                       horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
@@ -652,14 +766,16 @@ class CreateEmpState extends State<CreateEmployee> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Enter Your Password';
+                      return 'Enter Password';
                     }
                     return null;
                   },
                 ),
+
                 SizedBox(height: 10),
+
                 ElevatedButton(
-                  onPressed: () => createEmp(),
+                  onPressed: () => createEmp(context),
                   child: Text(
                     "Create Employee",
                     style: TextStyle(fontSize: 20, color: Colors.black),

@@ -185,6 +185,7 @@ void _openDropdown(String currentDesignation,int Id) async {
               children: [
                 TextFormField(
                   controller: _updateController,
+                  textCapitalization: TextCapitalization.words,
                   decoration: InputDecoration(
                     labelText: 'Enter Your Designation',
                     border: OutlineInputBorder(),
@@ -251,6 +252,7 @@ void _openDropdown(String currentDesignation,int Id) async {
               key: _formKey,
               child: TextFormField(
                 controller: designation,
+                textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   labelText: 'Enter Your Designation',
                   border: OutlineInputBorder(),
@@ -310,15 +312,16 @@ void _openDropdown(String currentDesignation,int Id) async {
                               children: [
                                 // Expanded left column with text
                                 Expanded(
-                                  flex: 3,
+                                  flex: 2,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       SizedBox(height: 4),
                                       Text(
-                                        "Company Name: ${comName}\nCompany Id: ${item['company_id']}\nDesignation: ${item['designationname']}",
-                                        style: TextStyle(height: 1.4),
+                                        "Designation: ${item['designationname']}",
+                                        style: TextStyle(fontSize:5 * MediaQuery.of(context).devicePixelRatio ),
                                       ),
                                     ],
                                   ),
@@ -326,8 +329,9 @@ void _openDropdown(String currentDesignation,int Id) async {
 
                                 // Buttons section
                                 Expanded(
-                                  flex: 1,
-                                  child: Column(
+                                  flex: 2,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       IconButton(
                                         onPressed:()=> _openDropdown(item['designationname'],item['id']),
@@ -336,7 +340,7 @@ void _openDropdown(String currentDesignation,int Id) async {
                                             Icon(
                                               FontAwesomeIcons.arrowsRotate,
                                               size:
-                                                  5 *
+                                                  6 *
                                                   MediaQuery.of(
                                                     context,
                                                   ).devicePixelRatio,
@@ -362,7 +366,7 @@ void _openDropdown(String currentDesignation,int Id) async {
                                             Icon(
                                               FontAwesomeIcons.trash,
                                               size:
-                                                  5 *
+                                                  6 *
                                                   MediaQuery.of(
                                                     context,
                                                   ).devicePixelRatio,

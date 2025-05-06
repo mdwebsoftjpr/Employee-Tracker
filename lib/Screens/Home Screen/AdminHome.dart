@@ -2,18 +2,18 @@ import 'dart:async';
 import 'dart:io'; // This is required to use the File class
 import 'package:employee_tracker/Screens/Admin%20Report/Attendance.dart';
 import 'package:employee_tracker/Screens/Admin%20Report/VisitRep.dart';
+import 'package:employee_tracker/Screens/Detail%20Screen/employeeList.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
-import 'package:employee_tracker/Screens/EmployeeReports/AttendanceRep.dart';
 import 'package:employee_tracker/Screens/create%20employee/Master.dart';
 import 'package:employee_tracker/Screens/create%20employee/createEmployee.dart';
 import 'package:employee_tracker/main.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 // #docregion photo-picker-example
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-
 import 'package:localstorage/localstorage.dart';
 
 void main() async {
@@ -385,29 +385,50 @@ class AdminhomeState extends State<AdminHome> {
                           children: [
                             Column(
                               children: [
-                                    SizedBox(height: 10),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Image.network(
-                                          'https://testapi.rabadtechnology.com/$image',
-                                          width: 70,
-                                          height: 70,
+                                SizedBox(height: 10),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width:
+                                          25 *
+                                          MediaQuery.of(
+                                            context,
+                                          ).devicePixelRatio,
+                                      height:
+                                          25 *
+                                          MediaQuery.of(
+                                            context,
+                                          ).devicePixelRatio,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(
+                                          4 *
+                                              MediaQuery.of(
+                                                context,
+                                              ).devicePixelRatio,
                                         ),
-
-                                        Text(
-                                          key_person,
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w600,
+                                        image: DecorationImage(
+                                          image: NetworkImage(
+                                            'https://testapi.rabadtechnology.com/$image',
                                           ),
+                                          fit: BoxFit.cover,
                                         ),
-                                      ],
+                                      ),
                                     ),
+                                    SizedBox(width: 10,),
+                                    Text(
+                                      key_person,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                             SizedBox(height: 10),
-                            Container(
+                           /*  Container(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -588,7 +609,7 @@ class AdminhomeState extends State<AdminHome> {
                                 ],
                               ),
                             ),
-                            SizedBox(height: 5),
+                            SizedBox(height: 5), */
                           ],
                         ),
                       ),
@@ -716,7 +737,7 @@ class AdminhomeState extends State<AdminHome> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Create Employee",
+                              "Create/Add Employee",
                               style: TextStyle(fontSize: 15),
                             ),
                             Icon(Icons.assignment_turned_in, size: 40),
@@ -769,6 +790,61 @@ class AdminhomeState extends State<AdminHome> {
                                   ),
                               child: Text(
                                 "Create",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color(0xFF03a9f4),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+              Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  // Set the background color here
+                  color: Color(0xFF03a9f4),
+                  borderRadius: BorderRadius.circular(
+                    10,
+                  ), // Optional: Adds rounded corners
+                ),
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "View Employee",
+                              style: TextStyle(fontSize: 15),
+                            ),
+                            Icon(FontAwesomeIcons.addressBook, size: 33),
+                            ElevatedButton(
+                              onPressed:
+                                  () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => Employeelist(),
+                                    ),
+                                  ),
+                              child: Text(
+                                "Employee List",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,

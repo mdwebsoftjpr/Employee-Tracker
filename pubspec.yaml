@@ -21,6 +21,10 @@ dependencies:
   geocoding: ^3.0.0
   device_info_plus: ^11.4.0
   font_awesome_flutter: ^10.8.0
+  flutter_image_compress: ^2.4.0
+  path_provider: ^2.1.5
+  path: ^1.9.1
+  cross_file: ^0.3.4+2
 
 dev_dependencies:
   flutter_test:
