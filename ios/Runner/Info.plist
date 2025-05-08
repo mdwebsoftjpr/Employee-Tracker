@@ -2,17 +2,27 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- Location Usage -->
+    <!-- Location Usage (Required for live tracking) -->
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Your location is needed to show the map.</string>
+    <string>This app requires your location while using the app for live tracking.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app needs access to your location even in the background for continuous tracking.</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Your location is needed to show the map.</string>
+    <string>This app tracks your location in the background to monitor attendance and visits.</string>
 
     <!-- Photo/Camera Access -->
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>We need access to your photo library to pick an image</string>
     <key>NSCameraUsageDescription</key>
-    <string>We need access to your camera to capture a photo</string>
+    <string>This app requires camera access to capture attendance photos.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs photo library access to upload profile or attendance images.</string>
+
+    <!-- Google Maps (iOS only) -->
+    <key>GMSApiKey</key>
+    <string>YOUR_ACTUAL_GOOGLE_MAPS_API_KEY</string> <!-- Replace with your actual API Key -->
+
+    <!-- Required for Google Maps to embed in Flutter -->
+    <key>io.flutter.embedded_views_preview</key>
+    <true/>
 
     <!-- General App Metadata -->
     <key>CFBundleDevelopmentRegion</key>
@@ -42,7 +52,7 @@
     <key>UIMainStoryboardFile</key>
     <string>Main</string>
 
-    <!-- Interface Orientations -->
+    <!-- Supported Orientations -->
     <key>UISupportedInterfaceOrientations</key>
     <array>
         <string>UIInterfaceOrientationPortrait</string>
@@ -57,7 +67,7 @@
         <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
 
-    <!-- Additional Flags -->
+    <!-- Performance and Input Flags -->
     <key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
     <key>UIApplicationSupportsIndirectInputEvents</key>

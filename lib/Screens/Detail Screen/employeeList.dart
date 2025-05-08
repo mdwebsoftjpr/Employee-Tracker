@@ -394,19 +394,24 @@ class EmployeelistState extends State<Employeelist> {
                                 ),
                                 SizedBox(height: 5),
                                 Text(
-                                  item['name'] ?? '',
+                                  item['name']?.length > 9
+                                      ? '${item['name'].substring(0, 11)}...'
+                                      : item['name'] ?? '',
                                   style: TextStyle(
                                     fontSize:
                                         4 *
                                         MediaQuery.of(context).devicePixelRatio,
-                                    color: Colors.black,
+                                    fontWeight: FontWeight.w400,
                                   ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
                           ),
+                          SizedBox(width: 5),
                           Expanded(
                             child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   "Salary:-",

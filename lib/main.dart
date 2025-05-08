@@ -68,88 +68,75 @@ class _createScreen extends State<CreateScreen> {
   final TextEditingController tradename = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
-  void login(context) async {
-    if (_formKey.currentState?.validate() ?? false) {
-      if (!TermCondition) {
-        // Show an error message if checkbox is not checked
+  void login(BuildContext context) async {
+  if (_formKey.currentState?.validate() ?? false) {
+    if (!TermCondition) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please accept the terms and conditions'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    String Tradename = tradename.text;
+    String Email = email.text;
+    String Cpassword = password.text;
+
+    final url = Uri.parse('https://testapi.rabadtechnology.com/login.php');
+    final Map<String, dynamic> requestBody = {
+      "trade_name": Tradename,
+      "email": Email,
+      "password": Cpassword,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+
+      final responseData = jsonDecode(response.body);
+      final success = responseData['success'];
+      final message = responseData['message'];
+      final role = responseData['role'];
+      final data = responseData['data'];
+
+      if (success == true) {
+        await localStorage.setItem('user', jsonEncode(data));
+        await localStorage.setItem('role', jsonEncode(role));
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Please accept Remembers'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(message)),
         );
-        return; // Exit the function without proceeding further
-      }
 
-      String Tradename = tradename.text;
-      String Email = email.text;
-      String Cpassword = password.text;
-
-      final url = Uri.parse('https://testapi.rabadtechnology.com/login.php');
-      final Map<String, dynamic> requestBody = {
-        "trade_name": Tradename,
-        "email": Email,
-        "password": Cpassword,
-      };
-      print(requestBody);
-      try {
-        final response = await http.post(
-          url, // Your API endpoint
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(requestBody),
-        );
-        // Decode response
-        final responseData = jsonDecode(response.body);
-
-        final success = responseData['success'];
-        final message = responseData['message'];
-        final role = responseData['role'];
-        final data = responseData['data'];
-
-        if (success == true) {
-          // Save to localStorage
-          await localStorage.setItem('user', jsonEncode(data));
-          await localStorage.setItem('role', jsonEncode(role));
-          // Show success message
-          ScaffoldMessenger.of(
+        if (role.toString().toLowerCase() == "admin") {
+          Navigator.pushAndRemoveUntil(
             context,
-          ).showSnackBar(SnackBar(content: Text(message)));
-
-          // Navigate based on role
-          if (role.toString().toLowerCase() == "admin") {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => AdminHome()),
-              (route) => false,
-            );
-          } else if (role.toString().toLowerCase() == "employee") {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => EmpHome()),
-              (route) => false,
-            );
-          }
-        } else {
-          if (mounted) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(message)));
-          }
-        }
-
-        // Update state (if needed)
-        setState(() {
-          msg = message;
-        });
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Something went wrong: ${e.toString()}')),
+            MaterialPageRoute(builder: (context) => AdminHome()),
+            (route) => false,
+          );
+        } else if (role.toString().toLowerCase() == "employee") {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => EmpHome()),
+            (route) => false,
           );
         }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Something went wrong: ${e.toString()}')),
+      );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {

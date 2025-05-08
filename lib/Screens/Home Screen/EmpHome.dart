@@ -651,7 +651,13 @@ class _EmpHomeState extends State<EmpHome> {
                           Navigator.pop(context); // Close the drawer first
                         },
                       ),
-                  (visit == true)
+                  (Mainstatus == "" || Mainstatus == 'punchout')
+                      ? ListTile(
+                        leading: Icon(Icons.person),
+                        title: Text("Visit In"),
+                        onTap: () async {},
+                      )
+                      : (visit == true)
                       ? ListTile(
                         leading: Icon(Icons.person),
                         title: Text("Visit In"),
@@ -1111,11 +1117,11 @@ class _EmpHomeState extends State<EmpHome> {
                               ),
                             ),
                             Icon(Icons.exit_to_app, size: 40),
-                            (visit==false)
+                            (visit == true)
                                 ? ElevatedButton(
                                   onPressed:
                                       () =>
-                                          (Mainstatus != '')
+                                          (Mainstatus == "")
                                               ? Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
@@ -1135,13 +1141,16 @@ class _EmpHomeState extends State<EmpHome> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xFF03a9f4),
                                   ),
-                                ):ElevatedButton(
+                                )
+                                : ElevatedButton(
                                   onPressed: () async {
-                                    await _pickImageFromCamera();
-                                    visitIn();
-                                    setState(() {
-                                      visit == false;
-                                    });
+                                    if (Mainstatus == "") {
+                                      await _pickImageFromCamera();
+                                      visitIn();
+                                      setState(() {
+                                        visit = false;
+                                      });
+                                    }
                                   },
                                   child: Text(
                                     "Visit In",
@@ -1154,7 +1163,6 @@ class _EmpHomeState extends State<EmpHome> {
                                     backgroundColor: Color(0xFF03a9f4),
                                   ),
                                 ),
-                                
                           ],
                         ),
                       ),
