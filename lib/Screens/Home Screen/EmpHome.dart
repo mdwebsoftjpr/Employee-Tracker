@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:employee_tracker/Screens/Detail%20Screen/EmpAttDetail.dart';
 import 'package:employee_tracker/Screens/EmployeeReports/visitReport.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/empProfile.dart';
 import 'package:employee_tracker/Screens/EmployeeReports/AttendanceRep.dart';
@@ -55,7 +56,7 @@ class _EmpHomeState extends State<EmpHome> {
   String comName = 'Compamy';
   String username = "";
   String role = '';
-  bool visit = false;
+  bool visit = true;
   int bcount = 0;
   bool BreakTime = false;
   String PSatatus = 'Present';
@@ -109,12 +110,6 @@ class _EmpHomeState extends State<EmpHome> {
         role = localStorage.getItem('role');
       });
     }
-    var Visit = localStorage.getItem('visitout') ?? false;
-    if (Visit == true) {
-      setState(() {
-        visit = Visit;
-      });
-    }
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/getEmployeestatus.php',
     );
@@ -144,6 +139,7 @@ class _EmpHomeState extends State<EmpHome> {
             punchIntime = punchInTime;
             punchOuttime = punchOutTime;
           });
+          print(Mainstatus);
         } else {
           setState(() {
             Mainstatus = '';
@@ -351,6 +347,7 @@ class _EmpHomeState extends State<EmpHome> {
       );
       request.fields['coordinate'] = '$latitude,$longitude';
       request.fields['diviceid'] = deviceId;
+      request.fields['company_id'] = Comid.toString();
       request.fields['address'] = CurrentAddress;
       request.fields['empid'] = '$userid';
       // Send request
@@ -607,23 +604,20 @@ class _EmpHomeState extends State<EmpHome> {
                       ),
                     ),
                   ),
-                  (Mainstatus == "" || Mainstatus == 'punchout')
-                      ? ListTile(
+                  (Mainstatus != "" || Mainstatus == 'punchin')
+                      ?ListTile(
                         leading: Icon(Icons.access_time),
                         title: Text("Punch in"),
-                        onTap: () async {
-                          await _pickImageFromCamera();
-                          punchIn();
-                          Navigator.pop(context);
-                        },
-                      )
-                      : ListTile(
-                        leading: Icon(Icons.access_time),
-                        title: Text("Punch Out"),
-                        onTap: () async {
-                          await _pickImageFromCamera();
+                        onTap: () {
+                          _pickImageFromCamera();
                           punchOut();
-                          Navigator.pop(context);
+                        },
+                      ):ListTile(
+                        leading: Icon(Icons.access_time),
+                        title: Text("Punch in"),
+                        onTap: () {
+                          _pickImageFromCamera();
+                          punchIn();
                         },
                       ),
                   (BreakTime)
@@ -651,29 +645,12 @@ class _EmpHomeState extends State<EmpHome> {
                           Navigator.pop(context); // Close the drawer first
                         },
                       ),
-                  (Mainstatus == "" || Mainstatus == 'punchout')
+                  (!visit)
                       ? ListTile(
-                        leading: Icon(Icons.person),
-                        title: Text("Visit In"),
-                        onTap: () async {},
-                      )
-                      : (visit == true)
-                      ? ListTile(
-                        leading: Icon(Icons.person),
-                        title: Text("Visit In"),
-                        onTap: () async {
-                          await _pickImageFromCamera();
-                          visitIn();
-                          setState(() {
-                            visit == false;
-                          });
-                        },
-                      )
-                      : ListTile(
                         leading: Icon(Icons.exit_to_app),
                         title: Text("Visit Out"),
                         onTap: () {
-                          if (Mainstatus == '' || Mainstatus == 'punchout') {
+                          if (Mainstatus != '' || Mainstatus == 'punchin') {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -682,14 +659,27 @@ class _EmpHomeState extends State<EmpHome> {
                             );
                           }
                         },
-                      ),
+                      ): ListTile(
+                        leading: Icon(Icons.person),
+                        title: Text("Visit In"),
+                        onTap: () async {
+                          if (Mainstatus != '' || Mainstatus == 'punchin') {
+                            await _pickImageFromCamera();
+                            visitIn();
+                            setState(() {
+                              visit == false;
+                            });
+                          }
+                        },
+                      )
+                      ,
                   ListTile(
                     leading: Icon(Icons.assignment_turned_in),
                     title: Text("Attendance Report"),
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => Attendancerep()),
+                        MaterialPageRoute(builder: (_) => EmpAttdetail()),
                       );
                     },
                   ),
@@ -1117,20 +1107,19 @@ class _EmpHomeState extends State<EmpHome> {
                               ),
                             ),
                             Icon(Icons.exit_to_app, size: 40),
-                            (visit == true)
+                            (!visit)
                                 ? ElevatedButton(
-                                  onPressed:
-                                      () =>
-                                          (Mainstatus == "")
-                                              ? Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder:
-                                                      (context) =>
-                                                          VisitOut(VisitId),
-                                                ),
-                                              )
-                                              : "",
+                                  onPressed: () {
+                                    if (Mainstatus != '' || Mainstatus == 'punchin') {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => VisitOut(VisitId),
+                                        ),
+                                      );
+                                    }
+                                  },
                                   child: Text(
                                     "Visit Out",
                                     style: TextStyle(
@@ -1144,7 +1133,7 @@ class _EmpHomeState extends State<EmpHome> {
                                 )
                                 : ElevatedButton(
                                   onPressed: () async {
-                                    if (Mainstatus == "") {
+                                    if (Mainstatus != '' || Mainstatus == 'punchin') {
                                       await _pickImageFromCamera();
                                       visitIn();
                                       setState(() {
@@ -1417,7 +1406,7 @@ class _EmpHomeState extends State<EmpHome> {
                                   () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => Attendancerep(),
+                                      builder: (context) => EmpAttdetail(),
                                     ),
                                   ),
                               child: Text(

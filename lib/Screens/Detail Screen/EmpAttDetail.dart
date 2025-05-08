@@ -3,39 +3,52 @@ import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
-
-class AttendanceDetail extends StatefulWidget {
-  final Map<String, dynamic> items;
-
-  const AttendanceDetail(this.items, {Key? key}) : super(key: key);
-
-  @override
-  AttendanceDetailState createState() => AttendanceDetailState();
+void main()async{
+   WidgetsFlutterBinding.ensureInitialized();
+  await _initializeLocalStorage();
+  runApp(EmpAttdetail());
 }
 
-class AttendanceDetailState extends State<AttendanceDetail> {
+Future<void> _initializeLocalStorage() async {
+  await localStorage.ready; // Wait for the localStorage to be ready
+}
+
+class EmpAttdetail extends StatefulWidget {
+  @override
+  EmpattdetailState createState() => EmpattdetailState();
+}
+
+class EmpattdetailState extends State<EmpAttdetail> {
   int? ComId;
   int? empId;
   DateTime? selectedMonth;
   int MonthNo = DateTime.now().month;
   int YearNo = DateTime.now().year;
-
-  final int currentExp = 85;
-  final int totalExp = 100;
   List<Map<String, dynamic>> attendanceData = [];
 
   @override
   void initState() {
     super.initState();
-    empId = widget.items['id'];
-    ComId = widget.items['company_id'];
+    _loadUser();
     EmpAttDetail();
   }
 
+   void _loadUser() {
+    var userJson = localStorage.getItem('user');
+    if (userJson != null) {
+      var user = jsonDecode(userJson);
+      print("Sahil$user");
+      setState(() {
+        ComId = user['company_id'] ??0;
+        empId = user['id'] ?? 0;
+      });
+    }
+  }
+
   void EmpAttDetail() async {
+    print("$empId,$ComId,$MonthNo,$YearNo");
     try {
       final url = Uri.parse(
         'https://testapi.rabadtechnology.com/getSingleEmpAttendanceAll.php',
@@ -69,7 +82,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
             }
           });
           setState(() {
-          attendanceData = tempList;
+          attendanceData = tempList.reversed.toList();
         });
         }else{
           ScaffoldMessenger.of(
@@ -106,15 +119,9 @@ class AttendanceDetailState extends State<AttendanceDetail> {
 
   @override
   Widget build(BuildContext context) {
-    final item = widget.items;
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
-    double percent = currentExp / totalExp;
     final devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
-    final imageUrl =
-        (item['image'] != null && item['image'].toString().trim().isNotEmpty)
-            ? 'https://testapi.rabadtechnology.com/uploads/${item['image']}'
-            : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
 
     return Scaffold(
       appBar: AppBar(
@@ -139,78 +146,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.all(deviceWidth * 0.04),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(deviceWidth * 0.02),
-                        child: Image.network(
-                          imageUrl,
-                          width: deviceWidth * 0.25,
-                          height: deviceHeight * 0.17,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      SizedBox(height: deviceHeight * 0.01),
-                      Text(
-                        item['empname'] ?? 'Unknown',
-                        style: TextStyle(fontSize: deviceWidth * 0.045),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      CircularPercentIndicator(
-                        radius: deviceWidth * 0.1,
-                        lineWidth: deviceWidth * 0.03,
-                        animation: true,
-                        percent: percent,
-                        center: Text(
-                          "${(percent * 100).toInt()}%",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: deviceWidth * 0.05,
-                            color: Colors.black,
-                          ),
-                        ),
-                        footer: Text(
-                          "Total: $currentExp / $totalExp",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: deviceWidth * 0.045,
-                          ),
-                        ),
-                        circularStrokeCap: CircularStrokeCap.round,
-                        progressColor: Colors.blue,
-                      ),
-                      Text(
-                        "This Month Attendance % $percent",
-                        style: TextStyle(fontSize: deviceWidth * 0.04),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Text(
-            "Details:-",
-            style: TextStyle(
-              fontSize: devicePixelRatio * 7,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Expanded(
-            child:
-                attendanceData.isEmpty
+      body:attendanceData.isEmpty
                     ? Center(
                       child: Text(
                         "Attendance Not Found",
@@ -326,9 +262,6 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                         );
                       },
                     ),
-          ),
-        ],
-      ),
     );
   }
 }

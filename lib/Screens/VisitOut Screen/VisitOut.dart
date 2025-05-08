@@ -40,7 +40,7 @@ Future<void> _initializeData() async {
   autofillAddress();
   await getCurrentLocation();
 }
-
+ 
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController organization = TextEditingController();

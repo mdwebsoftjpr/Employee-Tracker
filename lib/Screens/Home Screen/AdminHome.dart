@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:io'; // This is required to use the File class
 import 'package:employee_tracker/Screens/Admin%20Report/Attendance.dart';
-import 'package:employee_tracker/Screens/Admin%20Report/VisitRep.dart';
+import 'package:employee_tracker/Screens/Admin%20Report/VisitRepMap.dart';
+import 'package:employee_tracker/Screens/Admin%20Report/VisitReport.dart';
 import 'package:employee_tracker/Screens/Detail%20Screen/employeeList.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
 import 'package:employee_tracker/Screens/create%20employee/Master.dart';
@@ -313,12 +314,12 @@ class AdminhomeState extends State<AdminHome> {
                   ),
                   ListTile(
                     leading: Icon(Icons.assignment_turned_in),
-                    title: Text("Break Time Report"),
+                    title: Text("Visit Time Report"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AdminHome()),
+                        MaterialPageRoute(builder: (context) => AdminVisitreport()),
                       );
                     },
                   ),
@@ -682,7 +683,7 @@ class AdminhomeState extends State<AdminHome> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Break Time Report",
+                              "Visit Time Report",
                               style: TextStyle(fontSize: 15),
                             ),
                             Icon(Icons.access_time, size: 40),
@@ -691,7 +692,7 @@ class AdminhomeState extends State<AdminHome> {
                                   () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => VisitRep(),
+                                      builder: (context) => AdminVisitreport(),
                                     ),
                                   ),
                               child: Text(
