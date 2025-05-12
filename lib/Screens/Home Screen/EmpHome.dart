@@ -1066,8 +1066,6 @@ class _EmpHomeState extends State<EmpHome> {
                 //stop
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  // Set the background color here
-                  color: Color(0xFF03a9f4),
                   borderRadius: BorderRadius.circular(
                     10,
                   ), // Optional: Adds rounded corners
@@ -1090,7 +1088,8 @@ class _EmpHomeState extends State<EmpHome> {
                               "Mark Attendance",
                               style: TextStyle(fontSize: 15),
                             ),
-                            Icon(Icons.add, size: 40),
+                            Image.asset('assets/images/attendance.png', width: MediaQuery.of(context).size.width * 0.3,
+                                height: MediaQuery.of(context).size.width * 0.25,),
                             (Mainstatus == "" || Mainstatus == 'punchout')
                                 ? ElevatedButton(
                                   onPressed: () async {
@@ -1101,7 +1100,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "Punch in",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1117,7 +1116,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "Punch Out",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1146,7 +1145,8 @@ class _EmpHomeState extends State<EmpHome> {
                                 color: Colors.black,
                               ),
                             ),
-                            Icon(Icons.exit_to_app, size: 40),
+                            Image.asset('assets/images/visit.png', width: MediaQuery.of(context).size.width * 0.3,
+                                height: MediaQuery.of(context).size.width * 0.25,),
                             (!visit)
                                 ? ElevatedButton(
                                   onPressed: () {
@@ -1164,7 +1164,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "Visit Out",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1185,7 +1185,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "Visit In",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1203,8 +1203,6 @@ class _EmpHomeState extends State<EmpHome> {
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  // Set the background color here
-                  color: Color(0xFF03a9f4),
                   borderRadius: BorderRadius.circular(
                     10,
                   ), // Optional: Adds rounded corners
@@ -1230,9 +1228,11 @@ class _EmpHomeState extends State<EmpHome> {
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.black,
+
                               ),
                             ),
-                            Icon(Icons.coffee, size: 35),
+                            Image.asset('assets/images/Break.png', width: MediaQuery.of(context).size.width * 0.12,
+                                height: MediaQuery.of(context).size.width * 0.12,),
                             (bcount == 0)
                                 ? ElevatedButton(
                                   onPressed: () => {BreakIn()},
@@ -1240,7 +1240,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "Start",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1254,7 +1254,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "End",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1267,7 +1267,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "End",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                      color:Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1297,7 +1297,8 @@ class _EmpHomeState extends State<EmpHome> {
                                 color: Colors.black,
                               ),
                             ),
-                            Icon(Icons.dining, size: 35),
+                            Image.asset('assets/images/Break.png', width: MediaQuery.of(context).size.width * 0.12,
+                                height: MediaQuery.of(context).size.width * 0.12,),
                             (bcount == 2)
                                 ? ElevatedButton(
                                   onPressed: () => {BreakIn()},
@@ -1305,7 +1306,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "Start",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                     color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1319,7 +1320,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "End",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1332,7 +1333,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "End",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1362,7 +1363,8 @@ class _EmpHomeState extends State<EmpHome> {
                                 color: Colors.black,
                               ),
                             ),
-                            Icon(Icons.coffee, size: 35),
+                            Image.asset('assets/images/Break.png', width: MediaQuery.of(context).size.width * 0.12,
+                                height: MediaQuery.of(context).size.width * 0.12,),
                             (bcount == 4)
                                 ? ElevatedButton(
                                   onPressed: () => {BreakIn()},
@@ -1370,7 +1372,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "Start",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1384,7 +1386,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "End",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1397,7 +1399,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "End",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color: Colors.black,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1416,8 +1418,6 @@ class _EmpHomeState extends State<EmpHome> {
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  // Set the background color here
-                  color: Color(0xFF03a9f4),
                   borderRadius: BorderRadius.circular(
                     10,
                   ), // Optional: Adds rounded corners
@@ -1437,10 +1437,11 @@ class _EmpHomeState extends State<EmpHome> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Attendance Report",
+                              "Attendance Report's",
                               style: TextStyle(fontSize: 15),
                             ),
-                            Icon(Icons.assignment_turned_in, size: 40),
+                            Image.asset('assets/images/Att  Report.png', width: MediaQuery.of(context).size.width * 0.25,
+                                height: MediaQuery.of(context).size.width * 0.20,),
                             ElevatedButton(
                               onPressed:
                                   () => Navigator.push(
@@ -1453,7 +1454,7 @@ class _EmpHomeState extends State<EmpHome> {
                                 "View",
                                 style: TextStyle(
                                   fontSize: 15,
-                                  color: Colors.black,
+                                  color: Colors.white,
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
@@ -1476,10 +1477,11 @@ class _EmpHomeState extends State<EmpHome> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Daily Visit In Report",
+                              "Daily Visit Report's",
                               style: TextStyle(fontSize: 15),
                             ),
-                            Icon(Icons.access_time, size: 40),
+                           Image.asset('assets/images/visit_report.png', width: MediaQuery.of(context).size.width * 0.25,
+                                height: MediaQuery.of(context).size.width * 0.20,),
                             ElevatedButton(
                               onPressed:
                                   () => Navigator.push(
@@ -1492,7 +1494,7 @@ class _EmpHomeState extends State<EmpHome> {
                                 "View",
                                 style: TextStyle(
                                   fontSize: 15,
-                                  color: Colors.black,
+                                  color: Colors.white,
                                 ),
                               ),
                               style: ElevatedButton.styleFrom(
@@ -1506,7 +1508,7 @@ class _EmpHomeState extends State<EmpHome> {
                   ],
                 ),
               ),
-              SizedBox(height: 10),
+             /*  SizedBox(height: 10),
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -1584,7 +1586,7 @@ class _EmpHomeState extends State<EmpHome> {
                     ),
                   ],
                 ),
-              ),
+              ), */
               SizedBox(height: 10),
             ],
           ),

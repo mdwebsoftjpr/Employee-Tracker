@@ -191,7 +191,7 @@ class AdminhomeState extends State<AdminHome> {
     }
   }
 
-   void _showAlert() {
+  void _showAlert() {
     showDialog(
       context: context,
       builder: (context) {
@@ -315,8 +315,35 @@ class AdminhomeState extends State<AdminHome> {
                       ),
                     ),
                   ),
+                    ListTile(
+                    leading: Image.asset('assets/images/Att  Report.png', width: MediaQuery.of(context).size.width * 0.1,
+                                height: MediaQuery.of(context).size.width * 0.1,),
+                    title: Text("Attendance Report"),
+                    onTap: () {
+                      Navigator.pop(context); // Close the drawer first
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Attendance()),
+                      );
+                    },
+                  ),
                   ListTile(
-                    leading: Icon(Icons.person_outline),
+                    leading: Image.asset('assets/images/visit_report.png', width: MediaQuery.of(context).size.width * 0.1,
+                                height: MediaQuery.of(context).size.width * 0.1,),
+                    title: Text("Visit Time Report"),
+                    onTap: () {
+                      Navigator.pop(context); // Close the drawer first
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AdminVisitreport(),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: Image.asset('assets/images/addEmp.png', width: MediaQuery.of(context).size.width * 0.1,
+                                height: MediaQuery.of(context).size.width * 0.1,),
                     title: Text("Create Employee"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
@@ -330,7 +357,8 @@ class AdminhomeState extends State<AdminHome> {
                   ),
 
                   ListTile(
-                    leading: Icon(Icons.person_outline),
+                    leading: Image.asset('assets/images/Designation.png', width: MediaQuery.of(context).size.width * 0.1,
+                                height: MediaQuery.of(context).size.width * 0.1,),
                     title: Text("Create Designation"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
@@ -341,29 +369,8 @@ class AdminhomeState extends State<AdminHome> {
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.calendar_today),
-                    title: Text("Attendance Report"),
-                    onTap: () {
-                      Navigator.pop(context); // Close the drawer first
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Attendance()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.assignment_turned_in),
-                    title: Text("Visit Time Report"),
-                    onTap: () {
-                      Navigator.pop(context); // Close the drawer first
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => AdminVisitreport()),
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.exit_to_app),
+                    leading:Image.asset('assets/images/logout.png', width: MediaQuery.of(context).size.width * 0.1,
+                                height: MediaQuery.of(context).size.width * 0.1,),
                     title: Text("Logout"),
                     onTap: () {
                       clearStorage(context);
@@ -413,9 +420,7 @@ class AdminhomeState extends State<AdminHome> {
                     child: Center(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Color(
-                            0xFF03a9f4,
-                          ), // Set the background color here
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(
                             10,
                           ), // Optional: Adds rounded corners
@@ -455,7 +460,7 @@ class AdminhomeState extends State<AdminHome> {
                                         ),
                                       ),
                                     ),
-                                    SizedBox(width: 10,),
+                                    SizedBox(width: 10),
                                     Text(
                                       key_person,
                                       style: TextStyle(
@@ -468,7 +473,7 @@ class AdminhomeState extends State<AdminHome> {
                               ],
                             ),
                             SizedBox(height: 10),
-                           /*  Container(
+                            /*  Container(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -662,90 +667,80 @@ class AdminhomeState extends State<AdminHome> {
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  // Set the background color here
-                  color: Color(0xFF03a9f4),
-                  borderRadius: BorderRadius.circular(
-                    10,
-                  ), // Optional: Adds rounded corners
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Attendance Report",
-                              style: TextStyle(fontSize: 15),
+                      child: TextButton(
+                        onPressed:
+                            () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Attendance(),
+                              ),
                             ),
-                            Icon(Icons.calendar_today, size: 40),
-                            ElevatedButton(
-                              onPressed:
-                                  () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Attendance(),
-                                    ),
-                                  ),
-                              child: Text(
-                                "View",
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Attendance Report",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
                                 ),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
+                              Image.asset(
+                                'assets/images/Att  Report.png',
+                                width: MediaQuery.of(context).size.width * 0.4,
+                                height: MediaQuery.of(context).size.width * 0.3,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
                     SizedBox(width: 10),
                     Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Visit Time Report",
-                              style: TextStyle(fontSize: 15),
+                      child: TextButton(
+                        onPressed:
+                            () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AdminVisitreport(),
+                              ),
                             ),
-                            Icon(Icons.access_time, size: 40),
-                            ElevatedButton(
-                              onPressed:
-                                  () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AdminVisitreport(),
-                                    ),
-                                  ),
-                              child: Text(
-                                "View",
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Visit Time Report",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
                                 ),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
+                              Image.asset(
+                                'assets/images/visit_report.png',
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                height: MediaQuery.of(context).size.width * 0.3,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -756,8 +751,6 @@ class AdminhomeState extends State<AdminHome> {
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  // Set the background color here
-                  color: Color(0xFF03a9f4),
                   borderRadius: BorderRadius.circular(
                     10,
                   ), // Optional: Adds rounded corners
@@ -767,79 +760,71 @@ class AdminhomeState extends State<AdminHome> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Create/Add Employee",
-                              style: TextStyle(fontSize: 15),
+                      child: TextButton(
+                        onPressed:
+                            () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CreateEmployee(),
+                              ),
                             ),
-                            Icon(Icons.assignment_turned_in, size: 40),
-                            ElevatedButton(
-                              onPressed:
-                                  () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CreateEmployee(),
-                                    ),
-                                  ),
-                              child: Text(
-                                "Create",
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Create/Add Employee",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
                                 ),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
+                              Image.asset(
+                                'assets/images/addEmp.png',
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                height: MediaQuery.of(context).size.width * 0.3,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
                     SizedBox(width: 10),
                     Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Create Designation",
-                              style: TextStyle(fontSize: 15),
+                      child: TextButton(
+                        onPressed:
+                            () => Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Master()),
                             ),
-                            Icon(Icons.assignment_turned_in, size: 40),
-                            ElevatedButton(
-                              onPressed:
-                                  () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Master(),
-                                    ),
-                                  ),
-                              child: Text(
-                                "Create",
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Create Designation",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
                                 ),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
+                              Image.asset(
+                                'assets/images/Designation.png',
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                height: MediaQuery.of(context).size.width * 0.3,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -850,8 +835,6 @@ class AdminhomeState extends State<AdminHome> {
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  // Set the background color here
-                  color: Color(0xFF03a9f4),
                   borderRadius: BorderRadius.circular(
                     10,
                   ), // Optional: Adds rounded corners
@@ -861,40 +844,34 @@ class AdminhomeState extends State<AdminHome> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "View Employee",
-                              style: TextStyle(fontSize: 15),
-                            ),
-                            Icon(FontAwesomeIcons.addressBook, size: 33),
-                            ElevatedButton(
-                              onPressed:
-                                  () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Employeelist(),
-                                    ),
-                                  ),
-                              child: Text(
-                                "Employee List",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
+                      child: TextButton(
+                        onPressed:
+                            () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Employeelist(),
                               ),
                             ),
-                          ],
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "View Employee",
+                                style: TextStyle(fontSize: 15,color: Colors.black),
+                              ),
+                              Image.asset(
+                                'assets/images/empList.png',
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                height: MediaQuery.of(context).size.width * 0.3,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
