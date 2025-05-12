@@ -88,7 +88,7 @@ class AttendanceState extends State<Attendance> {
       appBar: AppBar(
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
-          'Attendance Detail',
+          'Daily Attendance Detail',
           style: TextStyle(
             color: Colors.white,
             fontSize: deviceWidth * 0.06,
@@ -111,7 +111,7 @@ class AttendanceState extends State<Attendance> {
                   final imageUrl =
                       (item['image'] != null &&
                               item['image'].toString().trim().isNotEmpty)
-                          ? 'https://testapi.rabadtechnology.com/uploads/${item['image']}'
+                          ? item['image']
                           : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
 
                   return GestureDetector(

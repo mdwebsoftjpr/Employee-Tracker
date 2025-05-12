@@ -26,6 +26,8 @@ class AttendanceDetailState extends State<AttendanceDetail> {
   final int currentExp = 85;
   final int totalExp = 100;
   List<Map<String, dynamic>> attendanceData = [];
+  int totalPresentDays = 0; // To store the count of 'P' days
+  double attendancePercentage = 0.0;
 
   @override
   void initState() {
@@ -66,28 +68,30 @@ class AttendanceDetailState extends State<AttendanceDetail> {
           AttData.forEach((key, value) {
             if (value is Map<String, dynamic>) {
               tempList.add({'date': key, ...value});
+              // Count 'P' status days
+              if (value['attendance_status'] == 'P' || value['attendance_status'] == 'p') {
+                totalPresentDays++;
+              }
             }
           });
+
+          // Calculate attendance percentage
+          attendancePercentage = (totalPresentDays / 31) * 100;
+
           setState(() {
-          attendanceData = tempList;
-        });
-        }else{
-          ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+            attendanceData = tempList;
+          });
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
         }
       } else {
         setState(() {
           attendanceData = [];
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -109,18 +113,17 @@ class AttendanceDetailState extends State<AttendanceDetail> {
     final item = widget.items;
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
-    double percent = currentExp / totalExp;
+
     final devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
-    final imageUrl =
-        (item['image'] != null && item['image'].toString().trim().isNotEmpty)
-            ? 'https://testapi.rabadtechnology.com/uploads/${item['image']}'
-            : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+    final imageUrl = (item['image'] != null && item['image'].toString().trim().isNotEmpty)
+        ?item['image']
+        : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
-          'Attendance Detail',
+          'Monthly Attendance Detail',
           style: TextStyle(
             color: Colors.white,
             fontSize: deviceWidth * 0.06,
@@ -172,9 +175,9 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                         radius: deviceWidth * 0.1,
                         lineWidth: deviceWidth * 0.03,
                         animation: true,
-                        percent: percent,
+                        percent: attendancePercentage / 100,
                         center: Text(
-                          "${(percent * 100).toInt()}%",
+                          "${attendancePercentage.toStringAsFixed(0)}%",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: deviceWidth * 0.05,
@@ -182,7 +185,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                           ),
                         ),
                         footer: Text(
-                          "Total: $currentExp / $totalExp",
+                          "Total: $totalPresentDays / 31",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: deviceWidth * 0.045,
@@ -192,7 +195,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                         progressColor: Colors.blue,
                       ),
                       Text(
-                        "This Month Attendance % $percent",
+                        "This Month Attendance % $attendancePercentage",
                         style: TextStyle(fontSize: deviceWidth * 0.04),
                       ),
                     ],
@@ -209,123 +212,116 @@ class AttendanceDetailState extends State<AttendanceDetail> {
             ),
           ),
           Expanded(
-            child:
-                attendanceData.isEmpty
-                    ? Center(
-                      child: Text(
-                        "Attendance Not Found",
-                        style: TextStyle(fontSize: deviceWidth * 0.05),
-                      ),
-                    )
-                    : ListView.builder(
-                      itemCount: attendanceData.length,
-                      itemBuilder: (context, index) {
-                        final data = attendanceData[index];
-                        return Padding(
-                          padding: EdgeInsets.all(devicePixelRatio * .5),
-                          child: Container(
-                            margin: EdgeInsets.only(
-                              top: devicePixelRatio * 2,
-                              left: devicePixelRatio * 3.5,
-                              right: devicePixelRatio * 3.5,
-                            ),
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                deviceWidth * 0.03,
-                              ),
-                              color: const Color.fromARGB(255, 247, 239, 230),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Date: ${data['date'] ?? ''}",
-                                        style: TextStyle(
-                                          fontSize: deviceWidth * 0.04,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Break Time: ${data['break_time'] ?? ''}",
-                                        style: TextStyle(
-                                          fontSize: deviceWidth * 0.04,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Punch In: ${data['time_in'] ?? ''}",
-                                        style: TextStyle(
-                                          fontSize: deviceWidth * 0.04,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Punch Out: ${data['time_out'] ?? ''}",
-                                        style: TextStyle(
-                                          fontSize: deviceWidth * 0.04,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: deviceHeight * 0.005,
-                                          horizontal: deviceWidth * 0.03,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              (data['attendance_status'] ==
-                                                          'P' ||
-                                                      data['attendance_status'] ==
-                                                          'p')
-                                                  ? Color(0xFF03a9f4)
-                                                  : Colors.redAccent,
-                                          borderRadius: BorderRadius.circular(
-                                            deviceWidth * 0.044,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          "${data['attendance_status'] ?? ''}",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: deviceWidth * 0.04,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: deviceHeight * 0.005),
-                                      Text(
-                                        "Total Hours: ${data['hours']}",
-                                        style: TextStyle(
-                                          fontSize: deviceWidth * 0.04,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+            child: attendanceData.isEmpty
+                ? Center(
+                    child: Text(
+                      "Attendance Not Found",
+                      style: TextStyle(fontSize: deviceWidth * 0.05),
                     ),
+                  )
+                : ListView.builder(
+                    itemCount: attendanceData.length,
+                    itemBuilder: (context, index) {
+                      final data = attendanceData[index];
+                      return Padding(
+                        padding: EdgeInsets.all(devicePixelRatio * .5),
+                        child: Container(
+                          margin: EdgeInsets.only(
+                            top: devicePixelRatio * 2,
+                            left: devicePixelRatio * 3.5,
+                            right: devicePixelRatio * 3.5,
+                          ),
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                              deviceWidth * 0.03,
+                            ),
+                            color: const Color.fromARGB(255, 247, 239, 230),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Date: ${data['date'] ?? ''}",
+                                      style: TextStyle(
+                                        fontSize: deviceWidth * 0.04,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Break Time: ${data['break_time'] ?? ''}",
+                                      style: TextStyle(
+                                        fontSize: deviceWidth * 0.04,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Punch In: ${data['time_in'] ?? ''}",
+                                      style: TextStyle(
+                                        fontSize: deviceWidth * 0.04,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Punch Out: ${data['time_out'] ?? ''}",
+                                      style: TextStyle(
+                                        fontSize: deviceWidth * 0.04,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: deviceHeight * 0.005,
+                                        horizontal: deviceWidth * 0.03,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: (data['attendance_status'] == 'P' ||
+                                                data['attendance_status'] == 'p')
+                                            ? Color(0xFF03a9f4)
+                                            : Colors.redAccent,
+                                        borderRadius: BorderRadius.circular(
+                                          deviceWidth * 0.044,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "${data['attendance_status'] ?? ''}",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: deviceWidth * 0.04,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(height: deviceHeight * 0.005),
+                                    Text(
+                                      "Total Hours: ${data['hours']}",
+                                      style: TextStyle(
+                                        fontSize: deviceWidth * 0.04,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

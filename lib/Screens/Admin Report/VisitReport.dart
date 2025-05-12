@@ -1,11 +1,11 @@
-import 'package:employee_tracker/Screens/Admin%20Report/VisitRepMap.dart';
+import 'package:employee_tracker/Screens/Admin Report/VisitRepMap.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:localstorage/localstorage.dart';
-import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:intl/intl.dart';
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
@@ -16,7 +16,7 @@ void main() async {
 }
 
 Future<void> _initializeLocalStorage() async {
-  await localStorage.ready; // Wait for the localStorage to be ready
+  await localStorage.ready;
 }
 
 class AdminVisitreport extends StatefulWidget {
@@ -28,98 +28,116 @@ class AdminVisitreport extends StatefulWidget {
 
 class AdminVisitreportState extends State<AdminVisitreport> {
   int? ComId;
-  DateTime? selectedMonth;
-  int MonthNo = DateTime.now().month;
-  int YearNo = DateTime.now().year;
+  String day = '';
   List<Map<String, dynamic>> attendanceData = [];
 
   @override
   void initState() {
     super.initState();
+    final DateTime now = DateTime.now();
+    day = DateFormat('yyyy-MM-dd').format(now);
     _loadUser();
-    VisitDetail();
   }
 
   void _loadUser() {
     var userJson = localStorage.getItem('user');
     if (userJson != null) {
       var user = jsonDecode(userJson);
-      print("Sahil$user");
       setState(() {
         ComId = user['id'] ?? 0;
       });
+      VisitDetail(); // Move here after ComId is set
     }
   }
 
   void VisitDetail() async {
-    print("$ComId,$MonthNo,$YearNo");
-    try {
-      final url = Uri.parse(
-        'https://testapi.rabadtechnology.com/getEmployeeActivity.php',
-      );
-      final Map<String, dynamic> requestBody = {"company_id": "${ComId ?? ''}"};
+  try {
+    final url = Uri.parse(
+      'https://testapi.rabadtechnology.com/getEmployeeActivity.php',
+    );
 
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(requestBody),
-      );
+    final Map<String, dynamic> requestBody = {
+      "company_id": ComId,
+      "month": "",
+      "date": day,
+    };
 
-      final data = jsonDecode(response.body);
-      final success = data['success'];
-      final message = data['message'] ?? 'No message';
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestBody),
+    );
 
-      if (success) {
-        final AttData = data['data'];
-        print(AttData);
+    final responseData = jsonDecode(response.body);
+    print("Response: $responseData");
 
-        // Checking if the returned data is a List of Maps
-        if (AttData != null && AttData is List) {
-          setState(() {
-            attendanceData = List<Map<String, dynamic>>.from(AttData);
-          });
-        } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(message)));
+    if (responseData['success'] == true) {
+      List<dynamic> employees = responseData['data'];
+
+      List<Map<String, dynamic>> allVisits = [];
+
+      for (var emp in employees) {
+        List<dynamic> visits = emp['data'];
+        for (var visit in visits) {
+          allVisits.add(Map<String, dynamic>.from(visit));
         }
-      } else {
-        setState(() {
-          attendanceData = [];
-        });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
       }
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+
+      setState(() {
+        attendanceData = allVisits; // You now have a flat list of all visits
+      });
+
+      print("Total visits: ${attendanceData}");
+    } else {
+      print("Error: ${responseData['message']}");
+    }
+  } catch (e) {
+    print("Error fetching data: $e");
+  }
+}
+
+  void _pickDate() async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        day = DateFormat('yyyy-MM-dd').format(pickedDate);
+      });
+      VisitDetail();
     }
   }
 
-  void _pickMonth() {
-    showMonthPicker(context: context, initialDate: DateTime.now()).then((date) {
-      if (date != null) {
-        setState(() {
-          MonthNo = date.month;
-          YearNo = date.year;
-        });
-        VisitDetail();
-      }
-    });
+  double safeParseDouble(String input) {
+    try {
+      return double.parse(
+        input
+            .replaceAll('"', '')
+            .replaceAll("'", '')
+            .replaceAll('\n', '')
+            .replaceAll('\r', '')
+            .trim(),
+      );
+    } catch (e) {
+      print("Error parsing double: $e");
+      return 0.0;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
-    double deviceHeight = MediaQuery.of(context).size.height;
-    final devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+    double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
-          'Attendance Detail',
+          'Visit Report',
           style: TextStyle(
             color: Colors.white,
             fontSize: deviceWidth * 0.06,
@@ -133,15 +151,15 @@ class AdminVisitreportState extends State<AdminVisitreport> {
               color: Colors.white,
               size: deviceWidth * 0.09,
             ),
-            onPressed: _pickMonth,
-            tooltip: "Pick Month",
+            onPressed: _pickDate,
+            tooltip: "Pick Date",
           ),
         ],
       ),
       body: attendanceData.isEmpty
           ? Center(
               child: Text(
-                "Attendance Not Found",
+                "Visit Not Found",
                 style: TextStyle(fontSize: deviceWidth * 0.05),
               ),
             )
@@ -152,10 +170,9 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                 return Padding(
                   padding: EdgeInsets.all(devicePixelRatio * .5),
                   child: Container(
-                    margin: EdgeInsets.only(
-                      top: devicePixelRatio * 2,
-                      left: devicePixelRatio * 3.5,
-                      right: devicePixelRatio * 3.5,
+                    margin: EdgeInsets.symmetric(
+                      vertical: devicePixelRatio * 2,
+                      horizontal: devicePixelRatio * 3.5,
                     ),
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
@@ -171,112 +188,103 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(8),
                                 child: Image.network(
-                                  'https://testapi.rabadtechnology.com/${data['image']}',
+                                  data['image'] ?? '',
                                   width: devicePixelRatio * 35,
                                   height: devicePixelRatio * 30,
                                   fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Icon(Icons.error),
                                 ),
                               ),
-                              Text(data['NameOfCustomer']),
+                              Text(data['NameOfCustomer'] ?? ''),
                             ],
                           ),
                         ),
                         SizedBox(width: devicePixelRatio * 3),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Address 1: ${data['address'] ?? ''}",
-                                style: TextStyle(
-                                  fontSize: deviceWidth * 0.04,
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            "Address 1: ${data['address'] ?? ''}",
+                            style: TextStyle(fontSize: deviceWidth * 0.04),
                           ),
                         ),
                         SizedBox(width: devicePixelRatio * 3),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Address 2: ${data['address2'] ?? ''}",
-                                style: TextStyle(
-                                  fontSize: deviceWidth * 0.04,
-                                ),
-                              ),
-                            ],
+                          child: Text(
+                            "Address 2: ${data['address2'] ?? ''}",
+                            style: TextStyle(fontSize: deviceWidth * 0.04),
                           ),
                         ),
                         SizedBox(width: devicePixelRatio * 3),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  final startString = data['start_Location'];
-                                  final endString = data['end_Location'];
+                          child: IconButton(
+                            onPressed: () {
+                              final startString = data['start_Location'];
+                              final endString = data['end_Location'];
 
-                                  if (startString != null &&
-                                      endString != null &&
-                                      startString.isNotEmpty &&
-                                      endString.isNotEmpty) {
-                                    try {
-                                      // Print out the raw data to debug
-                                      print("Start location: $startString");
-                                      print("End location: $endString");
+                              if (startString != null &&
+                                  endString != null &&
+                                  startString.isNotEmpty &&
+                                  endString.isNotEmpty) {
+                                try {
+                                  final startParts = startString
+                                      .split(',')
+                                      .map((e) => e.trim())
+                                      .toList();
+                                  final endParts = endString
+                                      .split(',')
+                                      .map((e) => e.trim())
+                                      .toList();
 
-                                      // Split the string by commas, ensure there are no leading/trailing spaces
-                                      final startParts =
-                                          startString.split(',').map((part) => part.trim()).toList();
-                                      final endParts =
-                                          endString.split(',').map((part) => part.trim()).toList();
+                                  if (startParts.length == 2 &&
+                                      endParts.length == 2) {
+                                    final start = LatLng(
+                                      safeParseDouble(startParts[0]),
+                                      safeParseDouble(startParts[1]),
+                                    );
+                                    final end = LatLng(
+                                      safeParseDouble(endParts[0]),
+                                      safeParseDouble(endParts[1]),
+                                    );
 
-                                      // Check if both coordinates have exactly two parts (latitude and longitude)
-                                      if (startParts.length == 2 && endParts.length == 2) {
-                                        final start = LatLng(
-                                          double.parse(startParts[0]),
-                                          double.parse(startParts[1]),
-                                        );
-                                        final end = LatLng(
-                                          double.parse(endParts[0]),
-                                          double.parse(endParts[1]),
-                                        );
-
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => SimpleMapScreen({
-                                              'start': start,
-                                              'end': end,
-                                            }),
-                                          ),
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('Invalid coordinate format (expected lat, lon)')),
-                                        );
-                                      }
-                                    } catch (e) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('Error parsing coordinates: $e')),
-                                      );
-                                    }
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SimpleMapScreen({
+                                          'start': start,
+                                          'end': end,
+                                        }),
+                                      ),
+                                    );
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Location data not available')),
+                                      SnackBar(
+                                        content: Text(
+                                            'Invalid coordinate format'),
+                                      ),
                                     );
                                   }
-                                },
-                                icon: Icon(
-                                  FontAwesomeIcons.mapLocationDot,
-                                  color: Color(0xFF03a9f4),
-                                  size: devicePixelRatio * 10,
-                                ),
-                              ),
-                            ],
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content:
+                                          Text('Error parsing coordinates'),
+                                    ),
+                                  );
+                                }
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content:
+                                        Text('Location data not available'),
+                                  ),
+                                );
+                              }
+                            },
+                            icon: Icon(
+                              FontAwesomeIcons.mapLocationDot,
+                              color: Color(0xFF03a9f4),
+                              size: devicePixelRatio * 10,
+                            ),
                           ),
                         ),
                       ],

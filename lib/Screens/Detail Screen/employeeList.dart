@@ -63,7 +63,7 @@ class EmployeelistState extends State<Employeelist> {
                               4 * MediaQuery.of(context).devicePixelRatio,
                             ),
                             child: Image.network(
-                              'https://testapi.rabadtechnology.com/${item['image'] ?? ''}',
+                              item['image'] ?? '',
                               width:
                                   25 * MediaQuery.of(context).devicePixelRatio,
                               height:
@@ -268,24 +268,65 @@ class EmployeelistState extends State<Employeelist> {
           ),
 
           actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.14,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Color(0xFF03a9f4),
-                ),
-                padding: EdgeInsets.only(
-                  top: 2 * MediaQuery.of(context).devicePixelRatio,
-                  left: 5 * MediaQuery.of(context).devicePixelRatio,
-                  right: 4 * MediaQuery.of(context).devicePixelRatio,
-                  bottom: 2 * MediaQuery.of(context).devicePixelRatio,
-                ),
-                child: Text("OK", style: TextStyle(color: Colors.black)),
-              ),
+            Row(
+  children: [
+    Expanded(
+      flex: 1,
+      child: TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5 * MediaQuery.of(context).devicePixelRatio),
+            color: Color(0xFF03a9f4),
+          ),
+          padding: EdgeInsets.symmetric(
+            vertical: 3 * MediaQuery.of(context).devicePixelRatio,
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            "OK",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
             ),
-          ],
+          ),
+        ),
+      ),
+    ),
+    SizedBox(width: 4 * MediaQuery.of(context).devicePixelRatio),
+    Expanded(
+      flex: 1,
+      child: TextButton(
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AttendanceDetail(item),
+          ),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5 * MediaQuery.of(context).devicePixelRatio),
+            color: Color(0xFF03a9f4),
+          ),
+          padding: EdgeInsets.symmetric(
+            vertical: 3 * MediaQuery.of(context).devicePixelRatio,
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            "Attendance Detail",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    ),
+  ],
+)
+
+            ],
         );
       },
     );
@@ -382,7 +423,7 @@ class EmployeelistState extends State<Employeelist> {
                                     4 * MediaQuery.of(context).devicePixelRatio,
                                   ),
                                   child: Image.network(
-                                    'https://testapi.rabadtechnology.com/${item['image'] ?? ''}',
+                                    item['image'] ?? '',
                                     width:
                                         25 *
                                         MediaQuery.of(context).devicePixelRatio,

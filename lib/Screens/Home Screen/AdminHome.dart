@@ -128,10 +128,7 @@ class AdminhomeState extends State<AdminHome> {
     try {
       await localStorage.clear();
       print('LocalStorage has been cleared!');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => CreateScreen()),
-      );
+      _showAlert();
     } catch (e) {
       print('Error clearing local storage: $e');
     }
@@ -192,6 +189,48 @@ class AdminhomeState extends State<AdminHome> {
         _selectedItem = selectedItem;
       });
     }
+  }
+
+   void _showAlert() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Icon(
+            Icons.check_circle_outline_outlined,
+            color: Colors.lightBlue,
+            size: 70,
+          ),
+          content: Text("You are successfully LogOut"),
+          actions: [
+            TextButton(
+              onPressed:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => CreateScreen()),
+                  ),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.25,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Color(0xFF03a9f4),
+                ),
+                padding: EdgeInsets.only(
+                  top: 2 * MediaQuery.of(context).devicePixelRatio,
+                  left: 5 * MediaQuery.of(context).devicePixelRatio,
+                  right: 4 * MediaQuery.of(context).devicePixelRatio,
+                  bottom: 2 * MediaQuery.of(context).devicePixelRatio,
+                ),
+                child: Text(
+                  "OK, got it!",
+                  style: TextStyle(color: Colors.black),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

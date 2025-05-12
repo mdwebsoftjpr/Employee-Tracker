@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 import 'package:flutter/services.dart';
+import 'SpleshScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +32,7 @@ void main() async {
     homeScreen = CreateScreen(); // if user is not found
   }
 
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: homeScreen));
+  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: SplashScreen()));
 }
 
 Future<void> _initializeLocalStorage() async {
@@ -203,7 +204,7 @@ class _createScreen extends State<CreateScreen> {
                       TextFormField(
                         controller: email,
                         decoration: InputDecoration(
-                          labelText: 'Your User Id',
+                          labelText: 'Your User Id/Email',
                           labelStyle: TextStyle(color: Colors.black),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(
