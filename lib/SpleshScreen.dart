@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/AdminHome.dart';
-import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
+import 'package:employee_tracker/Screens/EmployeeReports/EmpHome.dart';
 import 'main.dart'; // for CreateScreen()
 
 class SplashScreen extends StatefulWidget {

@@ -1,115 +1,184 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 class SimpleMapScreen extends StatelessWidget {
-  final Map<String, LatLng> locations;
-
-  const SimpleMapScreen(this.locations, {Key? key}) : super(key: key);
+  final List<LatLng> points;
+  const SimpleMapScreen({Key? key, required this.points}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final start = locations['start'];
-    final end = locations['end'];
-    final points = [if (start != null) start, if (end != null) end];
-
+    print(points);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF03a9f4),
-        title: Text(
-          'Visit Report',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: MediaQuery.of(context).size.width * 0.06,
-            fontWeight: FontWeight.bold,
-          ),
+      appBar: AppBar(title: Text('Visit Map')),
+      body: FlutterMap(
+        options: MapOptions(
+          initialCenter: points.isNotEmpty ? points.first : LatLng(0, 0),
+          initialZoom: 13,
         ),
-      ),
-      body: Column(
         children: [
-          Expanded(
-            child: FlutterMap(
-              options: MapOptions(
-                center: points.isNotEmpty ? points.first : LatLng(0, 0),
-                zoom: 13.0,
+          TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.example.app',
+          ),
+          PolylineLayer(
+            polylines: [
+              Polyline(
+                points: points,
+                strokeWidth: 4.0,
+                color: Colors.blue,
               ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.example.app',
-                ),
-                if (points.isNotEmpty)
-                  MarkerLayer(
-                    markers: points.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final location = entry.value;
+            ],
+          ),
+          MarkerLayer(
+            markers: points.asMap().entries.map((entry) {
+              final index = entry.key;
+              final point = entry.value;
 
-                      String label = index == 0 ? "Start Location" : "End Location";
-
-                      return Marker(
-                        point: location,
-                        width: 80.0,
-                        height: 80.0,
-                        child: GestureDetector(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                title: Text("Location Info"),
-                                content: Text("$label\nLat: ${location.latitude}, Lng: ${location.longitude}"),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.of(ctx).pop(),
-                                    child: Text("Close"),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                          child: Icon(
-                            Icons.location_pin,
-                            color: Colors.red,
-                            size: 40,
+              return Marker(
+                width: 40,
+                height: 40,
+                point: point,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(
+                      Icons.location_on,
+                      color: Colors.red,
+                      size: 30,
+                    ),
+                    Positioned(
+                      top: 8,
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: Colors.amber,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${index + 1}', // Serial number starts at 1
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      );
-                    }).toList(),
-                  ),
-                if (points.length >= 2)
-                  PolylineLayer(
-                    polylines: [
-                      Polyline(
-                        points: points,
-                        strokeWidth: 4.0,
-                        color: Colors.blue,
                       ),
-                    ],
-                  ),
-              ],
-            ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
           ),
-          /* Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            color: Colors.black,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (start != null)
-                  Text(
-                    "Start: Lat ${start.latitude}, Lng ${start.longitude}",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                if (end != null)
-                  Text(
-                    "End: Lat ${end.latitude}, Lng ${end.longitude}",
-                    style: TextStyle(color: Colors.white),
-                  ),
-              ],
-            ),
-          ), */
         ],
       ),
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+
+class SimpleMapScreen extends StatelessWidget {
+  // List of marker positions
+  final List<LatLng> markerPositions = [
+    LatLng(37.7749, -122.4194),
+    LatLng(34.0522, -118.2437),
+    LatLng(40.7128, -74.0060),
+    LatLng(51.5074, -0.1278),
+    LatLng(48.8566, 2.3522),
+    LatLng(35.6895, 139.6917),
+    LatLng(-33.8688, 151.2093),
+    LatLng(55.7558, 37.6173),
+    LatLng(28.6139, 77.2090),
+    LatLng(19.0760, 72.8777),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF03a9f4),
+        title: const Text(
+          'Visit Route',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+      body: FlutterMap(
+        options: MapOptions(
+          center:
+              markerPositions.isNotEmpty ? markerPositions.first : LatLng(0, 0),
+          zoom: 13.0,
+        ),
+        children: [
+          TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.example.app',
+          ),
+
+          if (markerPositions.length >= 2)
+            PolylineLayer(
+              polylines: [
+                Polyline(
+                  points: markerPositions,
+                  strokeWidth: 4.0,
+                  color: Colors.blue,
+                ),
+              ],
+            ),
+          MarkerLayer(
+            markers:
+                markerPositions.map((position) {
+                  return Marker(
+                    width: 40,
+                    height: 40,
+                    point: position,
+                    child: Stack(
+                      children: [
+                        Icon(Icons.location_on, color: Colors.red, size: 40),
+                        Container(
+                          width: 20,
+                          height: 20,
+                          padding: EdgeInsets.all(0),
+                          decoration: BoxDecoration(
+                            color: Colors.amber,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Center(child: Text('1'),)
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+          ),
+
+          // Only show polyline if there are at least two markers
+        ],
+      ),
+    );
+  }
+}
+ */

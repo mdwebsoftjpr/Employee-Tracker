@@ -315,9 +315,12 @@ class AdminhomeState extends State<AdminHome> {
                       ),
                     ),
                   ),
-                    ListTile(
-                    leading: Image.asset('assets/images/Att  Report.png', width: MediaQuery.of(context).size.width * 0.1,
-                                height: MediaQuery.of(context).size.width * 0.1,),
+                  ListTile(
+                    leading: Image.asset(
+                      'assets/images/Att  Report.png',
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      height: MediaQuery.of(context).size.width * 0.1,
+                    ),
                     title: Text("Attendance Report"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
@@ -328,8 +331,11 @@ class AdminhomeState extends State<AdminHome> {
                     },
                   ),
                   ListTile(
-                    leading: Image.asset('assets/images/visit_report.png', width: MediaQuery.of(context).size.width * 0.1,
-                                height: MediaQuery.of(context).size.width * 0.1,),
+                    leading: Image.asset(
+                      'assets/images/visit_report.png',
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      height: MediaQuery.of(context).size.width * 0.1,
+                    ),
                     title: Text("Visit Time Report"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
@@ -342,8 +348,11 @@ class AdminhomeState extends State<AdminHome> {
                     },
                   ),
                   ListTile(
-                    leading: Image.asset('assets/images/addEmp.png', width: MediaQuery.of(context).size.width * 0.1,
-                                height: MediaQuery.of(context).size.width * 0.1,),
+                    leading: Image.asset(
+                      'assets/images/addEmp.png',
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      height: MediaQuery.of(context).size.width * 0.1,
+                    ),
                     title: Text("Create Employee"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
@@ -357,8 +366,11 @@ class AdminhomeState extends State<AdminHome> {
                   ),
 
                   ListTile(
-                    leading: Image.asset('assets/images/Designation.png', width: MediaQuery.of(context).size.width * 0.1,
-                                height: MediaQuery.of(context).size.width * 0.1,),
+                    leading: Image.asset(
+                      'assets/images/Designation.png',
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      height: MediaQuery.of(context).size.width * 0.1,
+                    ),
                     title: Text("Create Designation"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
@@ -369,8 +381,11 @@ class AdminhomeState extends State<AdminHome> {
                     },
                   ),
                   ListTile(
-                    leading:Image.asset('assets/images/logout.png', width: MediaQuery.of(context).size.width * 0.1,
-                                height: MediaQuery.of(context).size.width * 0.1,),
+                    leading: Image.asset(
+                      'assets/images/logout.png',
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      height: MediaQuery.of(context).size.width * 0.1,
+                    ),
                     title: Text("Logout"),
                     onTap: () {
                       clearStorage(context);
@@ -420,11 +435,20 @@ class AdminhomeState extends State<AdminHome> {
                     child: Center(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(
-                            10,
-                          ), // Optional: Adds rounded corners
-                        ),
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 6,
+                                offset: Offset(
+                                  0,
+                                  3,
+                                ), // changes position of shadow
+                              ),
+                            ],
+                          ),
                         width: MediaQuery.of(context).size.width * 0.9,
                         child: Column(
                           children: [
@@ -687,7 +711,19 @@ class AdminhomeState extends State<AdminHome> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 6,
+                                offset: Offset(
+                                  0,
+                                  3,
+                                ), // changes position of shadow
+                              ),
+                            ],
                           ),
+
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -723,6 +759,17 @@ class AdminhomeState extends State<AdminHome> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 6,
+                                offset: Offset(
+                                  0,
+                                  3,
+                                ), // changes position of shadow
+                              ),
+                            ],
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -773,6 +820,17 @@ class AdminhomeState extends State<AdminHome> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 6,
+                                offset: Offset(
+                                  0,
+                                  3,
+                                ), // changes position of shadow
+                              ),
+                            ],
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -807,6 +865,17 @@ class AdminhomeState extends State<AdminHome> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 6,
+                                offset: Offset(
+                                  0,
+                                  3,
+                                ), // changes position of shadow
+                              ),
+                            ],
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -857,13 +926,27 @@ class AdminhomeState extends State<AdminHome> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 6,
+                                offset: Offset(
+                                  0,
+                                  3,
+                                ), // changes position of shadow
+                              ),
+                            ],
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 "View Employee",
-                                style: TextStyle(fontSize: 15,color: Colors.black),
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
+                                ),
                               ),
                               Image.asset(
                                 'assets/images/empList.png',

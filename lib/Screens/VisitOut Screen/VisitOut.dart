@@ -1,4 +1,4 @@
-import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
+import 'package:employee_tracker/Screens/EmployeeReports/EmpHome.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -212,8 +212,8 @@ Future<void> _initializeData() async {
       request.fields['Prospects'] = weather;
       request.fields['diviceid'] = "$deviceId";
       request.fields['location'] = "$lat,$long";
-      request.fields['id'] = widget.VisitId.toString(); // Assuming VisitId is an int
-
+      request.fields['id'] = widget.VisitId.toString(); 
+        print(widget.VisitId);
       // Send the request
  var response = await request.send();
 
@@ -224,6 +224,7 @@ var responseData = await Response.fromStream(response);
 
       if (response.statusCode == 200) {
         if (data['success'] == true) {
+          localStorage.deleteItem('visitId');
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(data['message'])));

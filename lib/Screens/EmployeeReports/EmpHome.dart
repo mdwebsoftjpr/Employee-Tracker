@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:employee_tracker/Screens/Home%20Screen/EmpVisitRep.dart';
 import 'package:employee_tracker/Screens/Detail%20Screen/EmpAttDetail.dart';
-import 'package:employee_tracker/Screens/EmployeeReports/visitReport.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/empProfile.dart';
-import 'package:employee_tracker/Screens/EmployeeReports/AttendanceRep.dart';
 import 'package:employee_tracker/Screens/VisitOut%20Screen/VisitOut.dart';
 import 'package:employee_tracker/main.dart';
 import 'package:intl/intl.dart';
-// #docregion photo-picker-example
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
@@ -46,6 +44,7 @@ class _EmpHomeState extends State<EmpHome> {
 
   void initializeApp() async {
     await getApi();
+    await getVisit();
     await getDeviceId();
     checkAutoPunchOut();
   }
@@ -56,7 +55,6 @@ class _EmpHomeState extends State<EmpHome> {
   String comName = 'Compamy';
   String username = "";
   String role = '';
-  bool visit = true;
   int bcount = 0;
   bool BreakTime = false;
   String PSatatus = 'Present';
@@ -74,6 +72,7 @@ class _EmpHomeState extends State<EmpHome> {
   String punchOuttime = '';
   int VisitId = 0;
   int? Comid;
+  String? visitStatus;
 
   Future<String?> getDeviceId() async {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -158,6 +157,35 @@ class _EmpHomeState extends State<EmpHome> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
+      }
+    } catch (e) {
+      print("ihcauihhuih $e");
+    }
+  }
+
+  Future<void> getVisit() async {
+    final url = Uri.parse(
+      'https://testapi.rabadtechnology.com/getvisitstatus.php',
+    );
+    try {
+      final Map<String, dynamic> requestBody = {
+        "emp_id": userid,
+        "company_id": Comid,
+      };
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      var responseData = jsonDecode(response.body);
+      if(responseData['status']=='success')
+      {
+        var visitData=responseData['data'][0];
+        var visitPunc=visitData['status'];
+        setState(() {
+          visitStatus=visitPunc;
+        });
+        print(visitPunc);
       }
     } catch (e) {
       print("ihcauihhuih $e");
@@ -360,13 +388,15 @@ class _EmpHomeState extends State<EmpHome> {
         print(data);
         var status = data['status'] ?? '';
         var id = status[0]['id'] ?? '';
+        print(id);
         setState(() {
           VisitId = id;
-          visit = false;
         });
+        print(VisitId);
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(message)));
+        getVisit();
       } else {
         ScaffoldMessenger.of(
           context,
@@ -377,7 +407,7 @@ class _EmpHomeState extends State<EmpHome> {
     }
   }
 
-   void _showAlert() {
+  void _showAlert() {
     showDialog(
       context: context,
       builder: (context) {
@@ -645,14 +675,19 @@ class _EmpHomeState extends State<EmpHome> {
                     ),
                   ),
                   (Mainstatus != "" || Mainstatus == 'punchin')
-                      ?ListTile(
-                        leading: Icon(Icons.access_time),
+                      ? ListTile(
+                        leading: Image.asset(
+                      'assets/images/attendance.png',
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      height: MediaQuery.of(context).size.width * 0.1,
+                    ),
                         title: Text("Punch in"),
                         onTap: () {
                           _pickImageFromCamera();
                           punchOut();
                         },
-                      ):ListTile(
+                      )
+                      : ListTile(
                         leading: Icon(Icons.access_time),
                         title: Text("Punch in"),
                         onTap: () {
@@ -662,7 +697,11 @@ class _EmpHomeState extends State<EmpHome> {
                       ),
                   (BreakTime)
                       ? ListTile(
-                        leading: Icon(Icons.pause),
+                        leading: Image.asset(
+                      'assets/images/Break.png',
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      height: MediaQuery.of(context).size.width * 0.1,
+                    ),
                         title: Text("Break Out"),
                         onTap: () {
                           BreakOut();
@@ -685,7 +724,7 @@ class _EmpHomeState extends State<EmpHome> {
                           Navigator.pop(context); // Close the drawer first
                         },
                       ),
-                  (!visit)
+                  (visitStatus=='opne')
                       ? ListTile(
                         leading: Icon(Icons.exit_to_app),
                         title: Text("Visit Out"),
@@ -699,20 +738,17 @@ class _EmpHomeState extends State<EmpHome> {
                             );
                           }
                         },
-                      ): ListTile(
+                      )
+                      : ListTile(
                         leading: Icon(Icons.person),
                         title: Text("Visit In"),
                         onTap: () async {
                           if (Mainstatus != '' || Mainstatus == 'punchin') {
                             await _pickImageFromCamera();
                             visitIn();
-                            setState(() {
-                              visit == false;
-                            });
                           }
                         },
-                      )
-                      ,
+                      ),
                   ListTile(
                     leading: Icon(Icons.assignment_turned_in),
                     title: Text("Attendance Report"),
@@ -729,7 +765,7 @@ class _EmpHomeState extends State<EmpHome> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => Visitreport()),
+                        MaterialPageRoute(builder: (_) => Empvisitrep()),
                       );
                     },
                   ),
@@ -784,12 +820,19 @@ class _EmpHomeState extends State<EmpHome> {
                     child: Center(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Color(
-                            0xFF03a9f4,
-                          ), // Set the background color here
-                          borderRadius: BorderRadius.circular(
-                            10,
-                          ), // Optional: Adds rounded corners
+                          color: Color(0xFF03a9f4),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 6,
+                              offset: Offset(
+                                0,
+                                3,
+                              ), // changes position of shadow
+                            ),
+                          ],
                         ),
                         width: MediaQuery.of(context).size.width * 0.9,
                         child: Column(
@@ -1080,6 +1123,17 @@ class _EmpHomeState extends State<EmpHome> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 6,
+                              offset: Offset(
+                                0,
+                                3,
+                              ), // changes position of shadow
+                            ),
+                          ],
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -1088,8 +1142,11 @@ class _EmpHomeState extends State<EmpHome> {
                               "Mark Attendance",
                               style: TextStyle(fontSize: 15),
                             ),
-                            Image.asset('assets/images/attendance.png', width: MediaQuery.of(context).size.width * 0.3,
-                                height: MediaQuery.of(context).size.width * 0.25,),
+                            Image.asset(
+                              'assets/images/attendance.png',
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              height: MediaQuery.of(context).size.width * 0.25,
+                            ),
                             (Mainstatus == "" || Mainstatus == 'punchout')
                                 ? ElevatedButton(
                                   onPressed: () async {
@@ -1134,6 +1191,17 @@ class _EmpHomeState extends State<EmpHome> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 6,
+                              offset: Offset(
+                                0,
+                                3,
+                              ), // changes position of shadow
+                            ),
+                          ],
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -1145,12 +1213,17 @@ class _EmpHomeState extends State<EmpHome> {
                                 color: Colors.black,
                               ),
                             ),
-                            Image.asset('assets/images/visit.png', width: MediaQuery.of(context).size.width * 0.3,
-                                height: MediaQuery.of(context).size.width * 0.25,),
-                            (!visit)
+                            Image.asset(
+                              'assets/images/visit.png',
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              height: MediaQuery.of(context).size.width * 0.25,
+                            ),
+                            (visitStatus=='opne')
                                 ? ElevatedButton(
                                   onPressed: () {
-                                    if (Mainstatus != '' || Mainstatus == 'punchin') {
+                                    print(VisitId);
+                                    if (Mainstatus != '' ||
+                                        Mainstatus == 'punchin') {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -1173,12 +1246,10 @@ class _EmpHomeState extends State<EmpHome> {
                                 )
                                 : ElevatedButton(
                                   onPressed: () async {
-                                    if (Mainstatus != '' || Mainstatus == 'punchin') {
+                                    if (Mainstatus != '' ||
+                                        Mainstatus == 'punchin') {
                                       await _pickImageFromCamera();
                                       visitIn();
-                                      setState(() {
-                                        visit = false;
-                                      });
                                     }
                                   },
                                   child: Text(
@@ -1213,11 +1284,16 @@ class _EmpHomeState extends State<EmpHome> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        // Set the background color here
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ), // Optional: Adds rounded corners
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 6,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
                       ),
                       child: Padding(
                         padding: EdgeInsets.all(10),
@@ -1228,11 +1304,13 @@ class _EmpHomeState extends State<EmpHome> {
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.black,
-
                               ),
                             ),
-                            Image.asset('assets/images/Break.png', width: MediaQuery.of(context).size.width * 0.12,
-                                height: MediaQuery.of(context).size.width * 0.12,),
+                            Image.asset(
+                              'assets/images/Break.png',
+                              width: MediaQuery.of(context).size.width * 0.12,
+                              height: MediaQuery.of(context).size.width * 0.12,
+                            ),
                             (bcount == 0)
                                 ? ElevatedButton(
                                   onPressed: () => {BreakIn()},
@@ -1267,7 +1345,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "End",
                                     style: TextStyle(
                                       fontSize: 15,
-                                      color:Colors.white,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1280,11 +1358,16 @@ class _EmpHomeState extends State<EmpHome> {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        // Set the background color here
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ), // Optional: Adds rounded corners
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 6,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
                       ),
                       child: Padding(
                         padding: EdgeInsets.all(10),
@@ -1297,8 +1380,11 @@ class _EmpHomeState extends State<EmpHome> {
                                 color: Colors.black,
                               ),
                             ),
-                            Image.asset('assets/images/Break.png', width: MediaQuery.of(context).size.width * 0.12,
-                                height: MediaQuery.of(context).size.width * 0.12,),
+                            Image.asset(
+                              'assets/images/Break.png',
+                              width: MediaQuery.of(context).size.width * 0.12,
+                              height: MediaQuery.of(context).size.width * 0.12,
+                            ),
                             (bcount == 2)
                                 ? ElevatedButton(
                                   onPressed: () => {BreakIn()},
@@ -1306,7 +1392,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     "Start",
                                     style: TextStyle(
                                       fontSize: 15,
-                                     color: Colors.white,
+                                      color: Colors.white,
                                     ),
                                   ),
                                   style: ElevatedButton.styleFrom(
@@ -1346,11 +1432,16 @@ class _EmpHomeState extends State<EmpHome> {
                     ),
                     Container(
                       decoration: BoxDecoration(
-                        // Set the background color here
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(
-                          10,
-                        ), // Optional: Adds rounded corners
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 6,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
                       ),
                       child: Padding(
                         padding: EdgeInsets.all(10),
@@ -1363,8 +1454,11 @@ class _EmpHomeState extends State<EmpHome> {
                                 color: Colors.black,
                               ),
                             ),
-                            Image.asset('assets/images/Break.png', width: MediaQuery.of(context).size.width * 0.12,
-                                height: MediaQuery.of(context).size.width * 0.12,),
+                            Image.asset(
+                              'assets/images/Break.png',
+                              width: MediaQuery.of(context).size.width * 0.12,
+                              height: MediaQuery.of(context).size.width * 0.12,
+                            ),
                             (bcount == 4)
                                 ? ElevatedButton(
                                   onPressed: () => {BreakIn()},
@@ -1432,6 +1526,17 @@ class _EmpHomeState extends State<EmpHome> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 6,
+                              offset: Offset(
+                                0,
+                                3,
+                              ), // changes position of shadow
+                            ),
+                          ],
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -1440,8 +1545,11 @@ class _EmpHomeState extends State<EmpHome> {
                               "Attendance Report's",
                               style: TextStyle(fontSize: 15),
                             ),
-                            Image.asset('assets/images/Att  Report.png', width: MediaQuery.of(context).size.width * 0.25,
-                                height: MediaQuery.of(context).size.width * 0.20,),
+                            Image.asset(
+                              'assets/images/Att  Report.png',
+                              width: MediaQuery.of(context).size.width * 0.25,
+                              height: MediaQuery.of(context).size.width * 0.20,
+                            ),
                             ElevatedButton(
                               onPressed:
                                   () => Navigator.push(
@@ -1472,6 +1580,17 @@ class _EmpHomeState extends State<EmpHome> {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 6,
+                              offset: Offset(
+                                0,
+                                3,
+                              ), // changes position of shadow
+                            ),
+                          ],
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -1480,14 +1599,17 @@ class _EmpHomeState extends State<EmpHome> {
                               "Daily Visit Report's",
                               style: TextStyle(fontSize: 15),
                             ),
-                           Image.asset('assets/images/visit_report.png', width: MediaQuery.of(context).size.width * 0.25,
-                                height: MediaQuery.of(context).size.width * 0.20,),
+                            Image.asset(
+                              'assets/images/visit_report.png',
+                              width: MediaQuery.of(context).size.width * 0.25,
+                              height: MediaQuery.of(context).size.width * 0.20,
+                            ),
                             ElevatedButton(
                               onPressed:
                                   () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (_) => Visitreport(),
+                                      builder: (_) => Empvisitrep(),
                                     ),
                                   ),
                               child: Text(
@@ -1508,7 +1630,7 @@ class _EmpHomeState extends State<EmpHome> {
                   ],
                 ),
               ),
-             /*  SizedBox(height: 10),
+              /*  SizedBox(height: 10),
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
