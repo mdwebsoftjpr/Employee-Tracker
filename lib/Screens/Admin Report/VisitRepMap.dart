@@ -46,7 +46,7 @@ class SimpleMapScreen extends StatelessWidget {
                     Icon(
                       Icons.location_on,
                       color: Colors.red,
-                      size: 30,
+                      size: 40,
                     ),
                     Positioned(
                       top: 8,
@@ -59,7 +59,7 @@ class SimpleMapScreen extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            'V${index + 1}', // Serial number starts at 1
+                            'V${index + 1}',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,

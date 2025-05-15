@@ -1,20 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.employee_tracker">
 
-    <!-- Required Permissions -->
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-    <!-- Optional: Background location, only if your app *really* needs it -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-
-    <!-- Optional for Android 13+ media access -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-
-    <!-- Older support (optional, deprecated on newer APIs) -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -24,8 +18,9 @@
         android:label="Employee Tracker"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true"> <!-- optional, if using HTTP -->
+        android:usesCleartextTraffic="true">
 
+        <!-- Main Activity with Autofill enabled -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -34,7 +29,8 @@
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:importantForAutofill="yes"> <!-- ✅ Autofill support -->
 
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
@@ -46,13 +42,12 @@
             </intent-filter>
         </activity>
 
-        <!-- Flutter Plugin Config -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
 
-    <!-- For text sharing plugins -->
+    <!-- For sharing plugins -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT" />

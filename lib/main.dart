@@ -145,6 +145,7 @@ class _createScreen extends State<CreateScreen> {
       backgroundColor: Colors.white,
       body: Center(
         child: SingleChildScrollView(
+          child: AutofillGroup(
           child: Form(
             key: _formKey,
             child: Column(
@@ -202,6 +203,7 @@ class _createScreen extends State<CreateScreen> {
                       ),
                       SizedBox(height: 20),
                       TextFormField(
+                        autofillHints: [AutofillHints.username],
                         controller: email,
                         decoration: InputDecoration(
                           labelText: 'Your User Id/Email',
@@ -225,6 +227,7 @@ class _createScreen extends State<CreateScreen> {
                       SizedBox(height: 20),
                       // Password field
                       TextFormField(
+                        autofillHints: [AutofillHints.password],
                         controller: password,
                         obscureText: _obscureText,
                         decoration: InputDecoration(
@@ -419,6 +422,7 @@ class _createScreen extends State<CreateScreen> {
               ],
             ),
           ),
+          )
         ),
       ),
     );

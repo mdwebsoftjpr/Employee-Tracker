@@ -339,6 +339,7 @@ class CreateComState extends State<CreateCom> {
 
                         SizedBox(height: 10),
                         TextFormField(
+                          textCapitalization: TextCapitalization.words,
                           controller: keyPerson,
                           decoration: InputDecoration(
                             labelText: 'Enter Your Key Person',
@@ -670,10 +671,8 @@ class CreateComState extends State<CreateCom> {
                         ),
                         SizedBox(height: 10), SizedBox(height: 10),
                         TextFormField(
+                          textCapitalization: TextCapitalization.words,
                           controller: loginUserName,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                          ],
                           decoration: InputDecoration(
                             labelText: 'Enter Your Login User Name',
                             contentPadding: EdgeInsets.symmetric(

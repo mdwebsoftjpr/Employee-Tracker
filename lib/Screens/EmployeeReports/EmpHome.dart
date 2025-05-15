@@ -231,11 +231,15 @@ class _EmpHomeState extends State<EmpHome> {
         MaterialPageRoute(builder: (context) => EmpHome()),
       );
     } else if (index == 1) {
-      // Search Tab
-      print('Search tab tapped');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => EmpAttdetail()),
+      );
     } else if (index == 2) {
-      // Notifications Tab
-      print('Search tab tapped');
+     Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Empvisitrep()),
+      );
     } else if (index == 3) {
       Navigator.push(
         context,
@@ -537,12 +541,12 @@ class _EmpHomeState extends State<EmpHome> {
           CurrentAddress = address;
         });
 
-        _showSnackBar('📍 Address: $address');
+        print('📍 Address: $address');
       } else {
-        _showSnackBar('No address found.');
+        print('No address found.');
       }
     } catch (e) {
-      _showSnackBar('Error fetching address: $e');
+      print('Error fetching address: $e');
     }
   }
 
@@ -555,48 +559,28 @@ class _EmpHomeState extends State<EmpHome> {
   // This is the value that will hold the selected item
   String _selectedItem = 'One';
 
-  void _openDropdown() async {
-    final selectedItem = await showDialog<String>(
+   void _openDropdown(TapDownDetails details) async {
+    final selectedItem = await showMenu<String>(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Select Action'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                Column(
-                  children: [
-                    TextButton(
-                      onPressed:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => EmpHome()),
-                          ),
-                      child: Text(
-                        "Home",
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => clearStorage(context),
-                      child: Text(
-                        "Logout",
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+      position: RelativeRect.fromLTRB(
+        details.globalPosition.dx,
+        details.globalPosition.dy,
+        0,
+        0,
+      ),
+      items: [
+        PopupMenuItem(value: 'profile', child: Text('Profile')),
+        PopupMenuItem(value: 'logout', child: Text('Logout')),
+      ],
     );
 
-    if (selectedItem != null) {
-      setState(() {
-        _selectedItem = selectedItem;
-      });
+    if (selectedItem == 'profile') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Empprofile()),
+      );
+    } else if (selectedItem == 'logout') {
+      clearStorage(context);
     }
   }
 
@@ -614,10 +598,9 @@ class _EmpHomeState extends State<EmpHome> {
                 alignment:
                     Alignment
                         .centerRight, // Align the second Expanded to the end
-                child: TextButton(
-                  onPressed:
-                      _openDropdown, // Call the function when button is pressed
-                  child: Icon(Icons.logout, size: 30, color: Colors.black),
+                child: GestureDetector(
+                  onTapDown: _openDropdown, // pass TapDownDetails here
+                  child: Icon(Icons.logout,color: Colors.white,size: 30,), // or any widget you want to tap
                 ),
               ),
             ),
@@ -639,7 +622,7 @@ class _EmpHomeState extends State<EmpHome> {
                       ), // Background color for the entire drawer
                     ),
                     accountName: Text(
-                      name,
+                      comName,
                       style: TextStyle(color: Colors.black),
                     ),
                     accountEmail: Text(
@@ -770,6 +753,16 @@ class _EmpHomeState extends State<EmpHome> {
                     },
                   ),
                   ListTile(
+                    leading: Icon(Icons.access_time),
+                    title: Text("Prifile"),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => Empprofile()),
+                      );
+                    },
+                  ),
+                  ListTile(
                     leading: Icon(Icons.exit_to_app),
                     title: Text("Logout"),
                     onTap: () {
@@ -791,10 +784,10 @@ class _EmpHomeState extends State<EmpHome> {
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(icon: Icon(Icons.add_photo_alternate_outlined), label: 'Att. Report'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
+            icon: Icon(Icons.location_on),
+            label: 'Visit Rep.',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
@@ -868,13 +861,25 @@ class _EmpHomeState extends State<EmpHome> {
                                     ),
 
                                     SizedBox(width: 10),
-                                    Text(
+                                    Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
                                       name,
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
+                                    Text(
+                                      CurrentAddress,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                      ],
+                                    )
                                   ],
                                 ),
                               ],
@@ -1542,7 +1547,7 @@ class _EmpHomeState extends State<EmpHome> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Attendance Report's",
+                              "Att. Report's",
                               style: TextStyle(fontSize: 15),
                             ),
                             Image.asset(
@@ -1596,7 +1601,7 @@ class _EmpHomeState extends State<EmpHome> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Daily Visit Report's",
+                              "Visit Report's",
                               style: TextStyle(fontSize: 15),
                             ),
                             Image.asset(

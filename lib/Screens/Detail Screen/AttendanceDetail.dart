@@ -79,7 +79,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
           attendancePercentage = (totalPresentDays / 31) * 100;
 
           setState(() {
-            attendanceData = tempList;
+            attendanceData = tempList.reversed.toList();
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));

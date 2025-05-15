@@ -1,14 +1,11 @@
 import 'dart:async';
-import 'dart:io'; // This is required to use the File class
 import 'package:employee_tracker/Screens/Admin%20Report/Attendance.dart';
-import 'package:employee_tracker/Screens/Admin%20Report/VisitRepMap.dart';
 import 'package:employee_tracker/Screens/Admin%20Report/VisitReport.dart';
 import 'package:employee_tracker/Screens/Detail%20Screen/employeeList.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
 import 'package:employee_tracker/Screens/create%20employee/Master.dart';
 import 'package:employee_tracker/Screens/create%20employee/createEmployee.dart';
 import 'package:employee_tracker/main.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 // #docregion photo-picker-example
 import 'package:image_picker/image_picker.dart';
@@ -37,7 +34,8 @@ class AdminHome extends StatefulWidget {
 class AdminhomeState extends State<AdminHome> {
   int _selectedIndex = 0;
   bool drop = false;
-  String key_person = "key_person";
+  String key_person = "";
+  String email = "";
   String comName = 'Compamy';
   String image = '';
   bool visit = false;
@@ -57,6 +55,7 @@ class AdminhomeState extends State<AdminHome> {
       setState(() {
         comName = user['company_name'] ?? 'Default Company';
         key_person = user['key_person'] ?? 'Default User';
+        email = user['db_email'] ?? 'Default User';
         image = user['image'] ?? 'Default User';
       });
       print(image);
@@ -93,13 +92,20 @@ class AdminhomeState extends State<AdminHome> {
 
     // Perform actions based on the selected index
     if (index == 0) {
-      print('Search tab tapped');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AdminHome()),
+      );
     } else if (index == 1) {
-      // Search Tab
-      print('Search tab tapped');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Attendance()),
+      );
     } else if (index == 2) {
-      // Notifications Tab
-      print('Search tab tapped');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => AdminVisitreport()),
+      );
     } else if (index == 3) {
       Navigator.push(
         context,
@@ -144,50 +150,28 @@ class AdminhomeState extends State<AdminHome> {
   // This is the value that will hold the selected item
   String _selectedItem = 'One';
 
-  void _openDropdown() async {
-    final selectedItem = await showDialog<String>(
+  void _openDropdown(TapDownDetails details) async {
+    final selectedItem = await showMenu<String>(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Select Action'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: [
-                Column(
-                  children: [
-                    TextButton(
-                      onPressed:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AdminHome(),
-                            ),
-                          ),
-                      child: Text(
-                        "Home",
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => clearStorage(context),
-                      child: Text(
-                        "Logout",
-                        style: TextStyle(fontSize: 20, color: Colors.black),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+      position: RelativeRect.fromLTRB(
+        details.globalPosition.dx,
+        details.globalPosition.dy,
+        0,
+        0,
+      ),
+      items: [
+        PopupMenuItem(value: 'profile', child: Text('Profile')),
+        PopupMenuItem(value: 'logout', child: Text('Logout')),
+      ],
     );
 
-    if (selectedItem != null) {
-      setState(() {
-        _selectedItem = selectedItem;
-      });
+    if (selectedItem == 'profile') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Adminprofile()),
+      );
+    } else if (selectedItem == 'logout') {
+      clearStorage(context);
     }
   }
 
@@ -201,7 +185,7 @@ class AdminhomeState extends State<AdminHome> {
             color: Colors.lightBlue,
             size: 70,
           ),
-          content: Text("You are successfully LogOut"),
+          content:Row(mainAxisAlignment: MainAxisAlignment.center, children: [  Text("You are successfully LogOut")],),
           actions: [
             TextButton(
               onPressed:
@@ -240,17 +224,16 @@ class AdminhomeState extends State<AdminHome> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(child: Text(comName)),
+            Container(child: Text(comName,style: TextStyle(color: Colors.white),)),
             SizedBox(width: 10),
             Container(
               child: Align(
                 alignment:
                     Alignment
                         .centerRight, // Align the second Expanded to the end
-                child: TextButton(
-                  onPressed:
-                      _openDropdown, // Call the function when button is pressed
-                  child: Icon(Icons.logout, size: 30, color: Colors.black),
+                child: GestureDetector(
+                  onTapDown: _openDropdown, // pass TapDownDetails here
+                  child: Icon(Icons.logout,color: Colors.white,size: 30,), // or any widget you want to tap
                 ),
               ),
             ),
@@ -276,34 +259,23 @@ class AdminhomeState extends State<AdminHome> {
                       style: TextStyle(color: Colors.black),
                     ),
                     accountEmail: Text(
-                      key_person,
+                      email,
                       style: TextStyle(color: Colors.black),
                     ),
                     currentAccountPicture: Container(
-                      margin: EdgeInsets.only(
-                        top: 10,
-                        bottom: 0,
-                        left: 10,
-                        right: 10,
+                      width: 25 * MediaQuery.of(context).devicePixelRatio,
+                      height: 25 * MediaQuery.of(context).devicePixelRatio,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          4 * MediaQuery.of(context).devicePixelRatio,
+                        ),
+                        image: DecorationImage(
+                          image: NetworkImage(
+                            'https://testapi.rabadtechnology.com/$image',
+                          ),
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      child:
-                          _imageFile != null
-                              ? ClipRRect(
-                                borderRadius: BorderRadius.circular(
-                                  20,
-                                ), // Apply border radius to the image
-                                child: Image.file(
-                                  File(
-                                    _imageFile!.path,
-                                  ), // Convert XFile to File
-                                  width: 70,
-                                  height: 70,
-                                  fit:
-                                      BoxFit
-                                          .cover, // Optional: Adjust how the image fits inside the container
-                                ),
-                              )
-                              : Text(" "),
                     ),
                   ),
                   ListTile(
@@ -382,6 +354,21 @@ class AdminhomeState extends State<AdminHome> {
                   ),
                   ListTile(
                     leading: Image.asset(
+                      'assets/images/profile.png',
+                      width: MediaQuery.of(context).size.width * 0.1,
+                      height: MediaQuery.of(context).size.width * 0.1,
+                    ),
+                    title: Text("Profile"),
+                    onTap: () {
+                      Navigator.pop(context); // Close the drawer first
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Adminprofile()),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading: Image.asset(
                       'assets/images/logout.png',
                       width: MediaQuery.of(context).size.width * 0.1,
                       height: MediaQuery.of(context).size.width * 0.1,
@@ -406,10 +393,13 @@ class AdminhomeState extends State<AdminHome> {
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notifications',
+            icon: Icon(Icons.add_photo_alternate_rounded),
+            label: 'Att. Detail',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.location_on),
+            label: 'Visit Rep',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle),
@@ -432,72 +422,68 @@ class AdminhomeState extends State<AdminHome> {
                       left: 10,
                     ),
                     width: double.infinity,
-                    child: Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 6,
-                                offset: Offset(
-                                  0,
-                                  3,
-                                ), // changes position of shadow
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 6,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: Column(
+                        children: [
+                          Column(
+                            children: [
+                              SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width *
+                                        0.03,
+                                  ),
+                                  Container(
+                                    width:
+                                        25 *
+                                        MediaQuery.of(context).devicePixelRatio,
+                                    height:
+                                        25 *
+                                        MediaQuery.of(context).devicePixelRatio,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(
+                                        4 *
+                                            MediaQuery.of(
+                                              context,
+                                            ).devicePixelRatio,
+                                      ),
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                          'https://testapi.rabadtechnology.com/$image',
+                                        ),
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    key_person,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        child: Column(
-                          children: [
-                            Column(
-                              children: [
-                                SizedBox(height: 10),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      width:
-                                          25 *
-                                          MediaQuery.of(
-                                            context,
-                                          ).devicePixelRatio,
-                                      height:
-                                          25 *
-                                          MediaQuery.of(
-                                            context,
-                                          ).devicePixelRatio,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(
-                                          4 *
-                                              MediaQuery.of(
-                                                context,
-                                              ).devicePixelRatio,
-                                        ),
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                            'https://testapi.rabadtechnology.com/$image',
-                                          ),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      key_person,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 10),
-                            /*  Container(
+                          SizedBox(height: 10),
+                          /*  Container(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -679,8 +665,7 @@ class AdminhomeState extends State<AdminHome> {
                               ),
                             ),
                             SizedBox(height: 5), */
-                          ],
-                        ),
+                        ],
                       ),
                     ),
                   ),
@@ -728,7 +713,7 @@ class AdminhomeState extends State<AdminHome> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "Attendance Report",
+                                "Att. Report",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
@@ -775,7 +760,7 @@ class AdminhomeState extends State<AdminHome> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "Visit Time Report",
+                                "Visit Report",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
@@ -836,7 +821,7 @@ class AdminhomeState extends State<AdminHome> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "Create/Add Employee",
+                                "Add Employee",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,
@@ -881,7 +866,7 @@ class AdminhomeState extends State<AdminHome> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "Create Designation",
+                                "Designation",
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: Colors.black,

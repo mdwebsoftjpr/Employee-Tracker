@@ -39,6 +39,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
     final DateTime now = DateTime.now();
     day = DateFormat('yyyy-MM-dd').format(now);
     _loadUser();
+    VisitDetail();
   }
 
   void _loadUser() {
@@ -139,113 +140,105 @@ Future<void> showDetail(
   BuildContext context,
   Map<String, dynamic> visit,
 ) async {
-  showModalBottomSheet(
+  showDialog(
     context: context,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
     builder: (context) {
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            Center(child: Text(
-              "Visit Details:-",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              FullScreenImageViewer(imageUrl: visit['imagev']),
+      return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        title: Center(
+          child: Text(
+            "Visit Details:-",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop(); // Close dialog first
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => FullScreenImageViewer(
+                                  imageUrl: visit['imagev']),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).devicePixelRatio * 25,
+                          height: MediaQuery.of(context).devicePixelRatio * 30,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                          ),
+                          child: Image.network(
+                            visit['imagev'] ?? '',
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Icon(Icons.broken_image, size: 40),
+                          ),
                         ),
-                      );
-                    },
-                    child: Container(
-                       width: MediaQuery.of(context).devicePixelRatio*30,
-                      height: MediaQuery.of(context).devicePixelRatio*55,
-                      child: Image.network(
-                      visit['imagev'] ?? '',
-                     
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Icon(Icons.broken_image),
+                      ),
                     ),
-                    )
                   ),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Name Of Customer: ${visit['NameOfCustomer'] ?? 'N/A'}",
-                        style: TextStyle(
-                          fontSize: MediaQuery.of(context).devicePixelRatio*5,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        "Concerned Person: ${visit['concernedperson'] ?? 'N/A'}",
-                        style: TextStyle(
-                          fontSize: MediaQuery.of(context).devicePixelRatio*5,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        "Start Time: ${visit['time'] ?? 'N/A'}",
-                        style: TextStyle(
-                          fontSize: MediaQuery.of(context).devicePixelRatio*5,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        "End Time: ${visit['end'] ?? 'N/A'}",
-                        style: TextStyle(
-                          fontSize: MediaQuery.of(context).devicePixelRatio*5,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        "Address: ${visit['address'] ?? 'N/A'}",
-                        style: TextStyle(
-                          fontSize: MediaQuery.of(context).devicePixelRatio*5,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(height: 6),
-                      Text(
-                        "Location Address: ${visit['address2'] ?? 'N/A'}",
-                        style: TextStyle(
-                          fontSize: MediaQuery.of(context).devicePixelRatio*5,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                  SizedBox(height: 16),
+                  buildTextDetail("Organization", visit['NameOfCustomer'], context),
+                  buildTextDetail("Concerned Person", visit['concernedperson'], context),
+                  buildTextDetail("Mobile No.", visit['phoneno'], context),
+                  buildTextDetail("Date", visit['date'], context),
+                  buildTextDetail("Start Time", visit['time'], context),
+                  buildTextDetail("End Time", visit['end'], context),
+                  buildTextDetail("Transport", visit['transport'], context),
+                  buildTextDetail("Probablity", visit['probablity'], context),
+                  buildTextDetail("Prospects", visit['prospects'], context),
+                  buildTextDetail("Address", visit['address'], context),
+                  buildTextDetail("Location Address", visit['address2'], context),
+                  
+                ],
+              ),
+              SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                   ),
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text("Close"),
                 ),
-              ],
-            ),
-            SizedBox(height: 20),
-          ],
+              )
+            ],
+          ),
         ),
       );
     },
   );
 }
+
+Widget buildTextDetail(String label, dynamic value, BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 4.0),
+    child: Text(
+      "$label: ${value ?? 'N/A'}",
+      style: TextStyle(
+        fontSize: MediaQuery.of(context).devicePixelRatio * 5,
+        fontWeight: FontWeight.w400,
+      ),
+    ),
+  );
+}
+
+
 
 
   @override
@@ -498,7 +491,7 @@ Future<void> showDetail(
                                     icon: Icon(
                                       FontAwesomeIcons.mapLocationDot,
                                       color: Color(0xFF03a9f4),
-                                      size: devicePixelRatio * 6,
+                                      size: devicePixelRatio * 10,
                                     ),
                                     onPressed: () {
                                       List<LatLng> points = [];

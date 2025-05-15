@@ -37,106 +37,116 @@ class EmpprofileState extends State<Empprofile> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double widthPercent = screenWidth * 0.9;
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFF03a9f4), // AppBar background color
-          title: Text(
-            'Profile',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ), // Custom Title
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-            ), // Custom back button
-            onPressed: () {
-              Navigator.pop(context); // Go back to the previous screen
-            },
-          ),
-        ),
-        body: 
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              Container(
-              margin: EdgeInsets.all(MediaQuery.of(context).size.width * 0.07),
-              width: MediaQuery.of(context).size.width * 0.9,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 215, 229, 241),
-                borderRadius: BorderRadius.circular(20)
+   Widget buildUserRow(String label, dynamic value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              '$label',
+              style: TextStyle(
+                fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
+                fontWeight: FontWeight.w600,
               ),
-              child: 
-           Padding(
-            padding: EdgeInsets.all(20),
-           child:Column(
-            children: [
-              Image.asset('assets/images/LogoMain.jpg',width: MediaQuery.of(context).size.width * 0.4,height: MediaQuery.of(context).size.width * 0.4,),
-              Row(
-              children: [
-                Expanded(child: Text('Company Name:',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
-                Expanded(child: Expanded(child: Text('${userdata!['company_name']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
-              ],
             ),
-             Row(
-              children: [
-                Expanded(child: Text('Role Of This company: ${userdata!['role']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
-                Expanded(child: Expanded(child: Text(' ${userdata!['role']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
-              ],
+          ),
+          Expanded(
+            child: Text(
+              '${value ?? 'N/A'}',
+              style: TextStyle(
+                fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
+              ),
             ),
-            Row(
-              children: [
-                Expanded(child:Text('Name: ',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
-                Expanded(child: Expanded(child: Text('${userdata!['name']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(child: Text('Email: ',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
-                Expanded(child: Expanded(child: Text(' ${userdata!['db_email']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(child: Text('Mobile No.: ',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
-                Expanded(child: Expanded(child: Text(' ${userdata!['mobile_no']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(child: Text('Pan Card No.: ',style: TextStyle(fontFamily: 'MyFont',fontSize: 20),),),
-                Expanded(child: Expanded(child: Text('  ${userdata!['pan_card']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(child: Text('User Name: ',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
-                Expanded(child: Expanded(child: Text('${userdata!['username']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(child: Text('Join Date And Time: ',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),
-                Expanded(child: Expanded(child: Text('${userdata!['create_at']}',style: TextStyle(fontSize: 6 * MediaQuery.of(context).devicePixelRatio),),),)
-              ],
-            ),
-            ],
-           )
-           )
-            ),
-              ],
-            )
-        ),
+          ),
+        ],
+      ),
     );
   }
-}
+@override
+  Widget build(BuildContext context) {
+    if (userdata == null) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Color(0xFF03a9f4),
+          title: Text('Profile'),
+          leading: BackButton(color: Colors.white),
+        ),
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color(0xFF03a9f4),
+        title: Text(
+          'Profile',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.07),
+        child: Center(
+          child: Container(
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 215, 229, 241),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              if (userdata!['image'] != null &&
+                  userdata!['image'].toString().isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(MediaQuery.of(context).size.width * 0.3),
+                  child: Image.network(
+                  'https://testapi.rabadtechnology.com/${userdata!['image']}',
+                  width: MediaQuery.of(context).size.width * 0.3,
+                ),
+                ),
+              SizedBox(height: 10),
+              buildUserRow("Company Name:", userdata!['company_name']),
+              buildUserRow("Name:", userdata!['name']),
+              buildUserRow("Designation:", userdata!['designation']),
+               buildUserRow("Salery:", userdata!['salary']),
+              buildUserRow("Email:", userdata!['db_email']),
+              buildUserRow("Mobile No.:", userdata!['mobile_no']),
+              buildUserRow("Address:", userdata!['address']),
+              buildUserRow("Pan Card No.:", userdata!['pan_card']),
+              buildUserRow("Addhar No.:", userdata!['aadharcard']),
+              buildUserRow("User Name:", userdata!['username']),
+              ElevatedButton(
+                onPressed: () {
+                  // TODO: Navigate to EditProfile screen or open edit form
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF03a9f4), // Custom blue color
+                  foregroundColor: Colors.white, // Text/icon color
+                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  elevation: 5,
+                  textStyle: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                child: Text("Edit Profile"),
+              ),
+            ],
+          ),
+        ),
+      
+        )),
+    );
+  }}
