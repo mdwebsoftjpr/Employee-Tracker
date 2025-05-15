@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:employee_tracker/Screens/image FullScreen/fullScreenImage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,10 +20,11 @@ Future<void> _initializeLocalStorage() async {
 }
 
 class Empvisitrep extends StatefulWidget {
-  EmpvisitrepSate createState() => EmpvisitrepSate();
+  @override
+  EmpvisitrepState createState() => EmpvisitrepState();
 }
 
-class EmpvisitrepSate extends State<Empvisitrep> {
+class EmpvisitrepState extends State<Empvisitrep> {
   int? ComId;
   String day = '';
   String month = '';
@@ -111,18 +113,10 @@ class EmpvisitrepSate extends State<Empvisitrep> {
             responseData['data'],
           );
         });
-        if (attendanceData.isNotEmpty && attendanceData[0]['data'] != null) {
-          List<dynamic> visits = attendanceData[0]['data'];
-          for (var visit in visits) {
-            StartLoc.add(visit['start_Location']);
-            EndLoc.add(visit['end_Location']);
-          }
-          print(StartLoc);
-          print(EndLoc);
-        } else {
-          print("No data found");
-        }
       } else {
+        setState(() {
+          attendanceData.clear(); // clears the list in place
+        });
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('${responseData['message']}')));
@@ -141,10 +135,124 @@ class EmpvisitrepSate extends State<Empvisitrep> {
     }
   }
 
+Future<void> showDetail(
+  BuildContext context,
+  Map<String, dynamic> visit,
+) async {
+  showModalBottomSheet(
+    context: context,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Center(child: Text(
+              "Visit Details:-",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              FullScreenImageViewer(imageUrl: visit['imagev']),
+                        ),
+                      );
+                    },
+                    child: Container(
+                       width: MediaQuery.of(context).devicePixelRatio*30,
+                      height: MediaQuery.of(context).devicePixelRatio*55,
+                      child: Image.network(
+                      visit['imagev'] ?? '',
+                     
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Icon(Icons.broken_image),
+                    ),
+                    )
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Name Of Customer: ${visit['NameOfCustomer'] ?? 'N/A'}",
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).devicePixelRatio*5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        "Concerned Person: ${visit['concernedperson'] ?? 'N/A'}",
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).devicePixelRatio*5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        "Start Time: ${visit['time'] ?? 'N/A'}",
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).devicePixelRatio*5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        "End Time: ${visit['end'] ?? 'N/A'}",
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).devicePixelRatio*5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        "Address: ${visit['address'] ?? 'N/A'}",
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).devicePixelRatio*5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 6),
+                      Text(
+                        "Location Address: ${visit['address2'] ?? 'N/A'}",
+                        style: TextStyle(
+                          fontSize: MediaQuery.of(context).devicePixelRatio*5,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
     double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF03a9f4),
@@ -152,28 +260,23 @@ class EmpvisitrepSate extends State<Empvisitrep> {
           'Employee Visit',
           style: TextStyle(
             color: Colors.white,
-            fontSize: devicePixelRatio * 7, // Reduced font size for the title
+            fontSize: devicePixelRatio * 7,
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: deviceWidth * 0.02,
-            ), // Reduced padding to avoid overflow
+            padding: EdgeInsets.symmetric(horizontal: deviceWidth * 0.02),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                // Column for Date selection
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "Date",
                       style: TextStyle(
-                        fontSize:
-                            devicePixelRatio *
-                            5, // Reduced font size for the label
+                        fontSize: devicePixelRatio * 5,
                         color: Colors.black,
                       ),
                     ),
@@ -182,26 +285,21 @@ class EmpvisitrepSate extends State<Empvisitrep> {
                       icon: Icon(
                         Icons.date_range,
                         color: Colors.white,
-                        size: deviceWidth * 0.07, // Reduced icon size
+                        size: deviceWidth * 0.07,
                       ),
                       onPressed: _pickDate,
                       tooltip: "Pick Date",
                     ),
                   ],
                 ),
-                SizedBox(
-                  width: deviceWidth * 0.01,
-                ), // Spacing between Date and Month
-                // Column for Month selection
+                SizedBox(width: deviceWidth * 0.01),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       "Month",
                       style: TextStyle(
-                        fontSize:
-                            devicePixelRatio *
-                            5, // Reduced font size for the label
+                        fontSize: devicePixelRatio * 5,
                         color: Colors.black,
                       ),
                     ),
@@ -210,7 +308,7 @@ class EmpvisitrepSate extends State<Empvisitrep> {
                       icon: Icon(
                         Icons.calendar_month,
                         color: Colors.white,
-                        size: deviceWidth * 0.07, // Reduced icon size
+                        size: deviceWidth * 0.07,
                       ),
                       onPressed: _pickMonth,
                       tooltip: "Pick Month",
@@ -222,167 +320,261 @@ class EmpvisitrepSate extends State<Empvisitrep> {
           ),
         ],
       ),
-
-      body: Container(
-        child: Column(
-          children: [
-            SizedBox(height: 10),
-            Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10), // Set radius here
-                child: Image.network(
-                  '${attendanceData[0]['image'] ?? ''}',
-                  width: deviceWidth * 0.50, // Set width
-                  height: deviceWidth * 0.50, // Set height
-                  fit: BoxFit.cover, // To fill the container without distortion
-                  errorBuilder:
-                      (context, error, stackTrace) => Icon(Icons.error),
+      body:
+          attendanceData.isEmpty
+              ? Center(
+                child: Text(
+                  "Visit Not Found",
+                  style: TextStyle(fontSize: deviceWidth * 0.06),
                 ),
-              ),
-            ),
-            SizedBox(height: 10),
-            IconButton(
-              onPressed: () {
-                if (StartLoc.isNotEmpty && EndLoc.isNotEmpty) {
-                  try {
-                    List<LatLng> points = [];
+              )
+              : ListView.builder(
+                itemCount: attendanceData.length,
+                itemBuilder: (context, index) {
+                  final item = attendanceData[index];
+                  final List<dynamic> visits = item['data'] ?? [];
+                  List<String> startLoc = [];
+                  List<String> endLoc = [];
 
-                    for (int i = 0; i < StartLoc.length; i++) {
-                      final startCoord =
-                          StartLoc[i].split(',').map((e) => e.trim()).toList();
-                      if (startCoord.length == 2) {
-                        points.add(
-                          LatLng(
-                            safeParseDouble(startCoord[0]),
-                            safeParseDouble(startCoord[1]),
-                          ),
-                        );
-                      }
+                  if (visits.isNotEmpty) {
+                    for (var visit in visits) {
+                      startLoc.add(visit['start_Location'] ?? '0.0, 0.0');
+                      endLoc.add(visit['end_Location'] ?? '0.0, 0.0');
                     }
-
-                    for (int i = 0; i < EndLoc.length; i++) {
-                      final endCoord =
-                          EndLoc[i].split(',').map((e) => e.trim()).toList();
-                      if (endCoord.length == 2) {
-                        points.add(
-                          LatLng(
-                            safeParseDouble(endCoord[0]),
-                            safeParseDouble(endCoord[1]),
-                          ),
-                        );
-                      }
-                    }
-
-                    if (points.isNotEmpty) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SimpleMapScreen(points: points),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('No valid coordinates found')),
-                      );
-                    }
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Error parsing coordinates: $e')),
-                    );
                   }
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Location data is empty')),
-                  );
-                }
-              },
-              icon: Icon(
-                FontAwesomeIcons.mapLocationDot,
-                color: Color(0xFF03a9f4),
-                size: devicePixelRatio * 10,
-              ),
-            ),
-            Text("Go To Map")
-          ],
-        ),
-      ),
-    );
-  }
-}
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 5,), Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("You Can See :-"),SizedBox(width: devicePixelRatio*5,),
+                            ElevatedButton(
+                        onPressed: () {
+                          List<LatLng> allPoints = [];
 
+                          for (var visit in visits) {
+                            final startCoord =
+                                visit['start_Location']?.split(',') ?? [];
+                            final endCoord =
+                                visit['end_Location']?.split(',') ?? [];
 
+                            if (startCoord.length == 2 &&
+                                endCoord.length == 2) {
+                              allPoints.add(
+                                LatLng(
+                                  safeParseDouble(startCoord[0]),
+                                  safeParseDouble(startCoord[1]),
+                                ),
+                              );
+                              allPoints.add(
+                                LatLng(
+                                  safeParseDouble(endCoord[0]),
+                                  safeParseDouble(endCoord[1]),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Invalid coordinate format for a visit',
+                                  ),
+                                ),
+                              );
+                            }
+                          }
 
-/*  final List<LatLng> points;
-  const SimpleMapScreen({Key? key, required this.points}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    print(points);
-    return Scaffold(
-      appBar: AppBar(title: Text('Visit Map')),
-      body: FlutterMap(
-        options: MapOptions(
-          initialCenter: points.isNotEmpty ? points.first : LatLng(0, 0),
-          initialZoom: 13,
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'com.example.app',
-          ),
-          PolylineLayer(
-            polylines: [
-              Polyline(
-                points: points,
-                strokeWidth: 4.0,
-                color: Colors.blue,
-              ),
-            ],
-          ),
-          MarkerLayer(
-            markers: points.asMap().entries.map((entry) {
-              final index = entry.key;
-              final point = entry.value;
-
-              return Marker(
-                width: 40,
-                height: 40,
-                point: point,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Icon(
-                      Icons.location_on,
-                      color: Colors.red,
-                      size: 30,
-                    ),
-                    Positioned(
-                      top: 8,
-                      child: Container(
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: Colors.amber,
-                          shape: BoxShape.circle,
+                          if (allPoints.isNotEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        SimpleMapScreen(points: allPoints),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'No valid location data available',
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF03a9f4), // Button color
+                          fixedSize: Size(
+                            double.infinity,
+                            devicePixelRatio*8,
+                          ), // Full width, height of 60 pixels
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              devicePixelRatio*5,
+                            ), // Rounded corners
+                          ),
                         ),
-                        child: Center(
-                          child: Text(
-                            '${index + 1}', // Serial number starts at 1
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        child: Text(
+                          "All Visits",
+                          style: TextStyle(
+                            fontSize: devicePixelRatio*5, // Adjust font size if necessary
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
+                          ],
+                        ),
+                      SizedBox(height: 5,),
+                      ...visits.map((visit) {
+                        return Card(
+                          margin: EdgeInsets.symmetric(
+                            horizontal: devicePixelRatio*5,
+                            vertical: devicePixelRatio*2,
+                          ),
+                          child: ListTile(
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                visit['imagev'] ?? '',
+                                width: devicePixelRatio*22,
+                                height: devicePixelRatio*22,
+                                fit: BoxFit.cover,
+                                errorBuilder:
+                                    (context, error, stackTrace) =>
+                                        Icon(Icons.broken_image),
+                              ),
+                            ),
+                            title: Text(
+                              visit['NameOfCustomer'] ?? 'No Customer Name',
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("Start: ${visit['time'] ?? 'N/A'}"),
+                                Text("End: ${visit['end'] ?? 'N/A'}"),
+                              ],
+                            ),
+                            trailing: Column(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      if (visits.isNotEmpty) {
+                                        showDetail(context, visit);
+                                      } else {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              "No detailed data available",
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Color(0xFF03a9f4),
+                                      fixedSize: Size(
+                                        devicePixelRatio * 27,
+                                        devicePixelRatio * 8,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                    ),
+                                    child: Text(
+                                      "More",
+                                      style: TextStyle(
+                                        fontSize: devicePixelRatio * 4,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: IconButton(
+                                    icon: Icon(
+                                      FontAwesomeIcons.mapLocationDot,
+                                      color: Color(0xFF03a9f4),
+                                      size: devicePixelRatio * 6,
+                                    ),
+                                    onPressed: () {
+                                      List<LatLng> points = [];
+
+                                      if (visit['start_Location'] != null &&
+                                          visit['end_Location'] != null) {
+                                        final startCoord =
+                                            visit['start_Location']
+                                                .split(',')
+                                                .map((e) => e.trim())
+                                                .toList();
+                                        final endCoord =
+                                            visit['end_Location']
+                                                .split(',')
+                                                .map((e) => e.trim())
+                                                .toList();
+
+                                        if (startCoord.length == 2 &&
+                                            endCoord.length == 2) {
+                                          points.add(
+                                            LatLng(
+                                              safeParseDouble(startCoord[0]),
+                                              safeParseDouble(startCoord[1]),
+                                            ),
+                                          );
+                                          points.add(
+                                            LatLng(
+                                              safeParseDouble(endCoord[0]),
+                                              safeParseDouble(endCoord[1]),
+                                            ),
+                                          );
+
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) => SimpleMapScreen(
+                                                    points: points,
+                                                  ),
+                                            ),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'Invalid coordinate format',
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      } else {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Location data is missing',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            isThreeLine: true,
+                          ),
+                        );
+                      }).toList(),
+                    ],
+                  );
+                },
+              ),
     );
   }
- */
+}

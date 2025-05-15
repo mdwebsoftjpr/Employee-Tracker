@@ -34,38 +34,34 @@ class _SplashScreenState extends State<SplashScreen> {
     super.dispose();
   }
 
-  void navigateUser() async {
-    await localStorage.ready;
+void navigateUser() async {
+  await localStorage.ready;
 
-    String? user = localStorage.getItem("user");
-    String? role = localStorage.getItem("role");
+  String? user = localStorage.getItem("user");
+  String? role = localStorage.getItem("role");
 
-    role = role?.toString().replaceAll('"', '').trim().toLowerCase();
+  role = role?.toString().replaceAll('"', '').trim().toLowerCase();
 
-    if (user != null && user != '') {
-      if (role == 'admin') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => AdminHome()),
-        );
-      } else if (role == 'employee') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => EmpHome()),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => CreateScreen()),
-        );
-      }
+  Widget targetScreen;
+
+  if (user != null && user != '') {
+    if (role == 'admin') {
+      targetScreen = AdminHome();
+    } else if (role == 'employee') {
+      targetScreen = EmpHome();
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => CreateScreen()),
-      );
+      targetScreen = CreateScreen();
     }
+  } else {
+    targetScreen = CreateScreen();
   }
+
+  Navigator.pushAndRemoveUntil(
+    context,
+    MaterialPageRoute(builder: (_) => targetScreen),
+    (route) => false, // removes all previous routes
+  );
+}
 
 @override
 Widget build(BuildContext context) {

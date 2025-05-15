@@ -6,6 +6,8 @@ import 'package:localstorage/localstorage.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
+import 'package:employee_tracker/Screens/image FullScreen/fullScreenImage.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
@@ -29,8 +31,7 @@ class AdminVisitreport extends StatefulWidget {
 class AdminVisitreportState extends State<AdminVisitreport> {
   int? ComId;
   String day = '';
-  List<String> StartLoc = [];
-  List<String> EndLoc = [];
+  String month = '';
   List<Map<String, dynamic>> attendanceData = [];
 
   @override
@@ -59,7 +60,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
       );
       final Map<String, dynamic> requestBody = {
         "company_id": ComId,
-        "month": "",
+        "month": month,
         "date": day,
       };
 
@@ -78,24 +79,14 @@ class AdminVisitreportState extends State<AdminVisitreport> {
             responseData['data'],
           );
         });
-        if (responseData['success'] == true && responseData['data'] != null) {
-          List<dynamic> outerData = responseData['data'];
-
-          for (var employee in outerData) {
-            List<dynamic> visits = employee['data'];
-            for (var visit in visits) {
-              StartLoc.add(visit['start_Location']);
-              EndLoc.add(visit['end_Location']);
-            }
-            // Optional: Print them
-            print("Start Points: $StartLoc");
-            print("End Points: $EndLoc");
-          }
-        } else {
-          print("No data found or response unsuccessful.");
-        }
       } else {
-        print("Error: ${responseData['message']}");
+        setState(() {
+          attendanceData.clear(); // clears the list in place
+        });
+
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${responseData['message']}')));
       }
     } catch (e) {
       print("Error fetching data: $e");
@@ -113,6 +104,25 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     if (pickedDate != null) {
       setState(() {
         day = DateFormat('yyyy-MM-dd').format(pickedDate);
+        month = '';
+      });
+      VisitDetail();
+    }
+  }
+
+  void _pickMonth() async {
+    DateTime? selected = await showMonthPicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (selected != null) {
+      setState(() {
+        // Format month as yyyy-MM
+        month = DateFormat('MM').format(selected);
+        day = '';
       });
       VisitDetail();
     }
@@ -127,16 +137,125 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     }
   }
 
-  /* void VisitPerson(BuildContext context, Map<String, dynamic> item) {
-    showDialog(
+  Future<void> showDetail(
+    BuildContext context,
+    Map<String, dynamic> visit,
+  ) async {
+    showModalBottomSheet(
       context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (context) {
-        final dpi = MediaQuery.of(context).devicePixelRatio;
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              Center(
+                child: Text(
+                  "Visit Details:-",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(height: 10),
 
-      Text("dsioa");
+              // Row for image and customer details
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) => FullScreenImageViewer(
+                                  imageUrl: visit['imagev'],
+                                ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).devicePixelRatio * 30,
+                        height: MediaQuery.of(context).devicePixelRatio * 55,
+                        child: Image.network(
+                          visit['imagev'] ?? '',
+
+                          fit: BoxFit.cover,
+                          errorBuilder:
+                              (context, error, stackTrace) =>
+                                  Icon(Icons.broken_image),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 16), // Space between image and text
+                  // Column to hold all the text data
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Name Of Customer: ${visit['NameOfCustomer'] ?? 'N/A'}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 6),
+                        Text(
+                          "Concerned Person: ${visit['concernedperson'] ?? 'N/A'}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 6),
+                        Text(
+                          "Start Time: ${visit['time'] ?? 'N/A'}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 6),
+                        Text(
+                          "End Time: ${visit['end'] ?? 'N/A'}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 6),
+                        Text(
+                          "Address: ${visit['address'] ?? 'N/A'}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(height: 6),
+                        Text(
+                          "Location Address: ${visit['address2'] ?? 'N/A'}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+            ],
+          ),
+        );
       },
     );
-  } */
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,14 +274,58 @@ class AdminVisitreportState extends State<AdminVisitreport> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.date_range,
-              color: Colors.white,
-              size: deviceWidth * 0.09,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: deviceWidth * 0.02),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Date",
+                      style: TextStyle(
+                        fontSize: devicePixelRatio * 5,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(width: 3),
+                    IconButton(
+                      icon: Icon(
+                        Icons.date_range,
+                        color: Colors.white,
+                        size: deviceWidth * 0.07,
+                      ),
+                      onPressed: _pickDate,
+                      tooltip: "Pick Date",
+                    ),
+                  ],
+                ),
+                SizedBox(width: deviceWidth * 0.01),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Month",
+                      style: TextStyle(
+                        fontSize: devicePixelRatio * 5,
+                        color: Colors.black,
+                      ),
+                    ),
+                    SizedBox(width: 3),
+                    IconButton(
+                      icon: Icon(
+                        Icons.calendar_month,
+                        color: Colors.white,
+                        size: deviceWidth * 0.07,
+                      ),
+                      onPressed: _pickMonth,
+                      tooltip: "Pick Month",
+                    ),
+                  ],
+                ),
+              ],
             ),
-            onPressed: _pickDate,
-            tooltip: "Pick Date",
           ),
         ],
       ),
@@ -178,19 +341,16 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                 itemCount: attendanceData.length,
                 itemBuilder: (context, index) {
                   final data = attendanceData[index];
-                  dynamic userDataRaw = data['data'];
-                  Map<String, dynamic>? userData;
 
-                  if (userDataRaw is Map<String, dynamic>) {
-                    userData = userDataRaw;
-                  } else if (userDataRaw is String) {
-                    try {
-                      userData = jsonDecode(userDataRaw);
-                    } catch (e) {
-                      print("Could not parse userData string: $e");
+                  List<String> startLoc = [];
+                  List<String> endLoc = [];
+                  List<dynamic> visits = data['data'] ?? [];
+
+                  if (visits.isNotEmpty) {
+                    for (var visit in visits) {
+                      startLoc.add(visit['start_Location']);
+                      endLoc.add(visit['end_Location']);
                     }
-                  } else if (userDataRaw is List && userDataRaw.isNotEmpty) {
-                    userData = Map<String, dynamic>.from(userDataRaw[0]);
                   }
 
                   return Padding(
@@ -267,8 +427,8 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                             children: [
                               ElevatedButton(
                                 onPressed: () {
-                                  if (userData != null && userData.isNotEmpty) {
-                                    /* VisitPerson(context, userData); */
+                                  if (visits.isNotEmpty) {
+                                    showDetail(context, visits[0]);
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
@@ -300,42 +460,42 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                               SizedBox(height: devicePixelRatio * 2),
                               IconButton(
                                 onPressed: () {
-                                  if (StartLoc.isNotEmpty &&
-                                      EndLoc.isNotEmpty) {
+                                  if (startLoc.isNotEmpty &&
+                                      endLoc.isNotEmpty) {
                                     try {
                                       List<LatLng> points = [];
 
                                       for (
                                         int i = 0;
-                                        i < StartLoc.length;
+                                        i < startLoc.length;
                                         i++
                                       ) {
-                                        final startCoord =
-                                            StartLoc[i]
+                                        final coord =
+                                            startLoc[i]
                                                 .split(',')
                                                 .map((e) => e.trim())
                                                 .toList();
-                                        if (startCoord.length == 2) {
+                                        if (coord.length == 2) {
                                           points.add(
                                             LatLng(
-                                              safeParseDouble(startCoord[0]),
-                                              safeParseDouble(startCoord[1]),
+                                              safeParseDouble(coord[0]),
+                                              safeParseDouble(coord[1]),
                                             ),
                                           );
                                         }
                                       }
 
-                                      for (int i = 0; i < EndLoc.length; i++) {
-                                        final endCoord =
-                                            EndLoc[i]
+                                      for (int i = 0; i < endLoc.length; i++) {
+                                        final coord =
+                                            endLoc[i]
                                                 .split(',')
                                                 .map((e) => e.trim())
                                                 .toList();
-                                        if (endCoord.length == 2) {
+                                        if (coord.length == 2) {
                                           points.add(
                                             LatLng(
-                                              safeParseDouble(endCoord[0]),
-                                              safeParseDouble(endCoord[1]),
+                                              safeParseDouble(coord[0]),
+                                              safeParseDouble(coord[1]),
                                             ),
                                           );
                                         }
