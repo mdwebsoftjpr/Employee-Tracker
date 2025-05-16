@@ -10,7 +10,8 @@ class Alert {
           content: Text(message, textAlign: TextAlign.center),
           actions: [
             ElevatedButton(
-              child: Text('OK'),
+              child: Text('OK',style: TextStyle(color: Colors.white),),
+              
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF03a9f4),
               ),

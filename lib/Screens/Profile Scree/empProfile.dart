@@ -170,32 +170,30 @@ class EmpprofileState extends State<Empprofile> {
                     Divider(color: Colors.grey.shade400),
                     SizedBox(height: 10),
 
-                    buildUserRow("Company Name:", userdata!['company_name']),
+                    buildUserRow("Com. Name:", userdata!['company_name']),
                     buildUserRow("Name:", userdata!['name']),
                     buildUserRow("Designation:", userdata!['designation']),
                     buildUserRow("Salary:", userdata!['salary']),
                     buildUserRow("Email:", userdata!['db_email']),
-                    buildUserRow("Mobile No.:", userdata!['mobile_no']),
+                    buildUserRow("Mobile No. :", userdata!['mobile_no']),
                     buildUserRow("Address:", userdata!['address']),
                     buildUserRow("PAN Card No.:", userdata!['pan_card']),
-                    buildUserRow("Aadhar No.:", userdata!['aadharcard']),
+                    buildUserRow("Aadhar No. :", userdata!['aadharcard']),
+                    buildUserRow("D.O.B. :", userdata!['dob']),
+                    buildUserRow("Joining Date:", userdata!['create_at']),
+                    buildUserRow("Work Hour:", userdata!['hours']),
                     buildUserRow("Username:", userdata!['username']),
                   ],
                 ),
               ),
             ),
             SizedBox(height: 30),
-
-            /// Action buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
                 ElevatedButton.icon(
                   onPressed: () {
                     // TODO: Navigate to EditProfile screen
                   },
-                  icon: Icon(Icons.edit),
-                  label: Text("Edit Profile"),
+                  icon: Icon(Icons.home),
+                  label: Text("Go to Home"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF03a9f4),
                     foregroundColor: Colors.white,
@@ -204,32 +202,12 @@ class EmpprofileState extends State<Empprofile> {
                       vertical: 14,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(screenWidth * 0.07),
                     ),
                     elevation: 4,
                   ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    clearStorage(context);
-                  },
-                  icon: Icon(Icons.logout),
-                  label: Text("Sign Out"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.06,
-                      vertical: 14,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    elevation: 4,
-                  ),
-                ),
-              ],
-            ),
+                
           ],
         ),
       ),

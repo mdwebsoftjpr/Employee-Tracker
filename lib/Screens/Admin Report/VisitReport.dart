@@ -136,104 +136,154 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     }
   }
 
-Future<void> showDetail(
-  BuildContext context,
-  List<dynamic> visitList,
-) async {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        title: Center(
-          child: Text(
-            "Visit Details",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-        ),
-        content: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.7, // allow scroll if too long
+          title: Center(
+            child: Text(
+              "Visit Details",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: visitList.map((visit) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (visit['imagev'] != null)
-                        Center(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => FullScreenImageViewer(
-                                      imageUrl: visit['imagev'],
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight:
+                  MediaQuery.of(context).size.height *
+                  0.7, // allow scroll if too long
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children:
+                    visitList.map((visit) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (visit['imagev'] != null)
+                              Center(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (_) => FullScreenImageViewer(
+                                                imageUrl: visit['imagev'],
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      width:
+                                          MediaQuery.of(
+                                            context,
+                                          ).devicePixelRatio *
+                                          25,
+                                      height:
+                                          MediaQuery.of(
+                                            context,
+                                          ).devicePixelRatio *
+                                          30,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                      ),
+                                      child: Image.network(
+                                        visit['imagev'],
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Icon(
+                                                  Icons.broken_image,
+                                                  size: 40,
+                                                ),
+                                      ),
                                     ),
                                   ),
-                                );
-                              },
-                              child: Container(
-                                width: MediaQuery.of(context).devicePixelRatio * 25,
-                                height: MediaQuery.of(context).devicePixelRatio * 30,
-                                decoration: BoxDecoration(color: Colors.grey[200]),
-                                child: Image.network(
-                                  visit['imagev'],
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Icon(Icons.broken_image, size: 40),
                                 ),
                               ),
+                            SizedBox(height: 12),
+                            buildTextDetail(
+                              "Organization",
+                              visit['NameOfCustomer'],
+                              context,
                             ),
-                          ),
+                            buildTextDetail(
+                              "Concerned Person",
+                              visit['concernedperson'],
+                              context,
+                            ),
+                            buildTextDetail(
+                              "Mobile No.",
+                              visit['phoneno'],
+                              context,
+                            ),
+                            buildTextDetail("Date", visit['date'], context),
+                            buildTextDetail(
+                              "Start Time",
+                              visit['time'],
+                              context,
+                            ),
+                            buildTextDetail("End Time", visit['end'], context),
+                            buildTextDetail(
+                              "Transport",
+                              visit['transport'],
+                              context,
+                            ),
+                            buildTextDetail(
+                              "Probability",
+                              visit['probablity'],
+                              context,
+                            ),
+                            buildTextDetail(
+                              "Prospects",
+                              visit['prospects'],
+                              context,
+                            ),
+                            buildTextDetail(
+                              "Address",
+                              visit['address'],
+                              context,
+                            ),
+                            buildTextDetail(
+                              "Location Address",
+                              visit['address2'],
+                              context,
+                            ),
+                            Divider(thickness: 1, color: Colors.grey),
+                          ],
                         ),
-                      SizedBox(height: 12),
-                      buildTextDetail("Organization", visit['NameOfCustomer'], context),
-                      buildTextDetail("Concerned Person", visit['concernedperson'], context),
-                      buildTextDetail("Mobile No.", visit['phoneno'], context),
-                      buildTextDetail("Date", visit['date'], context),
-                      buildTextDetail("Start Time", visit['time'], context),
-                      buildTextDetail("End Time", visit['end'], context),
-                      buildTextDetail("Transport", visit['transport'], context),
-                      buildTextDetail("Probability", visit['probablity'], context),
-                      buildTextDetail("Prospects", visit['prospects'], context),
-                      buildTextDetail("Address", visit['address'], context),
-                      buildTextDetail("Location Address", visit['address2'], context),
-                      Divider(thickness: 1, color: Colors.grey),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ),
-        actions: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
+                      );
+                    }).toList(),
               ),
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text("Close"),
             ),
           ),
-        ],
-      );
-    },
-  );
-}
-
+          actions: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text("Close"),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Widget buildTextDetail(String label, dynamic value, BuildContext context) {
     return Padding(
@@ -335,7 +385,7 @@ Future<void> showDetail(
 
                   List<String> startLoc = [];
                   List<String> endLoc = [];
-                  List<dynamic> EmpVisitDetail=[];
+                  List<dynamic> EmpVisitDetail = [];
                   List<dynamic> visits = data['data'] ?? [];
 
                   if (visits.isNotEmpty) {
@@ -434,21 +484,19 @@ Future<void> showDetail(
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFF03a9f4),
+                                  foregroundColor: Colors.white,
                                   padding: EdgeInsets.symmetric(
-                                    horizontal: 16,
+                                    horizontal: deviceWidth * 0.06,
                                     vertical: 10,
                                   ),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(
+                                      deviceWidth * 0.07,
+                                    ),
                                   ),
+                                  elevation: 4,
                                 ),
-                                child: Text(
-                                  "More",
-                                  style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
-                                    color: Colors.white,
-                                  ),
-                                ),
+                                child: Text("More"),
                               ),
                               SizedBox(height: devicePixelRatio * 2),
                               IconButton(

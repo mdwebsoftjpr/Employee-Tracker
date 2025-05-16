@@ -115,7 +115,6 @@ class EmpvisitrepState extends State<Empvisitrep> {
             responseData['data'],
           );
         });
-        Alert.alert(context, responseData['message']);
       } else {
         setState(() {
           attendanceData.clear(); // clears the list in place
@@ -135,7 +134,6 @@ class EmpvisitrepState extends State<Empvisitrep> {
       return 0.0;
     }
   }
-
 
   Future<void> showDetail(
     BuildContext context,
@@ -226,11 +224,13 @@ class EmpvisitrepState extends State<Empvisitrep> {
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
+                        horizontal: MediaQuery.of(context).devicePixelRatio * 5,
+                        vertical: MediaQuery.of(context).devicePixelRatio * 3,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(
+                          MediaQuery.of(context).devicePixelRatio * 7,
+                        ),
                       ),
                     ),
                     onPressed: () => Navigator.of(context).pop(),
@@ -416,18 +416,18 @@ class EmpvisitrepState extends State<Empvisitrep> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(
-                                0xFF03a9f4,
-                              ), // Button color
-                              fixedSize: Size(
-                                double.infinity,
-                                devicePixelRatio * 8,
-                              ), // Full width, height of 60 pixels
+                              backgroundColor: Color(0xFF03a9f4),
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: deviceWidth * 0.06,
+                                vertical: 14,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
-                                  devicePixelRatio * 5,
-                                ), // Rounded corners
+                                  deviceWidth * 0.07,
+                                ),
                               ),
+                              elevation: 4,
                             ),
                             child: Text(
                               "All Visits",
@@ -452,7 +452,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
-                                visit['imagev'] ?? '',
+                                visit['image'] ?? '',
                                 width: devicePixelRatio * 22,
                                 height: devicePixelRatio * 22,
                                 fit: BoxFit.cover,
@@ -467,8 +467,8 @@ class EmpvisitrepState extends State<Empvisitrep> {
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Start: ${visit['time'] ?? 'N/A'}"),
-                                Text("End: ${visit['end'] ?? 'N/A'}"),
+                                Text("Start: ${visit['end'] ?? 'N/A'}"),
+                                Text("End: ${visit['time'] ?? 'N/A'}"),
                               ],
                             ),
                             trailing: Column(
@@ -492,20 +492,16 @@ class EmpvisitrepState extends State<Empvisitrep> {
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Color(0xFF03a9f4),
-                                      fixedSize: Size(
-                                        devicePixelRatio * 27,
-                                        devicePixelRatio * 8,
-                                      ),
+                                      foregroundColor: Colors.white,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(
+                                          deviceWidth * 0.07,
+                                        ),
                                       ),
+                                      elevation: 4,
                                     ),
                                     child: Text(
-                                      "More",
-                                      style: TextStyle(
-                                        fontSize: devicePixelRatio * 4,
-                                        color: Colors.white,
-                                      ),
+                                      "More"
                                     ),
                                   ),
                                 ),

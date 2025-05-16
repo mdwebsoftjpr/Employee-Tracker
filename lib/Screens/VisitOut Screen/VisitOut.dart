@@ -23,25 +23,71 @@ Future<void> _initializeLocalStorage() async {
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
 class VisitOut extends StatefulWidget {
-  final int VisitId;
-  VisitOut(this.VisitId);
   @override
   VisitOutState createState() => VisitOutState();
 }
 
 class VisitOutState extends State<VisitOut> {
- void initState() {
-  super.initState();
-  print(widget.VisitId);
-  _initializeData();
-}
+  String? userdata;
+  int? empid;
+  int? comid;
+  int? VisitId;
+  void initState() {
+    super.initState();
+    _loadUser();
+    _initializeData();
+  }
 
-Future<void> _initializeData() async {
-  getCurrentAddress();
-  autofillAddress();
-  await getCurrentLocation();
-}
- 
+  Future<void> _initializeData() async {
+    getId();
+    getCurrentAddress();
+    autofillAddress();
+    await getCurrentLocation();
+  }
+
+   void _loadUser() {
+    var userJson = localStorage.getItem('user');
+    if (userJson != null) {
+      try {
+        var user = jsonDecode(userJson);
+        setState(() {
+          empid=user['id']??0;
+          comid=user['company_id']??0;
+        });
+        print("$comid,$empid");
+      } catch (e) {
+        print("Error decoding user data: $e");
+      }
+    }
+  }
+
+  void getId() async {
+    try {
+      final url = Uri.parse(
+        'https://testapi.rabadtechnology.com/getvisitstatus.php',
+      );
+      final Map<String, dynamic> requestBody = {
+        "emp_id":empid.toString(),
+        "company_id": comid.toString(),
+      };
+    final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+
+      final responseData = jsonDecode(response.body);
+      var data=responseData['data'];
+      for(var item in data){
+        setState(() {
+          VisitId=item['id'];
+        });
+      }
+    } catch (e) {
+      Alert.alert(context, "Error fetching data: $e");
+    }
+  }
+
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController organization = TextEditingController();
@@ -101,48 +147,48 @@ Future<void> _initializeData() async {
   }
 
   Future<void> getCurrentLocation() async {
-  bool serviceEnabled;
-  LocationPermission permission;
+    bool serviceEnabled;
+    LocationPermission permission;
 
-  serviceEnabled = await Geolocator.isLocationServiceEnabled();
-  if (!serviceEnabled) {
-    print('Location services are disabled. Please enable them.');
-    await Geolocator.openLocationSettings();
-    return;
-  }
-
-  permission = await Geolocator.checkPermission();
-  if (permission == LocationPermission.denied) {
-    permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied) {
-      print('Location permission denied.');
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      print('Location services are disabled. Please enable them.');
+      await Geolocator.openLocationSettings();
       return;
     }
-  }
 
-  if (permission == LocationPermission.deniedForever) {
-    print('Location permission permanently denied.');
-    return;
-  }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        print('Location permission denied.');
+        return;
+      }
+    }
 
-  // ✅ Get the position now
-  try {
-    Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.best,
-    );
+    if (permission == LocationPermission.deniedForever) {
+      print('Location permission permanently denied.');
+      return;
+    }
 
-    // Get latitude and longitude
-    double latitude = position.latitude;
-    double longitude = position.longitude;
-    setState(() {
-    lat = latitude.toString();   
-    long = longitude.toString(); 
-  });
-    print('Latitude: $latitude, Longitude: $longitude');
-  } catch (e) {
-    print('Error getting location: $e');
+    // ✅ Get the position now
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best,
+      );
+
+      // Get latitude and longitude
+      double latitude = position.latitude;
+      double longitude = position.longitude;
+      setState(() {
+        lat = latitude.toString();
+        long = longitude.toString();
+      });
+      print('Latitude: $latitude, Longitude: $longitude');
+    } catch (e) {
+      print('Error getting location: $e');
+    }
   }
-}
 
   void autofillAddress() {
     setState(() {
@@ -162,84 +208,88 @@ Future<void> _initializeData() async {
     }
   }
 
+
   void VisitOut(BuildContext context) async {
-  if (_formKey.currentState?.validate() ?? false) {
-    String Corganization = organization.text;
-    String CconcernedPerson = concernedPerson.text;
-    String Cphone = phone.text;
-    String Citem = item.text;
-    String Cvalue = value.text;
-    String Cprobability = probability.text;
-    String Caddress = address.text;
-    String Cremark = remark.text;
+    if (_formKey.currentState?.validate() ?? false) {
+      String Corganization = organization.text;
+      String CconcernedPerson = concernedPerson.text;
+      String Cphone = phone.text;
+      String Citem = item.text;
+      String Cvalue = value.text;
+      String Cprobability = probability.text;
+      String Caddress = address.text;
+      String Cremark = remark.text;
 
-    String modeOfTransport = '';
-    if (selectedTransportModes[0]) modeOfTransport += 'Air ';
-    if (selectedTransportModes[1]) modeOfTransport += 'Surface ';
-    if (selectedTransportModes[2]) modeOfTransport += 'Extrain ';
+      String modeOfTransport = '';
+      if (selectedTransportModes[0]) modeOfTransport += 'Air ';
+      if (selectedTransportModes[1]) modeOfTransport += 'Surface ';
+      if (selectedTransportModes[2]) modeOfTransport += 'Extrain ';
 
-    String weather =
-        _selectedValue == 1
-            ? 'Hot'
-            : _selectedValue == 2
-                ? 'Rain'
-                : 'Cold';
+      String weather =
+          _selectedValue == 1
+              ? 'Hot'
+              : _selectedValue == 2
+              ? 'Rain'
+              : 'Cold';
 
-    if (_imageFile == null) {
-      Alert.alert(context,'Please capture a photo');
-      return;
-    }
-
-    try {
-      // Prepare the multipart request
-      var url = Uri.parse("https://testapi.rabadtechnology.com/employee_activity_update.php");
-      var request = http.MultipartRequest('POST', url);
-
-      // Add the image file to the request
-      request.files.add(await http.MultipartFile.fromPath('image', _imageFile!.path));
-
-      // Add other fields to the request
-      request.fields['NameOfCustomer'] = Corganization;
-      request.fields['concernedperson'] = CconcernedPerson;
-      request.fields['phoneno'] = Cphone;
-      request.fields['item'] = Citem;
-      request.fields['volume'] = Cvalue;
-      request.fields['transport'] = modeOfTransport.trim();
-      request.fields['Probablity'] = Cprobability;
-      request.fields['address'] = Caddress;
-      request.fields['Remark'] = Cremark;
-      request.fields['Prospects'] = weather;
-      request.fields['diviceid'] = "$deviceId";
-      request.fields['location'] = "$lat,$long";
-      request.fields['id'] = widget.VisitId.toString(); 
-        print(widget.VisitId);
-      // Send the request
- var response = await request.send();
-
-// Get the response and handle it
-var responseData = await Response.fromStream(response);
-      var data = jsonDecode(responseData.body);
-      print(data);
-
-      if (response.statusCode == 200) {
-        if (data['success'] == true) {
-          localStorage.deleteItem('visitId');
-          await Alert.alert(context,data['message']);
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => EmpHome()),
-          );
-        } else {
-         Alert.alert(context,data['message'] ?? "Submission failed");
-        }
-      } else {
-        Alert.alert(context,"Server error: ${response.statusCode}");
+      if (_imageFile == null) {
+        Alert.alert(context, 'Please capture a photo');
+        return;
       }
-    } catch (e) {
-      Alert.alert(context,"Upload error: $e");
+
+      try {
+        // Prepare the multipart request
+        var url = Uri.parse(
+          "https://testapi.rabadtechnology.com/employee_activity_update.php",
+        );
+        var request = http.MultipartRequest('POST', url);
+
+        // Add the image file to the request
+        request.files.add(
+          await http.MultipartFile.fromPath('image', _imageFile!.path),
+        );
+
+        // Add other fields to the request
+        request.fields['NameOfCustomer'] = Corganization;
+        request.fields['concernedperson'] = CconcernedPerson;
+        request.fields['phoneno'] = Cphone;
+        request.fields['item'] = Citem;
+        request.fields['volume'] = Cvalue;
+        request.fields['transport'] = modeOfTransport.trim();
+        request.fields['Probablity'] = Cprobability;
+        request.fields['address'] = Caddress;
+        request.fields['Remark'] = Cremark;
+        request.fields['Prospects'] = weather;
+        request.fields['diviceid'] = "$deviceId";
+        request.fields['location'] = "$lat,$long";
+        request.fields['id'] = VisitId.toString();
+        // Send the request
+        var response = await request.send();
+
+        // Get the response and handle it
+        var responseData = await Response.fromStream(response);
+        var data = jsonDecode(responseData.body);
+        print(data);
+
+        if (response.statusCode == 200) {
+          if (data['success'] == true) {
+            localStorage.deleteItem('visitId');
+            await Alert.alert(context, data['message']);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => EmpHome()),
+            );
+          } else {
+            Alert.alert(context, data['message'] ?? "Submission failed");
+          }
+        } else {
+          Alert.alert(context, "Server error: ${response.statusCode}");
+        }
+      } catch (e) {
+        Alert.alert(context, "Upload error: $e");
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -382,18 +432,18 @@ var responseData = await Response.fromStream(response);
         decoration: InputDecoration(
           labelText: label,
           contentPadding: EdgeInsets.symmetric(
-                      vertical: 4 * MediaQuery.of(context).devicePixelRatio,
-                      horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(
-                        4 * MediaQuery.of(context).devicePixelRatio,
-                      ), // Set the border radius
-                    ),
+            vertical: 4 * MediaQuery.of(context).devicePixelRatio,
+            horizontal: 4 * MediaQuery.of(context).devicePixelRatio,
+          ),
+          labelStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(
+              4 * MediaQuery.of(context).devicePixelRatio,
+            ), // Set the border radius
+          ),
           filled: true,
           fillColor: Colors.grey[200],
         ),

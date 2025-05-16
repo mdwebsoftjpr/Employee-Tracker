@@ -154,7 +154,7 @@ class AdminhomeState extends State<AdminHome> {
   // This is the value that will hold the selected item
   String _selectedItem = 'One';
 
-  void _openDropdown(TapDownDetails details) async {
+    void _openDropdown(TapDownDetails details) async {
     final selectedItem = await showMenu<String>(
       context: context,
       position: RelativeRect.fromLTRB(
@@ -164,17 +164,42 @@ class AdminhomeState extends State<AdminHome> {
         0,
       ),
       items: [
-        PopupMenuItem(value: 'profile', child: Text('Profile')),
-        PopupMenuItem(value: 'logout', child: Text('Logout')),
+        PopupMenuItem(
+          value: 'profile',
+          child: Row(
+            children: [
+              Icon(
+                Icons.person,
+                color: Colors.black54,
+              ), // You can change icon and color
+              SizedBox(width: 8),
+              Text('Profile'),
+            ],
+          ),
+        ),
+
+        PopupMenuItem(
+          value: 'Logout',
+          child: Row(
+            children: [
+              Icon(
+                Icons.logout,
+                color: Colors.black54,
+              ), // You can change icon and color
+              SizedBox(width: 8),
+              Text('Logout'),
+            ],
+          ),
+        ),
       ],
     );
 
     if (selectedItem == 'profile') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Adminprofile()),
+        MaterialPageRoute(builder: (context) => AdminHome()),
       );
-    } else if (selectedItem == 'logout') {
+    } else if (selectedItem == 'Logout') {
       clearStorage(context);
     }
   }
@@ -185,31 +210,61 @@ class AdminhomeState extends State<AdminHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF03a9f4), // Custom AppBar background
+        elevation: 4,
+        leading: Builder(
+          builder:
+              (context) => IconButton(
+                icon: Icon(Icons.menu), // Change this to your preferred icon
+                color: Colors.white, // Set custom icon color
+                onPressed: () {
+                  Scaffold.of(context).openDrawer(); // Open the drawer
+                },
+              ),
+        ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              child: Text(comName, style: TextStyle(color: Colors.white)),
+            Expanded(
+              child: Text(
+                comName,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            SizedBox(width: 10),
-            Container(
-              child: Align(
-                alignment:
-                    Alignment
-                        .centerRight, // Align the second Expanded to the end
-                child: GestureDetector(
-                  onTapDown: _openDropdown, // pass TapDownDetails here
-                  child: Icon(
-                    Icons.logout,
-                    color: Colors.white,
-                    size: 30,
-                  ), // or any widget you want to tap
+            GestureDetector(
+              onTapDown: _openDropdown,
+              child: Container(
+                margin: EdgeInsets.only(left: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.white70, width: 1),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child:
+                      (image != null && image.isNotEmpty)
+                          ? Image.network(
+                            'https://testapi.rabadtechnology.com/$image',
+                            width: MediaQuery.of(context).size.width * 0.10,
+                            height: MediaQuery.of(context).size.width * 0.10,
+                            fit: BoxFit.cover,
+                          )
+                          : Icon(
+                            Icons.account_circle,
+                            size: 36,
+                            color: Colors.white,
+                          ),
                 ),
               ),
             ),
           ],
         ),
-        backgroundColor: Color(0xFF03a9f4),
       ),
       drawer: Drawer(
         width: MediaQuery.of(context).size.width * 0.6,
