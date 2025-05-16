@@ -274,7 +274,6 @@ class _EmpHomeState extends State<EmpHome> {
     });
   }
 
-
   void punchIn() async {
     if (_imageFile == null) return;
 
@@ -309,7 +308,10 @@ class _EmpHomeState extends State<EmpHome> {
         Alert.alert(context, message);
       }
     } else {
-      Alert.alert(context, "❌ Upload failed with status: ${response.statusCode}");
+      Alert.alert(
+        context,
+        "❌ Upload failed with status: ${response.statusCode}",
+      );
     }
   }
 
@@ -350,7 +352,10 @@ class _EmpHomeState extends State<EmpHome> {
         Alert.alert(context, message);
       }
     } else {
-      Alert.alert(context, "❌ Upload failed with status: ${response.statusCode}");
+      Alert.alert(
+        context,
+        "❌ Upload failed with status: ${response.statusCode}",
+      );
     }
   }
 
@@ -394,19 +399,21 @@ class _EmpHomeState extends State<EmpHome> {
     }
   }
 
-void clearStorage(BuildContext context) async {
-  try {
-    await localStorage.clear();
-    await Alert.alert(context, 'Successfully Logout'); // WAIT before navigating
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CreateScreen()),
-    );
-  } catch (e) {
-    await Alert.alert(context, 'Error: $e'); // also await here
+  void clearStorage(BuildContext context) async {
+    try {
+      await localStorage.clear();
+      await Alert.alert(
+        context,
+        'Successfully Logout',
+      ); // WAIT before navigating
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CreateScreen()),
+      );
+    } catch (e) {
+      await Alert.alert(context, 'Error: $e'); // also await here
+    }
   }
-}
-
 
   void dropUp() {
     print("UP");
@@ -426,7 +433,7 @@ void clearStorage(BuildContext context) async {
     // Check if location services are enabled
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      Alert.alert(context,'Location services are disabled. Please enable.');
+      Alert.alert(context, 'Location services are disabled. Please enable.');
       await Geolocator.openLocationSettings();
       return;
     }
@@ -436,13 +443,13 @@ void clearStorage(BuildContext context) async {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        Alert.alert(context,'Location permission denied.' );
+        Alert.alert(context, 'Location permission denied.');
         return;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      Alert.alert(context,'Location permission permanently denied.' );
+      Alert.alert(context, 'Location permission permanently denied.');
       return;
     }
 
@@ -606,7 +613,7 @@ void clearStorage(BuildContext context) async {
                       ),
                     ),
                   ),
-                  (Mainstatus != "" || Mainstatus == 'punchin')
+                  (Mainstatus == "" || Mainstatus == 'punchout')
                       ? ListTile(
                         leading: Image.asset(
                           'assets/images/attendance.png',
@@ -621,7 +628,7 @@ void clearStorage(BuildContext context) async {
                       )
                       : ListTile(
                         leading: Icon(Icons.access_time),
-                        title: Text("Punch in"),
+                        title: Text("Punch Out"),
                         onTap: () {
                           _pickImageFromCamera();
                           punchIn();
@@ -661,12 +668,17 @@ void clearStorage(BuildContext context) async {
                         leading: Icon(Icons.exit_to_app),
                         title: Text("Visit Out"),
                         onTap: () {
-                          if (Mainstatus != '' || Mainstatus == 'punchin') {
+                          if (Mainstatus != '' && Mainstatus == 'punchin') {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) => VisitOut(VisitId),
                               ),
+                            );
+                          } else {
+                            Alert.alert(
+                              context,
+                              'Please Mark Your Attendance Then Do Visit',
                             );
                           }
                         },
@@ -675,12 +687,18 @@ void clearStorage(BuildContext context) async {
                         leading: Icon(Icons.person),
                         title: Text("Visit In"),
                         onTap: () async {
-                          if (Mainstatus != '' || Mainstatus == 'punchin') {
+                          if (Mainstatus != '' && Mainstatus == 'punchin') {
                             await _pickImageFromCamera();
                             visitIn();
+                          } else {
+                            Alert.alert(
+                              context,
+                              'Please Mark Your Attendance Then Do Visit',
+                            );
                           }
                         },
                       ),
+
                   ListTile(
                     leading: Icon(Icons.assignment_turned_in),
                     title: Text("Attendance Report"),
@@ -1180,14 +1198,18 @@ void clearStorage(BuildContext context) async {
                                 ? ElevatedButton(
                                   onPressed: () {
                                     print(VisitId);
-                                    if (Mainstatus != '' ||
-                                        Mainstatus == 'punchin') {
+                                    if (Mainstatus != '' && Mainstatus == 'punchin') {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder:
                                               (context) => VisitOut(VisitId),
                                         ),
+                                      );
+                                    } else {
+                                      Alert.alert(
+                                        context,
+                                        'Please Mark Your Attendance Then Do Visit',
                                       );
                                     }
                                   },
@@ -1204,10 +1226,15 @@ void clearStorage(BuildContext context) async {
                                 )
                                 : ElevatedButton(
                                   onPressed: () async {
-                                    if (Mainstatus != '' ||
+                                    if (Mainstatus != '' &&
                                         Mainstatus == 'punchin') {
                                       await _pickImageFromCamera();
                                       visitIn();
+                                    } else {
+                                      Alert.alert(
+                                        context,
+                                        'Please Mark Your Attendance Then Do Visit',
+                                      );
                                     }
                                   },
                                   child: Text(
