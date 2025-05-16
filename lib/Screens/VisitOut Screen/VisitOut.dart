@@ -1,4 +1,5 @@
-import 'package:employee_tracker/Screens/EmployeeReports/EmpHome.dart';
+import 'package:employee_tracker/Screens/Components/Alert.dart';
+import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
@@ -185,9 +186,7 @@ Future<void> _initializeData() async {
                 : 'Cold';
 
     if (_imageFile == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Please capture a photo')));
+      Alert.alert(context,'Please capture a photo');
       return;
     }
 
@@ -225,34 +224,23 @@ var responseData = await Response.fromStream(response);
       if (response.statusCode == 200) {
         if (data['success'] == true) {
           localStorage.deleteItem('visitId');
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(data['message'])));
-          localStorage.setItem('visitout', true);
+          await Alert.alert(context,data['message']);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => EmpHome()),
           );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(data['message'] ?? "Submission failed"),
-            ),
-          );
+         Alert.alert(context,data['message'] ?? "Submission failed");
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Server error: ${response.statusCode}")),
-        );
+        Alert.alert(context,"Server error: ${response.statusCode}");
       }
     } catch (e) {
-      print("Upload error: $e");
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Something went wrong")));
+      Alert.alert(context,"Upload error: $e");
     }
   }
 }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

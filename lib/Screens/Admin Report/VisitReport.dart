@@ -8,6 +8,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
 import 'package:employee_tracker/Screens/image FullScreen/fullScreenImage.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
@@ -84,9 +85,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
           attendanceData.clear(); // clears the list in place
         });
 
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${responseData['message']}')));
+        Alert.alert(context, responseData['message']);
       }
     } catch (e) {
       print("Error fetching data: $e");
@@ -137,107 +136,117 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     }
   }
 
- Future<void> showDetail(
+Future<void> showDetail(
   BuildContext context,
-  Map<String, dynamic> visit,
+  List<dynamic> visitList,
 ) async {
   showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         title: Center(
           child: Text(
-            "Visit Details:-",
+            "Visit Details",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).pop(); // Close dialog first
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => FullScreenImageViewer(
-                                  imageUrl: visit['imagev']),
+        content: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.7, // allow scroll if too long
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: visitList.map((visit) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (visit['imagev'] != null)
+                        Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => FullScreenImageViewer(
+                                      imageUrl: visit['imagev'],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: MediaQuery.of(context).devicePixelRatio * 25,
+                                height: MediaQuery.of(context).devicePixelRatio * 30,
+                                decoration: BoxDecoration(color: Colors.grey[200]),
+                                child: Image.network(
+                                  visit['imagev'],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Icon(Icons.broken_image, size: 40),
+                                ),
+                              ),
                             ),
-                          );
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).devicePixelRatio * 25,
-                          height: MediaQuery.of(context).devicePixelRatio * 30,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                          ),
-                          child: Image.network(
-                            visit['imagev'] ?? '',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Icon(Icons.broken_image, size: 40),
                           ),
                         ),
-                      ),
-                    ),
+                      SizedBox(height: 12),
+                      buildTextDetail("Organization", visit['NameOfCustomer'], context),
+                      buildTextDetail("Concerned Person", visit['concernedperson'], context),
+                      buildTextDetail("Mobile No.", visit['phoneno'], context),
+                      buildTextDetail("Date", visit['date'], context),
+                      buildTextDetail("Start Time", visit['time'], context),
+                      buildTextDetail("End Time", visit['end'], context),
+                      buildTextDetail("Transport", visit['transport'], context),
+                      buildTextDetail("Probability", visit['probablity'], context),
+                      buildTextDetail("Prospects", visit['prospects'], context),
+                      buildTextDetail("Address", visit['address'], context),
+                      buildTextDetail("Location Address", visit['address2'], context),
+                      Divider(thickness: 1, color: Colors.grey),
+                    ],
                   ),
-                  SizedBox(height: 16),
-                  buildTextDetail("Organization", visit['NameOfCustomer'], context),
-                  buildTextDetail("Concerned Person", visit['concernedperson'], context),
-                  buildTextDetail("Mobile No.", visit['phoneno'], context),
-                  buildTextDetail("Date", visit['date'], context),
-                  buildTextDetail("Start Time", visit['time'], context),
-                  buildTextDetail("End Time", visit['end'], context),
-                  buildTextDetail("Transport", visit['transport'], context),
-                  buildTextDetail("Probablity", visit['probablity'], context),
-                  buildTextDetail("Prospects", visit['prospects'], context),
-                  buildTextDetail("Address", visit['address'], context),
-                  buildTextDetail("Location Address", visit['address2'], context),
-                  
-                ],
-              ),
-              SizedBox(height: 20),
-              Align(
-                alignment: Alignment.centerRight,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text("Close"),
-                ),
-              )
-            ],
+                );
+              }).toList(),
+            ),
           ),
         ),
+        actions: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("Close"),
+            ),
+          ),
+        ],
       );
     },
   );
 }
 
-Widget buildTextDetail(String label, dynamic value, BuildContext context) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4.0),
-    child: Text(
-      "$label: ${value ?? 'N/A'}",
-      style: TextStyle(
-        fontSize: MediaQuery.of(context).devicePixelRatio * 5,
-        fontWeight: FontWeight.w400,
+
+  Widget buildTextDetail(String label, dynamic value, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Text(
+        "$label: ${value ?? 'N/A'}",
+        style: TextStyle(
+          fontSize: MediaQuery.of(context).devicePixelRatio * 5,
+          fontWeight: FontWeight.w400,
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -326,12 +335,14 @@ Widget buildTextDetail(String label, dynamic value, BuildContext context) {
 
                   List<String> startLoc = [];
                   List<String> endLoc = [];
+                  List<dynamic> EmpVisitDetail=[];
                   List<dynamic> visits = data['data'] ?? [];
 
                   if (visits.isNotEmpty) {
                     for (var visit in visits) {
                       startLoc.add(visit['start_Location']);
                       endLoc.add(visit['end_Location']);
+                      EmpVisitDetail.add(visit);
                     }
                   }
 
@@ -410,7 +421,7 @@ Widget buildTextDetail(String label, dynamic value, BuildContext context) {
                               ElevatedButton(
                                 onPressed: () {
                                   if (visits.isNotEmpty) {
-                                    showDetail(context, visits[0]);
+                                    showDetail(context, EmpVisitDetail);
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(

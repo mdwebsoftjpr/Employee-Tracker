@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/EmpVisitRep.dart';
 import 'package:employee_tracker/Screens/Detail%20Screen/EmpAttDetail.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/empProfile.dart';
@@ -146,17 +147,13 @@ class _EmpHomeState extends State<EmpHome> {
             punchIntime = punchInTime;
           });
         }
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        print(message);
       } else {
         setState(() {
           Mainstatus = '';
         });
 
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        print(message);
       }
     } catch (e) {
       print("ihcauihhuih $e");
@@ -178,12 +175,11 @@ class _EmpHomeState extends State<EmpHome> {
         body: jsonEncode(requestBody),
       );
       var responseData = jsonDecode(response.body);
-      if(responseData['status']=='success')
-      {
-        var visitData=responseData['data'][0];
-        var visitPunc=visitData['status'];
+      if (responseData['status'] == 'success') {
+        var visitData = responseData['data'][0];
+        var visitPunc = visitData['status'];
         setState(() {
-          visitStatus=visitPunc;
+          visitStatus = visitPunc;
         });
         print(visitPunc);
       }
@@ -236,7 +232,7 @@ class _EmpHomeState extends State<EmpHome> {
         MaterialPageRoute(builder: (context) => EmpAttdetail()),
       );
     } else if (index == 2) {
-     Navigator.push(
+      Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => Empvisitrep()),
       );
@@ -278,6 +274,7 @@ class _EmpHomeState extends State<EmpHome> {
     });
   }
 
+
   void punchIn() async {
     if (_imageFile == null) return;
 
@@ -307,16 +304,12 @@ class _EmpHomeState extends State<EmpHome> {
       if (success) {
         print("Success $success");
         getApi();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        Alert.alert(context, message);
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        Alert.alert(context, message);
       }
     } else {
-      print("❌ Upload failed with status: ${response.statusCode}");
+      Alert.alert(context, "❌ Upload failed with status: ${response.statusCode}");
     }
   }
 
@@ -351,18 +344,13 @@ class _EmpHomeState extends State<EmpHome> {
       var message = data['message'];
 
       if (success) {
-        print("hdauihidnh");
         getApi();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        Alert.alert(context, message);
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        Alert.alert(context, message);
       }
     } else {
-      print("❌ Upload failed with status: ${response.statusCode}");
+      Alert.alert(context, "❌ Upload failed with status: ${response.statusCode}");
     }
   }
 
@@ -396,72 +384,29 @@ class _EmpHomeState extends State<EmpHome> {
         setState(() {
           VisitId = id;
         });
-        print(VisitId);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        Alert.alert(context, message);
         getVisit();
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        Alert.alert(context, message);
       }
     } catch (e) {
-      print(e);
+      Alert.alert(context, e);
     }
   }
 
-  void _showAlert() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Icon(
-            Icons.check_circle_outline_outlined,
-            color: Colors.lightBlue,
-            size: 70,
-          ),
-          content: Text("You are successfully LogOut"),
-          actions: [
-            TextButton(
-              onPressed:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CreateScreen()),
-                  ),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.25,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Color(0xFF03a9f4),
-                ),
-                padding: EdgeInsets.only(
-                  top: 2 * MediaQuery.of(context).devicePixelRatio,
-                  left: 5 * MediaQuery.of(context).devicePixelRatio,
-                  right: 4 * MediaQuery.of(context).devicePixelRatio,
-                  bottom: 2 * MediaQuery.of(context).devicePixelRatio,
-                ),
-                child: Text(
-                  "OK, got it!",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+void clearStorage(BuildContext context) async {
+  try {
+    await localStorage.clear();
+    await Alert.alert(context, 'Successfully Logout'); // WAIT before navigating
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CreateScreen()),
     );
+  } catch (e) {
+    await Alert.alert(context, 'Error: $e'); // also await here
   }
+}
 
-  void clearStorage(context) async {
-    try {
-      await localStorage.clear();
-      print('LocalStorage has been cleared!');
-      _showAlert();
-    } catch (e) {
-      print('Error clearing local storage: $e');
-    }
-  }
 
   void dropUp() {
     print("UP");
@@ -481,7 +426,7 @@ class _EmpHomeState extends State<EmpHome> {
     // Check if location services are enabled
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      _showSnackBar('Location services are disabled. Please enable.');
+      Alert.alert(context,'Location services are disabled. Please enable.');
       await Geolocator.openLocationSettings();
       return;
     }
@@ -491,13 +436,13 @@ class _EmpHomeState extends State<EmpHome> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        _showSnackBar('Location permission denied.');
+        Alert.alert(context,'Location permission denied.' );
         return;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      _showSnackBar('Location permission permanently denied.');
+      Alert.alert(context,'Location permission permanently denied.' );
       return;
     }
 
@@ -512,12 +457,12 @@ class _EmpHomeState extends State<EmpHome> {
         longitude = position.longitude.toString();
       });
 
-      _showSnackBar('Location fetched successfully.');
+      print('Location fetched successfully.');
 
       // Now fetch the address
       await fetchAndPrintAddress();
     } catch (e) {
-      _showSnackBar('Error getting location: $e');
+      print('Error getting location: $e');
     }
   }
 
@@ -526,7 +471,7 @@ class _EmpHomeState extends State<EmpHome> {
     double? lng = double.tryParse(longitude);
 
     if (lat == null || lng == null) {
-      _showSnackBar('Invalid latitude or longitude.');
+      print('Invalid latitude or longitude.');
       return;
     }
 
@@ -559,7 +504,7 @@ class _EmpHomeState extends State<EmpHome> {
   // This is the value that will hold the selected item
   String _selectedItem = 'One';
 
-   void _openDropdown(TapDownDetails details) async {
+  void _openDropdown(TapDownDetails details) async {
     final selectedItem = await showMenu<String>(
       context: context,
       position: RelativeRect.fromLTRB(
@@ -600,7 +545,11 @@ class _EmpHomeState extends State<EmpHome> {
                         .centerRight, // Align the second Expanded to the end
                 child: GestureDetector(
                   onTapDown: _openDropdown, // pass TapDownDetails here
-                  child: Icon(Icons.logout,color: Colors.white,size: 30,), // or any widget you want to tap
+                  child: Icon(
+                    Icons.logout,
+                    color: Colors.white,
+                    size: 30,
+                  ), // or any widget you want to tap
                 ),
               ),
             ),
@@ -660,10 +609,10 @@ class _EmpHomeState extends State<EmpHome> {
                   (Mainstatus != "" || Mainstatus == 'punchin')
                       ? ListTile(
                         leading: Image.asset(
-                      'assets/images/attendance.png',
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      height: MediaQuery.of(context).size.width * 0.1,
-                    ),
+                          'assets/images/attendance.png',
+                          width: MediaQuery.of(context).size.width * 0.1,
+                          height: MediaQuery.of(context).size.width * 0.1,
+                        ),
                         title: Text("Punch in"),
                         onTap: () {
                           _pickImageFromCamera();
@@ -681,10 +630,10 @@ class _EmpHomeState extends State<EmpHome> {
                   (BreakTime)
                       ? ListTile(
                         leading: Image.asset(
-                      'assets/images/Break.png',
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      height: MediaQuery.of(context).size.width * 0.1,
-                    ),
+                          'assets/images/Break.png',
+                          width: MediaQuery.of(context).size.width * 0.1,
+                          height: MediaQuery.of(context).size.width * 0.1,
+                        ),
                         title: Text("Break Out"),
                         onTap: () {
                           BreakOut();
@@ -707,7 +656,7 @@ class _EmpHomeState extends State<EmpHome> {
                           Navigator.pop(context); // Close the drawer first
                         },
                       ),
-                  (visitStatus=='opne')
+                  (visitStatus == 'opne')
                       ? ListTile(
                         leading: Icon(Icons.exit_to_app),
                         title: Text("Visit Out"),
@@ -784,7 +733,10 @@ class _EmpHomeState extends State<EmpHome> {
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.add_photo_alternate_outlined), label: 'Att. Report'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add_photo_alternate_outlined),
+            label: 'Att. Report',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.location_on),
             label: 'Visit Rep.',
@@ -862,24 +814,25 @@ class _EmpHomeState extends State<EmpHome> {
 
                                     SizedBox(width: 10),
                                     Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
                                         Text(
-                                      name,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Text(
-                                      CurrentAddress,
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
+                                          name,
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Text(
+                                          CurrentAddress,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
                                       ],
-                                    )
+                                    ),
                                   ],
                                 ),
                               ],
@@ -1223,7 +1176,7 @@ class _EmpHomeState extends State<EmpHome> {
                               width: MediaQuery.of(context).size.width * 0.3,
                               height: MediaQuery.of(context).size.width * 0.25,
                             ),
-                            (visitStatus=='opne')
+                            (visitStatus == 'opne')
                                 ? ElevatedButton(
                                   onPressed: () {
                                     print(VisitId);

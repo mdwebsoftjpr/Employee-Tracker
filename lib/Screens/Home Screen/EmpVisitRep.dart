@@ -1,4 +1,5 @@
 import 'package:employee_tracker/Screens/Admin%20Report/VisitRepMap.dart';
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
@@ -114,16 +115,15 @@ class EmpvisitrepState extends State<Empvisitrep> {
             responseData['data'],
           );
         });
+        Alert.alert(context, responseData['message']);
       } else {
         setState(() {
           attendanceData.clear(); // clears the list in place
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${responseData['message']}')));
+        Alert.alert(context, responseData['message']);
       }
     } catch (e) {
-      print("Error fetching data: $e");
+      Alert.alert(context, "Error fetching data: $e");
     }
   }
 
@@ -131,115 +131,132 @@ class EmpvisitrepState extends State<Empvisitrep> {
     try {
       return double.parse(input.replaceAll('"', '').replaceAll("'", '').trim());
     } catch (e) {
-      print("Error parsing double: $e");
+      Alert.alert(context, "Error parsing double: $e");
       return 0.0;
     }
   }
 
-Future<void> showDetail(
-  BuildContext context,
-  Map<String, dynamic> visit,
-) async {
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: Center(
-          child: Text(
-            "Visit Details:-",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+
+  Future<void> showDetail(
+    BuildContext context,
+    Map<String, dynamic> visit,
+  ) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
           ),
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).pop(); // Close dialog first
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => FullScreenImageViewer(
-                                  imageUrl: visit['imagev']),
+          title: Center(
+            child: Text(
+              "Visit Details:-",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).pop(); // Close dialog first
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => FullScreenImageViewer(
+                                      imageUrl: visit['imagev'],
+                                    ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            width: MediaQuery.of(context).devicePixelRatio * 25,
+                            height:
+                                MediaQuery.of(context).devicePixelRatio * 30,
+                            decoration: BoxDecoration(color: Colors.grey[200]),
+                            child: Image.network(
+                              visit['imagev'] ?? '',
+                              fit: BoxFit.cover,
+                              errorBuilder:
+                                  (context, error, stackTrace) =>
+                                      Icon(Icons.broken_image, size: 40),
                             ),
-                          );
-                        },
-                        child: Container(
-                          width: MediaQuery.of(context).devicePixelRatio * 25,
-                          height: MediaQuery.of(context).devicePixelRatio * 30,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                          ),
-                          child: Image.network(
-                            visit['imagev'] ?? '',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
-                                Icon(Icons.broken_image, size: 40),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 16),
-                  buildTextDetail("Organization", visit['NameOfCustomer'], context),
-                  buildTextDetail("Concerned Person", visit['concernedperson'], context),
-                  buildTextDetail("Mobile No.", visit['phoneno'], context),
-                  buildTextDetail("Date", visit['date'], context),
-                  buildTextDetail("Start Time", visit['time'], context),
-                  buildTextDetail("End Time", visit['end'], context),
-                  buildTextDetail("Transport", visit['transport'], context),
-                  buildTextDetail("Probablity", visit['probablity'], context),
-                  buildTextDetail("Prospects", visit['prospects'], context),
-                  buildTextDetail("Address", visit['address'], context),
-                  buildTextDetail("Location Address", visit['address2'], context),
-                  
-                ],
-              ),
-              SizedBox(height: 20),
-              Align(
-                alignment: Alignment.centerRight,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                  ),
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: Text("Close"),
+                    SizedBox(height: 16),
+                    buildTextDetail(
+                      "Organization",
+                      visit['NameOfCustomer'],
+                      context,
+                    ),
+                    buildTextDetail(
+                      "Concerned Person",
+                      visit['concernedperson'],
+                      context,
+                    ),
+                    buildTextDetail("Mobile No.", visit['phoneno'], context),
+                    buildTextDetail("Date", visit['date'], context),
+                    buildTextDetail("Start Time", visit['time'], context),
+                    buildTextDetail("End Time", visit['end'], context),
+                    buildTextDetail("Transport", visit['transport'], context),
+                    buildTextDetail("Probablity", visit['probablity'], context),
+                    buildTextDetail("Prospects", visit['prospects'], context),
+                    buildTextDetail("Address", visit['address'], context),
+                    buildTextDetail(
+                      "Location Address",
+                      visit['address2'],
+                      context,
+                    ),
+                  ],
                 ),
-              )
-            ],
+                SizedBox(height: 20),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text("Close"),
+                  ),
+                ),
+              ],
+            ),
           ),
+        );
+      },
+    );
+  }
+
+  Widget buildTextDetail(String label, dynamic value, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Text(
+        "$label: ${value ?? 'N/A'}",
+        style: TextStyle(
+          fontSize: MediaQuery.of(context).devicePixelRatio * 5,
+          fontWeight: FontWeight.w400,
         ),
-      );
-    },
-  );
-}
-
-Widget buildTextDetail(String label, dynamic value, BuildContext context) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 4.0),
-    child: Text(
-      "$label: ${value ?? 'N/A'}",
-      style: TextStyle(
-        fontSize: MediaQuery.of(context).devicePixelRatio * 5,
-        fontWeight: FontWeight.w400,
       ),
-    ),
-  );
-}
-
-
-
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -338,100 +355,106 @@ Widget buildTextDetail(String label, dynamic value, BuildContext context) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 5,), Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text("You Can See :-"),SizedBox(width: devicePixelRatio*5,),
-                            ElevatedButton(
-                        onPressed: () {
-                          List<LatLng> allPoints = [];
+                      SizedBox(height: 5),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("You Can See :-"),
+                          SizedBox(width: devicePixelRatio * 5),
+                          ElevatedButton(
+                            onPressed: () {
+                              List<LatLng> allPoints = [];
 
-                          for (var visit in visits) {
-                            final startCoord =
-                                visit['start_Location']?.split(',') ?? [];
-                            final endCoord =
-                                visit['end_Location']?.split(',') ?? [];
+                              for (var visit in visits) {
+                                final startCoord =
+                                    visit['start_Location']?.split(',') ?? [];
+                                final endCoord =
+                                    visit['end_Location']?.split(',') ?? [];
 
-                            if (startCoord.length == 2 &&
-                                endCoord.length == 2) {
-                              allPoints.add(
-                                LatLng(
-                                  safeParseDouble(startCoord[0]),
-                                  safeParseDouble(startCoord[1]),
-                                ),
-                              );
-                              allPoints.add(
-                                LatLng(
-                                  safeParseDouble(endCoord[0]),
-                                  safeParseDouble(endCoord[1]),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Invalid coordinate format for a visit',
+                                if (startCoord.length == 2 &&
+                                    endCoord.length == 2) {
+                                  allPoints.add(
+                                    LatLng(
+                                      safeParseDouble(startCoord[0]),
+                                      safeParseDouble(startCoord[1]),
+                                    ),
+                                  );
+                                  allPoints.add(
+                                    LatLng(
+                                      safeParseDouble(endCoord[0]),
+                                      safeParseDouble(endCoord[1]),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Invalid coordinate format for a visit',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              }
+
+                              if (allPoints.isNotEmpty) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) =>
+                                            SimpleMapScreen(points: allPoints),
                                   ),
-                                ),
-                              );
-                            }
-                          }
-
-                          if (allPoints.isNotEmpty) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) =>
-                                        SimpleMapScreen(points: allPoints),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'No valid location data available',
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(
+                                0xFF03a9f4,
+                              ), // Button color
+                              fixedSize: Size(
+                                double.infinity,
+                                devicePixelRatio * 8,
+                              ), // Full width, height of 60 pixels
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                  devicePixelRatio * 5,
+                                ), // Rounded corners
                               ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'No valid location data available',
-                                ),
+                            ),
+                            child: Text(
+                              "All Visits",
+                              style: TextStyle(
+                                fontSize:
+                                    devicePixelRatio *
+                                    5, // Adjust font size if necessary
+                                color: Colors.white,
                               ),
-                            );
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF03a9f4), // Button color
-                          fixedSize: Size(
-                            double.infinity,
-                            devicePixelRatio*8,
-                          ), // Full width, height of 60 pixels
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                              devicePixelRatio*5,
-                            ), // Rounded corners
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          "All Visits",
-                          style: TextStyle(
-                            fontSize: devicePixelRatio*5, // Adjust font size if necessary
-                            color: Colors.white,
-                          ),
-                        ),
+                        ],
                       ),
-                          ],
-                        ),
-                      SizedBox(height: 5,),
+                      SizedBox(height: 5),
                       ...visits.map((visit) {
                         return Card(
                           margin: EdgeInsets.symmetric(
-                            horizontal: devicePixelRatio*5,
-                            vertical: devicePixelRatio*2,
+                            horizontal: devicePixelRatio * 5,
+                            vertical: devicePixelRatio * 2,
                           ),
                           child: ListTile(
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
                                 visit['imagev'] ?? '',
-                                width: devicePixelRatio*22,
-                                height: devicePixelRatio*22,
+                                width: devicePixelRatio * 22,
+                                height: devicePixelRatio * 22,
                                 fit: BoxFit.cover,
                                 errorBuilder:
                                     (context, error, stackTrace) =>

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:employee_tracker/Screens/Admin%20Report/Attendance.dart';
 import 'package:employee_tracker/Screens/Admin%20Report/VisitReport.dart';
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Detail%20Screen/employeeList.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
 import 'package:employee_tracker/Screens/create%20employee/Master.dart';
@@ -133,8 +134,11 @@ class AdminhomeState extends State<AdminHome> {
   void clearStorage(context) async {
     try {
       await localStorage.clear();
-      print('LocalStorage has been cleared!');
-      _showAlert();
+      await Alert.alert(context, "Successfully LogOut");
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CreateScreen()),
+      );
     } catch (e) {
       print('Error clearing local storage: $e');
     }
@@ -175,47 +179,7 @@ class AdminhomeState extends State<AdminHome> {
     }
   }
 
-  void _showAlert() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Icon(
-            Icons.check_circle_outline_outlined,
-            color: Colors.lightBlue,
-            size: 70,
-          ),
-          content:Row(mainAxisAlignment: MainAxisAlignment.center, children: [  Text("You are successfully LogOut")],),
-          actions: [
-            TextButton(
-              onPressed:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CreateScreen()),
-                  ),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.25,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Color(0xFF03a9f4),
-                ),
-                padding: EdgeInsets.only(
-                  top: 2 * MediaQuery.of(context).devicePixelRatio,
-                  left: 5 * MediaQuery.of(context).devicePixelRatio,
-                  right: 4 * MediaQuery.of(context).devicePixelRatio,
-                  bottom: 2 * MediaQuery.of(context).devicePixelRatio,
-                ),
-                child: Text(
-                  "OK, got it!",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +188,9 @@ class AdminhomeState extends State<AdminHome> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(child: Text(comName,style: TextStyle(color: Colors.white),)),
+            Container(
+              child: Text(comName, style: TextStyle(color: Colors.white)),
+            ),
             SizedBox(width: 10),
             Container(
               child: Align(
@@ -233,7 +199,11 @@ class AdminhomeState extends State<AdminHome> {
                         .centerRight, // Align the second Expanded to the end
                 child: GestureDetector(
                   onTapDown: _openDropdown, // pass TapDownDetails here
-                  child: Icon(Icons.logout,color: Colors.white,size: 30,), // or any widget you want to tap
+                  child: Icon(
+                    Icons.logout,
+                    color: Colors.white,
+                    size: 30,
+                  ), // or any widget you want to tap
                 ),
               ),
             ),

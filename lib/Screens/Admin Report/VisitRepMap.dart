@@ -7,74 +7,102 @@ class SimpleMapScreen extends StatelessWidget {
   final List<LatLng> points;
   const SimpleMapScreen({Key? key, required this.points}) : super(key: key);
 
+  /// Calculate total distance of all route points in kilometers
+  double getTotalDistance(List<LatLng> points) {
+    final Distance distance = const Distance();
+    double total = 0.0;
+    for (int i = 0; i < points.length - 1; i++) {
+      total += distance.as(LengthUnit.Kilometer, points[i], points[i + 1]);
+    }
+    return total;
+  }
+
   @override
   Widget build(BuildContext context) {
-    print(points);
-    return Scaffold(
-      appBar: AppBar(title: Text('Visit Map')),
-      body: FlutterMap(
-        options: MapOptions(
-          initialCenter: points.isNotEmpty ? points.first : LatLng(0, 0),
-          initialZoom: 13,
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'com.example.app',
-          ),
-          PolylineLayer(
-            polylines: [
-              Polyline(
-                points: points,
-                strokeWidth: 4.0,
-                color: Colors.blue,
-              ),
-            ],
-          ),
-          MarkerLayer(
-            markers: points.asMap().entries.map((entry) {
-              final index = entry.key;
-              final point = entry.value;
+    final LatLng initialPoint = points.isNotEmpty ? points.first : LatLng(0, 0);
+    final double totalDistance = getTotalDistance(points);
 
-              return Marker(
-                width: 40,
-                height: 40,
-                point: point,
-                child: Stack(
-                  alignment: Alignment.center,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Visit Map'),
+        backgroundColor: Colors.blue,
+      ),
+      body: points.isEmpty
+          ? Center(child: Text('No Points Available'))
+          : Stack(
+              children: [
+                FlutterMap(
+                  options: MapOptions(
+                    initialCenter: initialPoint,
+                    initialZoom: 13,
+                  ),
                   children: [
-                    Icon(
-                      Icons.location_on,
-                      color: Colors.red,
-                      size: 40,
+                    TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.example.app',
                     ),
-                    Positioned(
-                      top: 8,
-                      child: Container(
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: Colors.amber,
-                          shape: BoxShape.circle,
+                    PolylineLayer(
+                      polylines: [
+                        Polyline(
+                          points: points,
+                          strokeWidth: 4.0,
+                          color: Colors.blue,
                         ),
-                        child: Center(
-                          child: Text(
-                            'V${index + 1}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      ],
+                    ),
+                    MarkerLayer(
+                      markers: points.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final point = entry.value;
+
+                        return Marker(
+                          width: 60,
+                          height: 60,
+                          point: point,
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.location_on,
+                                color: index == 0
+                                    ? Colors.green // start
+                                    : (index == points.length - 1
+                                        ? Colors.red // end
+                                        : Colors.orange), // middle
+                                size: 35,
+                              ),
+                              Text(
+                                'V${index + 1}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ),
+                        );
+                      }).toList(),
                     ),
                   ],
                 ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
+                    ),
+                    child: Text(
+                      'Total Distance: ${totalDistance.toStringAsFixed(2)} km',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }

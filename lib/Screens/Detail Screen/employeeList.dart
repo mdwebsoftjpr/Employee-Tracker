@@ -1,3 +1,4 @@
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Detail%20Screen/AttendanceDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -269,68 +270,74 @@ class EmployeelistState extends State<Employeelist> {
 
           actions: [
             Row(
-  children: [
-    Expanded(
-      flex: 1,
-      child: TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5 * MediaQuery.of(context).devicePixelRatio),
-            color: Color(0xFF03a9f4),
-          ),
-          padding: EdgeInsets.symmetric(
-            vertical: 3 * MediaQuery.of(context).devicePixelRatio,
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            "OK",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          5 * MediaQuery.of(context).devicePixelRatio,
+                        ),
+                        color: Color(0xFF03a9f4),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 3 * MediaQuery.of(context).devicePixelRatio,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        "OK",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 4 * MediaQuery.of(context).devicePixelRatio),
+                Expanded(
+                  flex: 1,
+                  child: TextButton(
+                    onPressed:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AttendanceDetail(item),
+                          ),
+                        ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          5 * MediaQuery.of(context).devicePixelRatio,
+                        ),
+                        color: Color(0xFF03a9f4),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        vertical: 3 * MediaQuery.of(context).devicePixelRatio,
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Attendance Detail",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ),
-      ),
-    ),
-    SizedBox(width: 4 * MediaQuery.of(context).devicePixelRatio),
-    Expanded(
-      flex: 1,
-      child: TextButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => AttendanceDetail(item),
-          ),
-        ),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5 * MediaQuery.of(context).devicePixelRatio),
-            color: Color(0xFF03a9f4),
-          ),
-          padding: EdgeInsets.symmetric(
-            vertical: 3 * MediaQuery.of(context).devicePixelRatio,
-          ),
-          alignment: Alignment.center,
-          child: Text(
-            "Attendance Detail",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    ),
-  ],
-)
-
-            ],
+          ],
         );
       },
     );
   }
+
+
 
   void ShowEmp() async {
     final url = Uri.parse(
@@ -351,14 +358,10 @@ class EmployeelistState extends State<Employeelist> {
         });
         print(EmpDetail);
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+        Alert.alert(context, responseData['message']);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong: ${e.toString()}')),
-      );
+      Alert.alert(context, e);
     }
   }
 
@@ -403,10 +406,12 @@ class EmployeelistState extends State<Employeelist> {
                     child: Container(
                       margin: EdgeInsets.only(
                         top: 5,
-                        left: MediaQuery.of(context).size.width * 0.05,
-                        right: MediaQuery.of(context).size.width * 0.05,
+                        left: MediaQuery.of(context).size.width * 0.03,
+                        right: MediaQuery.of(context).size.width * 0.03,
                       ),
-                      padding: EdgeInsets.all(5),
+                      padding: EdgeInsets.all(
+                        1 * MediaQuery.of(context).devicePixelRatio,
+                      ),
                       decoration: BoxDecoration(
                         color: Color.fromARGB(255, 215, 229, 241),
                         borderRadius: BorderRadius.circular(
@@ -414,6 +419,7 @@ class EmployeelistState extends State<Employeelist> {
                         ),
                       ),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Expanded(
                             child: Column(
@@ -442,14 +448,16 @@ class EmployeelistState extends State<Employeelist> {
                                     fontSize:
                                         4 *
                                         MediaQuery.of(context).devicePixelRatio,
-                                    fontWeight: FontWeight.w400,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(width: 5),
+                          SizedBox(
+                            width: 6 * MediaQuery.of(context).devicePixelRatio,
+                          ),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -484,6 +492,7 @@ class EmployeelistState extends State<Employeelist> {
                               ],
                             ),
                           ),
+                          SizedBox(width: 4 * MediaQuery.of(context).devicePixelRatio,),
                           Expanded(
                             child: Column(
                               children: [

@@ -1,3 +1,4 @@
+import 'package:employee_tracker/main.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
@@ -49,26 +50,64 @@ class AdminprofileState extends State<Adminprofile> {
     }
   }
 
+  Future<void> alert(BuildContext context, message) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(child: Text('Employee Tracker')),
+          content: Text(message, textAlign: TextAlign.center),
+          actions: [
+            ElevatedButton(
+              child: Text('OK'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF03a9f4),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void clearStorage(context) async {
+    try {
+      await localStorage.clear();
+      await alert(context, "Successfully Logged Out");
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => CreateScreen()),
+        (route) => false,
+      );
+    } catch (e) {
+      print('Error clearing local storage: $e');
+    }
+  }
+
   Widget buildUserRow(String label, dynamic value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
+            flex: 3,
             child: Text(
               '$label',
               style: TextStyle(
-                fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
                 fontWeight: FontWeight.w600,
+                color: Colors.grey[800],
               ),
             ),
           ),
           Expanded(
+            flex: 5,
             child: Text(
               '${value ?? 'N/A'}',
-              style: TextStyle(
-                fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
-              ),
+              style: TextStyle(color: Colors.black87),
             ),
           ),
         ],
@@ -78,12 +117,13 @@ class AdminprofileState extends State<Adminprofile> {
 
   @override
   Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
+
     if (userdata == null) {
       return Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xFF03a9f4),
           title: Text('Profile'),
-          leading: BackButton(color: Colors.white),
         ),
         body: Center(child: CircularProgressIndicator()),
       );
@@ -92,69 +132,109 @@ class AdminprofileState extends State<Adminprofile> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF03a9f4),
-        title: Text(
-          'Profile',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+        title: Text('Admin Profile'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.07),
-        child: Center(
-          child: Container(
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 215, 229, 241),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          padding: EdgeInsets.all(20),
-          child: Column(
-            children: [
-              if (userdata!['image'] != null &&
-                  userdata!['image'].toString().isNotEmpty)
-                Image.network(
-                  'https://testapi.rabadtechnology.com/${userdata!['image']}',
-                  width: MediaQuery.of(context).size.width * 0.4,
-                  height: MediaQuery.of(context).size.width * 0.4,
-                ),
-              SizedBox(height: 10),
-              buildUserRow("Company Name:", userdata!['company_name']),
-              buildUserRow("Name:", userdata!['trade_name']),
-              buildUserRow("Email:", userdata!['db_email']),
-              buildUserRow("Mobile No.:", userdata!['mobile_no']),
-              buildUserRow("Pan Card No.:", userdata!['pan_card']),
-              buildUserRow("User Name:", userdata!['username']),
-              buildUserRow("Website Name:", userdata!['website_link']),
-              ElevatedButton(
-                onPressed: () {
-                  // TODO: Navigate to EditProfile screen or open edit form
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF03a9f4), // Custom blue color
-                  foregroundColor: Colors.white, // Text/icon color
-                  padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  elevation: 5,
-                  textStyle: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                child: Text("Edit Profile"),
+        padding: EdgeInsets.all(screenWidth * 0.05),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            /// Card with all details
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
               ),
-            ],
-          ),
+              elevation: 5,
+              color: Color(0xFFF0F9FF),
+              child: Padding(
+                padding: EdgeInsets.all(screenWidth * 0.06),
+                child: Column(
+                  children: [
+                    /// Profile image
+                    if (userdata!['image'] != null && userdata!['image'].toString().isNotEmpty)
+                      CircleAvatar(
+                        radius: screenWidth * 0.18,
+                        backgroundImage: NetworkImage(
+                          'https://testapi.rabadtechnology.com/${userdata!['image']}',
+                        ),
+                        backgroundColor: Colors.grey[200],
+                      )
+                    else
+                      CircleAvatar(
+                        radius: screenWidth * 0.18,
+                        backgroundColor: Colors.grey[300],
+                        child: Icon(Icons.person, size: screenWidth * 0.2),
+                      ),
+
+                    SizedBox(height: 20),
+                    Divider(thickness: 1, color: Colors.grey[400]),
+                    SizedBox(height: 10),
+
+                    /// Admin details
+                    buildUserRow("Company Name:", userdata!['company_name']),
+                    buildUserRow("Trade Name:", userdata!['trade_name']),
+                    buildUserRow("Key Person:", userdata!['key_person']),
+                    buildUserRow("Email:", userdata!['db_email']),
+                    buildUserRow("Mobile No.:", userdata!['mobile_no']),
+                    buildUserRow("GST No.:", userdata!['gstin_no']),
+                    buildUserRow("Address:", userdata!['address']),
+                    buildUserRow("PAN Card No.:", userdata!['pan_card']),
+                    buildUserRow("Username:", userdata!['username']),
+                    buildUserRow("Website:", userdata!['website_link']),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(height: 30),
+
+            /// Action buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // TODO: Navigate to edit screen
+                  },
+                  icon: Icon(Icons.edit),
+                  label: Text("Edit Profile"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF03a9f4),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.06,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 4,
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    clearStorage(context);
+                  },
+                  icon: Icon(Icons.logout),
+                  label: Text("Sign Out"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.06,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    elevation: 4,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-      
-        )),
+      ),
     );
   }
 }

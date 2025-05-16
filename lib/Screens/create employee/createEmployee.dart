@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/AdminHome.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -151,16 +153,13 @@ class CreateEmpState extends State<CreateEmployee> {
           designationList = List<Map<String, dynamic>>.from(
             responseData['data'],
           );
+          Alert.alert(context, responseData['message']);
         });
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+        Alert.alert(context, responseData['message']);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Something went wrong: ${e.toString()}")),
-      );
+     Alert.alert(context,e);
     }
   }
 
@@ -249,59 +248,14 @@ class CreateEmpState extends State<CreateEmployee> {
         final responseData = jsonDecode(response.body);
 
         if (responseData['success']) {
-          _showAlert(context,responseData['message']);
+          Alert.alert(context,'Successfully ${responseData['message']}');
         } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+          Alert.alert(context,responseData['message']);
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Something went wrong: ${e.toString()}")),
-        );
+        Alert.alert(context,e);
       }
     }
-  }
-  void _showAlert(context,message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Icon(
-            Icons.check_circle_outline_outlined,
-            color: Colors.lightBlue,
-            size: 70,
-          ),
-          content: Text("You are successfully $message"),
-          actions: [
-            TextButton(
-              onPressed:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AdminHome()),
-                  ),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.25,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: Color(0xFF03a9f4),
-                ),
-                padding: EdgeInsets.only(
-                  top: 2 * MediaQuery.of(context).devicePixelRatio,
-                  left: 5 * MediaQuery.of(context).devicePixelRatio,
-                  right: 4 * MediaQuery.of(context).devicePixelRatio,
-                  bottom: 2 * MediaQuery.of(context).devicePixelRatio,
-                ),
-                child: Text(
-                  "OK, got it!",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -668,7 +622,7 @@ class CreateEmpState extends State<CreateEmployee> {
                     ),
                     filled: true,
                     fillColor: Colors.grey[200],
-                    prefixIcon: Icon(Icons.attach_money),
+                    prefixIcon: Icon(FontAwesomeIcons.indianRupeeSign, size: 18),
                   ),
                   keyboardType: TextInputType.phone,
                   validator: (value) {
@@ -820,8 +774,9 @@ class CreateEmpState extends State<CreateEmployee> {
                   onPressed: () => createEmp(context),
                   child: Text(
                     "Create Employee",
-                    style: TextStyle(fontSize: 20, color: Colors.black),
+                    style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
+                  style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF03a9f4)),
                 ),
                 SizedBox(height: 15),
               ],

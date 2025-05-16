@@ -1,3 +1,4 @@
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -64,23 +65,23 @@ class MasterState extends State<Master> {
           designationList = responseData['data'];
         });
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+        Alert.alert(context, responseData['message']);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong: ${e.toString()}')),
-      );
+      Alert.alert(context, e);
     }
   }
 
-  void UpdateMaster(String designation,int id) async {
+  void UpdateMaster(String designation, int id) async {
     print("$designation,$id");
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/updatedesignation.php',
     );
-    final Map<String, dynamic> requestBody = {"company_id": comId.toString(),"designationname":designation,"designation_id":id};
+    final Map<String, dynamic> requestBody = {
+      "company_id": comId.toString(),
+      "designationname": designation,
+      "designation_id": id,
+    };
 
     try {
       final response = await http.post(
@@ -91,20 +92,16 @@ class MasterState extends State<Master> {
       final responseData = jsonDecode(response.body);
       if (responseData['success']) {
         ShowMaster();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+        Alert.alert(context, responseData['message']);
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+        Alert.alert(context, responseData['message']);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong: ${e.toString()}')),
-      );
+      Alert.alert(context, e);
     }
   }
+
+
 
   void DeleteMaster(int id) async {
     final url = Uri.parse(
@@ -121,18 +118,12 @@ class MasterState extends State<Master> {
       final responseData = jsonDecode(response.body);
       if (responseData['success']) {
         ShowMaster();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+        Alert.alert(context, responseData['message']);
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+        Alert.alert(context, responseData['message']);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong: ${e.toString()}')),
-      );
+      Alert.alert(context, e);
     }
   }
 
@@ -153,74 +144,72 @@ class MasterState extends State<Master> {
           body: jsonEncode(requestBody),
         );
         final responseData = jsonDecode(response.body);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+        Alert.alert(context, responseData['message']);
         if (responseData['success']) {
           designation.clear();
           ShowMaster();
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Something went wrong: ${e.toString()}')),
-        );
+        Alert.alert(context, e);
       }
     }
   }
-void _openDropdown(String currentDesignation,int Id) async {
-  final TextEditingController _updateController =
-      TextEditingController(text: currentDesignation);
-  final GlobalKey<FormState> _updateFormKey = GlobalKey<FormState>();
 
-  await showDialog<String>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Update Designation'),
-        content: SingleChildScrollView(
-          child: Form(
-            key: _updateFormKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: _updateController,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: InputDecoration(
-                    labelText: 'Enter Your Designation',
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    prefixIcon: Icon(Icons.person),
+  void _openDropdown(String currentDesignation, int Id) async {
+    final TextEditingController _updateController = TextEditingController(
+      text: currentDesignation,
+    );
+    final GlobalKey<FormState> _updateFormKey = GlobalKey<FormState>();
+
+    await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Update Designation'),
+          content: SingleChildScrollView(
+            child: Form(
+              key: _updateFormKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: _updateController,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: InputDecoration(
+                      labelText: 'Enter Your Designation',
+                      border: OutlineInputBorder(),
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      prefixIcon: Icon(Icons.person),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Enter your Designation';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Enter your Designation';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_updateFormKey.currentState!.validate()) {
-                      Navigator.pop(context); // Close the dialog
-                      UpdateMaster(_updateController.text,Id); // Call update
-                    }
-                  },
-                  child: Text(
-                    "Update",
-                    style: TextStyle(color: Colors.black),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_updateFormKey.currentState!.validate()) {
+                        Navigator.pop(context); // Close the dialog
+                        UpdateMaster(_updateController.text, Id); // Call update
+                      }
+                    },
+                    child: Text(
+                      "Update",
+                      style: TextStyle(color: Colors.black),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -314,14 +303,20 @@ void _openDropdown(String currentDesignation,int Id) async {
                                 Expanded(
                                   flex: 2,
                                   child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       SizedBox(height: 4),
                                       Text(
                                         "Designation: ${item['designationname']}",
-                                        style: TextStyle(fontSize:5 * MediaQuery.of(context).devicePixelRatio ),
+                                        style: TextStyle(
+                                          fontSize:
+                                              5 *
+                                              MediaQuery.of(
+                                                context,
+                                              ).devicePixelRatio,
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -334,7 +329,11 @@ void _openDropdown(String currentDesignation,int Id) async {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       IconButton(
-                                        onPressed:()=> _openDropdown(item['designationname'],item['id']),
+                                        onPressed:
+                                            () => _openDropdown(
+                                              item['designationname'],
+                                              item['id'],
+                                            ),
                                         icon: Column(
                                           children: [
                                             Icon(
@@ -360,7 +359,8 @@ void _openDropdown(String currentDesignation,int Id) async {
                                         ),
                                       ),
                                       IconButton(
-                                        onPressed: ()=>DeleteMaster(item['id']) ,
+                                        onPressed:
+                                            () => DeleteMaster(item['id']),
                                         icon: Column(
                                           children: [
                                             Icon(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
-
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Detail%20Screen/AttendanceDetail.dart';
 
 void main() async {
@@ -66,17 +66,51 @@ class AttendanceState extends State<Attendance> {
             responseData['data'],
           );
         });
-        print(attendanceData);
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(responseData['message'])));
+        Alert.alert(context, responseData['message']);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Something went wrong: ${e.toString()}')),
-      );
+      Alert.alert(context, 'Something went wrong: ${e.toString()}');
     }
+  }
+
+  Future<void> alert(BuildContext context, message) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [Text('Employee Tracker')],
+          ),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  overflow:
+                      TextOverflow.visible, // Or ellipsis if you want cut-off
+                  softWrap: true,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              child: Text('OK', style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF03a9f4),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss alert
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -119,7 +153,7 @@ class AttendanceState extends State<Attendance> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AttendanceDetail(item)
+                          builder: (context) => AttendanceDetail(item),
                         ),
                       );
                     },

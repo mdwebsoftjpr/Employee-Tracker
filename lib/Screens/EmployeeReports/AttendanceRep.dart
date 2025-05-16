@@ -1,3 +1,4 @@
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
@@ -68,52 +69,51 @@ class AttendancerepState extends State<Attendancerep> {
     }
   }
 
-void attendance() async {
-  final url = Uri.parse(
-    'https://testapi.rabadtechnology.com/attendence_report.php',
-  );
-  try {
-    final Map<String, dynamic> requestBody = {
-      "date": formattedDate,
-      "username": name,
-      "company_name": comName,
-    };
-
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(requestBody),
+  void attendance() async {
+    final url = Uri.parse(
+      'https://testapi.rabadtechnology.com/attendence_report.php',
     );
+    try {
+      final Map<String, dynamic> requestBody = {
+        "date": formattedDate,
+        "username": name,
+        "company_name": comName,
+      };
 
-    print("Status Code: ${response.statusCode}");
-    print("Raw Response Body: ${response.body}");
-
-    if (response.statusCode == 200 && response.body.isNotEmpty) {
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
-      var success = responseData['success'];
-      var message = responseData['message'];
-      var data = responseData['data'];
-      print(data);
-      if (success == true) {
-        setState(() {
-          attendanceDeta = List<Map<String, dynamic>>.from(data);
-        });
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Invalid or empty response from server")),
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
       );
+
+      print("Status Code: ${response.statusCode}");
+      print("Raw Response Body: ${response.body}");
+
+      if (response.statusCode == 200 && response.body.isNotEmpty) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        var success = responseData['success'];
+        var message = responseData['message'];
+        var data = responseData['data'];
+        print(data);
+        if (success == true) {
+          setState(() {
+            attendanceDeta = List<Map<String, dynamic>>.from(data);
+          });
+          Alert.alert(context, message);
+        } else {
+          Alert.alert(context, message);
+        }
+      } else {
+        Alert.alert(context, "Invalid or empty response from server");
+      }
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Something went wrong: $e")));
     }
-  } catch (e) {
-    print("Error: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Something went wrong: $e")),
-    );
   }
-}
+
 
 
   @override
@@ -129,7 +129,7 @@ void attendance() async {
                 color: Colors.white,
                 fontSize: MediaQuery.of(context).size.width * 0.05,
                 fontWeight: FontWeight.bold,
-              ), 
+              ),
             ),
             SizedBox(width: MediaQuery.of(context).size.width * 0.075),
             TextButton(

@@ -1,3 +1,4 @@
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
@@ -5,8 +6,8 @@ import 'dart:convert';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
-void main()async{
-   WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
   runApp(EmpAttdetail());
 }
@@ -35,13 +36,13 @@ class EmpattdetailState extends State<EmpAttdetail> {
     EmpAttDetail();
   }
 
-   void _loadUser() {
+  void _loadUser() {
     var userJson = localStorage.getItem('user');
     if (userJson != null) {
       var user = jsonDecode(userJson);
       print("Sahil$user");
       setState(() {
-        ComId = user['company_id'] ??0;
+        ComId = user['company_id'] ?? 0;
         empId = user['id'] ?? 0;
       });
     }
@@ -82,28 +83,24 @@ class EmpattdetailState extends State<EmpAttdetail> {
             }
           });
           setState(() {
-          attendanceData = tempList.reversed.toList();
-        });
-        }else{
-          ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+            attendanceData = tempList.reversed.toList();
+          });
+        } else {
+          Alert.alert(context, message);
         }
       } else {
         setState(() {
           attendanceData = [];
         });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+
+        Alert.alert(context, message);
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      Alert.alert(context, e);
     }
   }
 
+ 
   void _pickMonth() {
     showMonthPicker(context: context, initialDate: DateTime.now()).then((date) {
       if (date != null) {
@@ -146,122 +143,117 @@ class EmpattdetailState extends State<EmpAttdetail> {
           ),
         ],
       ),
-      body:attendanceData.isEmpty
-                    ? Center(
-                      child: Text(
-                        "Attendance Not Found",
-                        style: TextStyle(fontSize: deviceWidth * 0.05),
+      body:
+          attendanceData.isEmpty
+              ? Center(
+                child: Text(
+                  "Attendance Not Found",
+                  style: TextStyle(fontSize: deviceWidth * 0.05),
+                ),
+              )
+              : ListView.builder(
+                itemCount: attendanceData.length,
+                itemBuilder: (context, index) {
+                  final data = attendanceData[index];
+                  return Padding(
+                    padding: EdgeInsets.all(devicePixelRatio * .5),
+                    child: Container(
+                      margin: EdgeInsets.only(
+                        top: devicePixelRatio * 2,
+                        left: devicePixelRatio * 3.5,
+                        right: devicePixelRatio * 3.5,
                       ),
-                    )
-                    : ListView.builder(
-                      itemCount: attendanceData.length,
-                      itemBuilder: (context, index) {
-                        final data = attendanceData[index];
-                        return Padding(
-                          padding: EdgeInsets.all(devicePixelRatio * .5),
-                          child: Container(
-                            margin: EdgeInsets.only(
-                              top: devicePixelRatio * 2,
-                              left: devicePixelRatio * 3.5,
-                              right: devicePixelRatio * 3.5,
-                            ),
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                deviceWidth * 0.03,
-                              ),
-                              color: const Color.fromARGB(255, 247, 239, 230),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(deviceWidth * 0.03),
+                        color: const Color.fromARGB(255, 247, 239, 230),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Date: ${data['date'] ?? ''}",
-                                        style: TextStyle(
-                                          fontSize: deviceWidth * 0.04,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Break Time: ${data['break_time'] ?? ''}",
-                                        style: TextStyle(
-                                          fontSize: deviceWidth * 0.04,
-                                        ),
-                                      ),
-                                    ],
+                                Text(
+                                  "Date: ${data['date'] ?? ''}",
+                                  style: TextStyle(
+                                    fontSize: deviceWidth * 0.04,
                                   ),
                                 ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Punch In: ${data['time_in'] ?? ''}",
-                                        style: TextStyle(
-                                          fontSize: deviceWidth * 0.04,
-                                        ),
-                                      ),
-                                      Text(
-                                        "Punch Out: ${data['time_out'] ?? ''}",
-                                        style: TextStyle(
-                                          fontSize: deviceWidth * 0.04,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: deviceHeight * 0.005,
-                                          horizontal: deviceWidth * 0.03,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              (data['attendance_status'] ==
-                                                          'P' ||
-                                                      data['attendance_status'] ==
-                                                          'p')
-                                                  ? Color(0xFF03a9f4)
-                                                  : Colors.redAccent,
-                                          borderRadius: BorderRadius.circular(
-                                            deviceWidth * 0.044,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          "${data['attendance_status'] ?? ''}",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: deviceWidth * 0.04,
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(height: deviceHeight * 0.005),
-                                      Text(
-                                        "Total Hours: ${data['hours']}",
-                                        style: TextStyle(
-                                          fontSize: deviceWidth * 0.04,
-                                        ),
-                                      ),
-                                    ],
+                                Text(
+                                  "Break Time: ${data['break_time'] ?? ''}",
+                                  style: TextStyle(
+                                    fontSize: deviceWidth * 0.04,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        );
-                      },
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Punch In: ${data['time_in'] ?? ''}",
+                                  style: TextStyle(
+                                    fontSize: deviceWidth * 0.04,
+                                  ),
+                                ),
+                                Text(
+                                  "Punch Out: ${data['time_out'] ?? ''}",
+                                  style: TextStyle(
+                                    fontSize: deviceWidth * 0.04,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: deviceHeight * 0.005,
+                                    horizontal: deviceWidth * 0.03,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        (data['attendance_status'] == 'P' ||
+                                                data['attendance_status'] ==
+                                                    'p')
+                                            ? Color(0xFF03a9f4)
+                                            : Colors.redAccent,
+                                    borderRadius: BorderRadius.circular(
+                                      deviceWidth * 0.044,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "${data['attendance_status'] ?? ''}",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: deviceWidth * 0.04,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: deviceHeight * 0.005),
+                                Text(
+                                  "Total Hours: ${data['hours']}",
+                                  style: TextStyle(
+                                    fontSize: deviceWidth * 0.04,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  );
+                },
+              ),
     );
   }
 }
