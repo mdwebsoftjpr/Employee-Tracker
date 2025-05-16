@@ -781,7 +781,7 @@ class _EmpHomeState extends State<EmpHome> {
                       clearStorage(context);
                     },
                   ),
-                  SizedBox(height: 40,),
+                  SizedBox(height: 60,),
                   Divider(),
 
                   Padding(
