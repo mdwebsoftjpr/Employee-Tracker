@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 // #docregion photo-picker-example
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -313,11 +313,7 @@ class AdminhomeState extends State<AdminHome> {
                     ),
                   ),
                   ListTile(
-                    leading: Image.asset(
-                      'assets/images/Att  Report.png',
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      height: MediaQuery.of(context).size.width * 0.1,
-                    ),
+                    leading: Icon(Icons.fact_check),
                     title: Text("Attendance Report"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
@@ -328,12 +324,8 @@ class AdminhomeState extends State<AdminHome> {
                     },
                   ),
                   ListTile(
-                    leading: Image.asset(
-                      'assets/images/visit_report.png',
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      height: MediaQuery.of(context).size.width * 0.1,
-                    ),
-                    title: Text("Visit Time Report"),
+                    leading: Icon(Icons.receipt_long),
+                    title: Text("Visit Report"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
@@ -345,11 +337,7 @@ class AdminhomeState extends State<AdminHome> {
                     },
                   ),
                   ListTile(
-                    leading: Image.asset(
-                      'assets/images/addEmp.png',
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      height: MediaQuery.of(context).size.width * 0.1,
-                    ),
+                    leading: Icon(Icons.people_alt),
                     title: Text("Create Employee"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
@@ -363,11 +351,7 @@ class AdminhomeState extends State<AdminHome> {
                   ),
 
                   ListTile(
-                    leading: Image.asset(
-                      'assets/images/Designation.png',
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      height: MediaQuery.of(context).size.width * 0.1,
-                    ),
+                    leading:Icon(Icons.person_add_alt_1),
                     title: Text("Create Designation"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
@@ -378,11 +362,7 @@ class AdminhomeState extends State<AdminHome> {
                     },
                   ),
                   ListTile(
-                    leading: Image.asset(
-                      'assets/images/profile.png',
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      height: MediaQuery.of(context).size.width * 0.1,
-                    ),
+                    leading:Icon(Icons.person),
                     title: Text("Profile"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
@@ -393,15 +373,59 @@ class AdminhomeState extends State<AdminHome> {
                     },
                   ),
                   ListTile(
-                    leading: Image.asset(
-                      'assets/images/logout.png',
-                      width: MediaQuery.of(context).size.width * 0.1,
-                      height: MediaQuery.of(context).size.width * 0.1,
-                    ),
+                    leading:Icon(Icons.logout),
                     title: Text("Logout"),
                     onTap: () {
                       clearStorage(context);
                     },
+                  ),
+                   Divider(),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+                    child: InkWell(
+                      onTap: () async {
+                        const url = 'https://www.mdwebsoft.com/';
+                        if (await canLaunchUrl(Uri.parse(url))) {
+                          await launchUrl(Uri.parse(url));
+                        } else {
+                          throw 'Could not launch $url';
+                        }
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Copy Rights',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.copyright,
+                                size: 16,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                '2025 Md Websoft',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

@@ -287,7 +287,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                       "Date",
                       style: TextStyle(
                         fontSize: devicePixelRatio * 5,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                     SizedBox(width: 3),
@@ -310,7 +310,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                       "Month",
                       style: TextStyle(
                         fontSize: devicePixelRatio * 5,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                     SizedBox(width: 3),
@@ -420,7 +420,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                               foregroundColor: Colors.white,
                               padding: EdgeInsets.symmetric(
                                 horizontal: deviceWidth * 0.06,
-                                vertical: 14,
+                                vertical: 10,
                               ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
