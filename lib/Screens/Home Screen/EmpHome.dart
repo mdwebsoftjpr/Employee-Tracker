@@ -775,16 +775,6 @@ class _EmpHomeState extends State<EmpHome> {
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.person) ,
-                    title: Text("Company Profile"),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => Adminprofile()),
-                      );
-                    },
-                  ),
-                  ListTile(
                     leading:Icon(Icons.logout) ,
                     title: Text("Logout"),
                     onTap: () {
