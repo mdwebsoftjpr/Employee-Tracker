@@ -272,6 +272,8 @@ class EmpvisitrepState extends State<Empvisitrep> {
         title: Text(
           'Employee Visit',
           style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),

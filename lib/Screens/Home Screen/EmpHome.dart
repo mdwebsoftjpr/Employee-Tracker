@@ -18,7 +18,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p; 
+import 'package:path/path.dart' as p;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -113,8 +113,8 @@ class _EmpHomeState extends State<EmpHome> {
         name = user['name'] ?? 'Default User';
         username = user['username'] ?? 'Default User';
         userid = user['id'] ?? 'Default User';
-        userImg =  user['image'];
-        comimage=user['company_logo'];
+        userImg = user['image'];
+        comimage = user['company_logo'];
       });
       print(userImg);
     }
@@ -211,45 +211,46 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   Future<File?> compressImage(XFile xFile) async {
-  final File file = File(xFile.path);
-  final dir = await getTemporaryDirectory();
-  final targetPath = p.join(dir.path, 'compressed_${p.basename(file.path)}');
+    final File file = File(xFile.path);
+    final dir = await getTemporaryDirectory();
+    final targetPath = p.join(dir.path, 'compressed_${p.basename(file.path)}');
 
-  int quality = 70;
-  File? compressedFile;
-  const int maxSizeInBytes = 100 * 1024;
+    int quality = 70;
+    File? compressedFile;
+    const int maxSizeInBytes = 100 * 1024;
 
-  for (int q = quality; q >= 10; q -= 10) {
-    final result = await FlutterImageCompress.compressAndGetFile(
-      file.path,
-      targetPath,
-      quality: q,
-      format: CompressFormat.jpeg,
+    for (int q = quality; q >= 10; q -= 10) {
+      final result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        targetPath,
+        quality: q,
+        format: CompressFormat.jpeg,
+      );
+
+      if (result != null && await result.length() <= maxSizeInBytes) {
+        compressedFile = File(result.path);
+        break;
+      }
+    }
+
+    return compressedFile;
+  }
+
+  Future<void> _pickImageFromCamera() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.camera,
+      preferredCameraDevice: CameraDevice.front,
     );
 
-    if (result != null && await result.length() <= maxSizeInBytes) {
-      compressedFile = File(result.path);
-      break;
+    if (pickedFile != null) {
+      File? compressed = await compressImage(pickedFile);
+
+      setState(() {
+        _imageFile = compressed != null ? XFile(compressed.path) : pickedFile;
+      });
     }
   }
 
-  return compressedFile;
-}
-
-Future<void> _pickImageFromCamera() async {
-  final XFile? pickedFile = await _picker.pickImage(
-    source: ImageSource.camera,
-    preferredCameraDevice: CameraDevice.front,
-  );
-
-  if (pickedFile != null) {
-    File? compressed = await compressImage(pickedFile);
-
-    setState(() {
-      _imageFile = compressed != null ? XFile(compressed.path) : pickedFile;
-    });
-  }
-}
   // Notification method to navigate to Notification screen
   void _onItemTapped(int index) {
     setState(() {
@@ -639,7 +640,7 @@ Future<void> _pickImageFromCamera() async {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child:
-                      (UserImage != null && UserImage.isNotEmpty)
+                      (userImg != null )
                           ? Image.network(
                             'https://testapi.rabadtechnology.com/$userImg',
                             width: MediaQuery.of(context).size.width * 0.10,
@@ -686,7 +687,7 @@ Future<void> _pickImageFromCamera() async {
                         right: 10,
                       ),
                       child:
-                          (UserImage != '')
+                          (comimage != '')
                               ? ClipRRect(
                                 borderRadius: BorderRadius.circular(10),
                                 child: Image.network(
@@ -708,7 +709,7 @@ Future<void> _pickImageFromCamera() async {
                   ),
                   (Mainstatus == "" || Mainstatus == 'punchout')
                       ? ListTile(
-                        leading: Icon(Icons.fingerprint) ,
+                        leading: Icon(Icons.fingerprint),
                         title: Text("Punch in"),
                         onTap: () {
                           _pickImageFromCamera();
@@ -725,7 +726,7 @@ Future<void> _pickImageFromCamera() async {
                       ),
                   (BreakTime)
                       ? ListTile(
-                        leading: Icon(Icons.coffee) ,
+                        leading: Icon(Icons.coffee),
                         title: Text("Break Out"),
                         onTap: () {
                           BreakOut();
@@ -734,14 +735,14 @@ Future<void> _pickImageFromCamera() async {
                       )
                       : (bcount >= 3)
                       ? ListTile(
-                        leading: Icon(Icons.coffee) ,
+                        leading: Icon(Icons.coffee),
                         title: Text("Break Limit Over"),
                         onTap: () {
                           Navigator.pop(context); // Close the drawer first
                         },
                       )
                       : ListTile(
-                        leading: Icon(Icons.coffee) ,
+                        leading: Icon(Icons.coffee),
                         title: Text("Break In"),
                         onTap: () {
                           BreakIn();
@@ -750,15 +751,13 @@ Future<void> _pickImageFromCamera() async {
                       ),
                   (visitStatus == 'opne')
                       ? ListTile(
-                        leading: Icon(Icons.run_circle) ,
+                        leading: Icon(Icons.run_circle),
                         title: Text("Visit Out"),
                         onTap: () {
                           if (Mainstatus != '' && Mainstatus == 'punchin') {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) => VisitOut(),
-                              ),
+                              MaterialPageRoute(builder: (_) => VisitOut()),
                             );
                           } else {
                             Alert.alert(
@@ -769,7 +768,7 @@ Future<void> _pickImageFromCamera() async {
                         },
                       )
                       : ListTile(
-                        leading: Icon(Icons.location_on) ,
+                        leading: Icon(Icons.location_on),
                         title: Text("Visit In"),
                         onTap: () async {
                           if (Mainstatus != '' && Mainstatus == 'punchin') {
@@ -785,7 +784,7 @@ Future<void> _pickImageFromCamera() async {
                       ),
 
                   ListTile(
-                    leading: Icon(Icons.fact_check) ,
+                    leading: Icon(Icons.fact_check),
                     title: Text("Attendance Report"),
                     onTap: () {
                       Navigator.push(
@@ -795,7 +794,7 @@ Future<void> _pickImageFromCamera() async {
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.receipt_long) ,
+                    leading: Icon(Icons.receipt_long),
                     title: Text("Visit Report"),
                     onTap: () {
                       Navigator.push(
@@ -805,13 +804,13 @@ Future<void> _pickImageFromCamera() async {
                     },
                   ),
                   ListTile(
-                    leading:Icon(Icons.logout) ,
+                    leading: Icon(Icons.logout),
                     title: Text("Logout"),
                     onTap: () {
                       clearStorage(context);
                     },
                   ),
-                  SizedBox(height: 60,),
+                  SizedBox(height: 60),
                   Divider(),
 
                   Padding(
@@ -935,7 +934,7 @@ Future<void> _pickImageFromCamera() async {
                                       ),
                                       margin: EdgeInsets.all(10),
                                       child:
-                                          (UserImage != '')
+                                          (UserImage != '' && UserImage.isNotEmpty)
                                               ? ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
@@ -950,8 +949,6 @@ Future<void> _pickImageFromCamera() async {
                                     ),
 
                                     SizedBox(width: 10),
-
-                                    /// 👇 Wrap this in Flexible so the Column can wrap text
                                     Expanded(
                                       child: Column(
                                         crossAxisAlignment:
@@ -961,8 +958,8 @@ Future<void> _pickImageFromCamera() async {
                                           Text(
                                             name,
                                             style: TextStyle(
-                                              fontSize: 20,
-                                              fontWeight: FontWeight.w600,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
                                               color: Colors.white,
                                             ),
                                           ),
@@ -1352,8 +1349,7 @@ Future<void> _pickImageFromCamera() async {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder:
-                                              (context) => VisitOut(),
+                                          builder: (context) => VisitOut(),
                                         ),
                                       );
                                     } else {
@@ -1450,9 +1446,7 @@ Future<void> _pickImageFromCamera() async {
                         padding: EdgeInsets.all(10),
                         child: Column(
                           children: [
-                            Text(
-                              "Break 1"
-                            ),
+                            Text("Break 1"),
                             Image.asset(
                               'assets/images/Break.png',
                               width: MediaQuery.of(context).size.width * 0.12,
@@ -1461,9 +1455,7 @@ Future<void> _pickImageFromCamera() async {
                             (bcount == 0)
                                 ? ElevatedButton(
                                   onPressed: () => {BreakIn()},
-                                  child: Text(
-                                    "Start"
-                                  ),
+                                  child: Text("Start"),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xFF03a9f4),
                                     foregroundColor: Colors.white,
@@ -1485,9 +1477,7 @@ Future<void> _pickImageFromCamera() async {
                                 : (bcount == 1)
                                 ? ElevatedButton(
                                   onPressed: () => {BreakOut()},
-                                  child: Text(
-                                    "End"
-                                  ),
+                                  child: Text("End"),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xFF03a9f4),
                                     foregroundColor: Colors.white,
@@ -1508,9 +1498,7 @@ Future<void> _pickImageFromCamera() async {
                                 )
                                 : ElevatedButton(
                                   onPressed: () => {},
-                                  child: Text(
-                                    "End"
-                                  ),
+                                  child: Text("End"),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,
                                     foregroundColor: Colors.white,
@@ -1550,9 +1538,7 @@ Future<void> _pickImageFromCamera() async {
                         padding: EdgeInsets.all(10),
                         child: Column(
                           children: [
-                            Text(
-                              "Break 2"
-                            ),
+                            Text("Break 2"),
                             Image.asset(
                               'assets/images/Break.png',
                               width: MediaQuery.of(context).size.width * 0.12,
@@ -1561,9 +1547,7 @@ Future<void> _pickImageFromCamera() async {
                             (bcount == 2)
                                 ? ElevatedButton(
                                   onPressed: () => {BreakIn()},
-                                  child: Text(
-                                    "Start"
-                                  ),
+                                  child: Text("Start"),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xFF03a9f4),
                                     foregroundColor: Colors.white,
@@ -1585,9 +1569,7 @@ Future<void> _pickImageFromCamera() async {
                                 : (bcount == 3)
                                 ? ElevatedButton(
                                   onPressed: () => {BreakOut()},
-                                  child: Text(
-                                    "End"
-                                  ),
+                                  child: Text("End"),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xFF03a9f4),
                                     foregroundColor: Colors.white,
@@ -1608,9 +1590,7 @@ Future<void> _pickImageFromCamera() async {
                                 )
                                 : ElevatedButton(
                                   onPressed: () => {},
-                                  child: Text(
-                                    "End"
-                                  ),
+                                  child: Text("End"),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,
                                     foregroundColor: Colors.white,
@@ -1650,9 +1630,7 @@ Future<void> _pickImageFromCamera() async {
                         padding: EdgeInsets.all(10),
                         child: Column(
                           children: [
-                            Text(
-                              "Break 3"
-                            ),
+                            Text("Break 3"),
                             Image.asset(
                               'assets/images/Break.png',
                               width: MediaQuery.of(context).size.width * 0.12,
@@ -1661,9 +1639,7 @@ Future<void> _pickImageFromCamera() async {
                             (bcount == 4)
                                 ? ElevatedButton(
                                   onPressed: () => {BreakIn()},
-                                  child: Text(
-                                    "Start"
-                                  ),
+                                  child: Text("Start"),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xFF03a9f4),
                                     foregroundColor: Colors.white,
@@ -1685,9 +1661,7 @@ Future<void> _pickImageFromCamera() async {
                                 : (bcount == 5)
                                 ? ElevatedButton(
                                   onPressed: () => {BreakOut()},
-                                  child: Text(
-                                    "End"
-                                  ),
+                                  child: Text("End"),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Color(0xFF03a9f4),
                                     foregroundColor: Colors.white,
@@ -1708,9 +1682,7 @@ Future<void> _pickImageFromCamera() async {
                                 )
                                 : ElevatedButton(
                                   onPressed: () => {},
-                                  child: Text(
-                                    "End"
-                                  ),
+                                  child: Text("End"),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.red,
                                     foregroundColor: Colors.white,
@@ -1787,26 +1759,22 @@ Future<void> _pickImageFromCamera() async {
                                       builder: (context) => EmpAttdetail(),
                                     ),
                                   ),
-                              child: Text(
-                                "View"
-                              ),
+                              child: Text("View"),
                               style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
-                                          MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
+                                backgroundColor: Color(0xFF03a9f4),
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal:
+                                      MediaQuery.of(context).size.width * 0.05,
+                                  vertical: 4,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    MediaQuery.of(context).size.width * 0.07,
                                   ),
+                                ),
+                                elevation: 4,
+                              ),
                             ),
                           ],
                         ),
@@ -1851,26 +1819,22 @@ Future<void> _pickImageFromCamera() async {
                                       builder: (_) => Empvisitrep(),
                                     ),
                                   ),
-                              child: Text(
-                                "View"
-                              ),
+                              child: Text("View"),
                               style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
-                                          MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
+                                backgroundColor: Color(0xFF03a9f4),
+                                foregroundColor: Colors.white,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal:
+                                      MediaQuery.of(context).size.width * 0.05,
+                                  vertical: 4,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                    MediaQuery.of(context).size.width * 0.07,
                                   ),
+                                ),
+                                elevation: 4,
+                              ),
                             ),
                           ],
                         ),

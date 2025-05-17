@@ -1,3 +1,4 @@
+import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
 import 'package:employee_tracker/main.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -64,10 +65,7 @@ class EmpprofileState extends State<Empprofile> {
             flex: 5,
             child: Text(
               '${value ?? 'N/A'}',
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.black87,
-              ),
+              style: TextStyle(fontSize: 15, color: Colors.black87),
             ),
           ),
         ],
@@ -130,11 +128,16 @@ class EmpprofileState extends State<Empprofile> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Color(0xFF03a9f4),
-        title: Text('Employee Profile',style: TextStyle(color: Colors.white),),
+        title: Text(
+          'Employee Profile',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -172,8 +175,6 @@ class EmpprofileState extends State<Empprofile> {
                     SizedBox(height: 20),
                     Divider(color: Colors.grey.shade400),
                     SizedBox(height: 10),
-
-                    buildUserRow("Com. Name:", userdata!['company_name']),
                     buildUserRow("Name:", userdata!['name']),
                     buildUserRow("Designation:", userdata!['designation']),
                     buildUserRow("Salary:", userdata!['salary']),
@@ -191,26 +192,30 @@ class EmpprofileState extends State<Empprofile> {
               ),
             ),
             SizedBox(height: 30),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Navigate to EditProfile screen
-                  },
-                  icon: Icon(Icons.home),
-                  label: Text("Go to Home"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF03a9f4),
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.06,
-                      vertical: 14,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(screenWidth * 0.07),
-                    ),
-                    elevation: 4,
-                  ),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EmpHome(),
+                        ),
+                      );
+              },
+              icon: Icon(Icons.home),
+              label: Text("Go to Home"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF03a9f4),
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.06,
+                  vertical: 14,
                 ),
-                
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(screenWidth * 0.07),
+                ),
+                elevation: 4,
+              ),
+            ),
           ],
         ),
       ),

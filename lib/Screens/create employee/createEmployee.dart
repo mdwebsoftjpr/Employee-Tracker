@@ -19,7 +19,6 @@ void main() async {
   runApp(MaterialApp(home: CreateEmployee()));
 }
 
-
 class UpperCaseTextFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
@@ -32,7 +31,6 @@ class UpperCaseTextFormatter extends TextInputFormatter {
     );
   }
 }
-
 
 Future<void> _initializeLocalStorage() async {
   await localStorage.ready;
@@ -159,7 +157,7 @@ class CreateEmpState extends State<CreateEmployee> {
         Alert.alert(context, responseData['message']);
       }
     } catch (e) {
-     Alert.alert(context,e);
+      Alert.alert(context, e);
     }
   }
 
@@ -196,8 +194,6 @@ class CreateEmpState extends State<CreateEmployee> {
       });
     }
   }
-
-  
 
   Future<void> createEmp(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
@@ -248,28 +244,27 @@ class CreateEmpState extends State<CreateEmployee> {
         final responseData = jsonDecode(response.body);
 
         if (responseData['success']) {
-          Alert.alert(context,'Successfully ${responseData['message']}');
+          Alert.alert(context, 'Successfully ${responseData['message']}');
         } else {
-          Alert.alert(context,responseData['message']);
+          Alert.alert(context, responseData['message']);
         }
       } catch (e) {
-        Alert.alert(context,e);
+        Alert.alert(context, e);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
           'Create Employee',
           style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
@@ -623,7 +618,10 @@ class CreateEmpState extends State<CreateEmployee> {
                     ),
                     filled: true,
                     fillColor: Colors.grey[200],
-                    prefixIcon: Icon(FontAwesomeIcons.indianRupeeSign, size: 18),
+                    prefixIcon: Icon(
+                      FontAwesomeIcons.indianRupeeSign,
+                      size: 18,
+                    ),
                   ),
                   keyboardType: TextInputType.phone,
                   validator: (value) {
@@ -777,7 +775,9 @@ class CreateEmpState extends State<CreateEmployee> {
                     "Create Employee",
                     style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
-                  style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF03a9f4)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF03a9f4),
+                  ),
                 ),
                 SizedBox(height: 15),
               ],

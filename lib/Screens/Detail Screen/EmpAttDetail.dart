@@ -129,6 +129,8 @@ class EmpattdetailState extends State<EmpAttdetail> {
         title: Text(
           'Attendance Detail',
           style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),

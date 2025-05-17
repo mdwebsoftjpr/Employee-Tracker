@@ -24,88 +24,107 @@ class SimpleMapScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+          'Visit Map',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
-        title: Text('Visit Map'),
         backgroundColor: Colors.blue,
       ),
-      body: points.isEmpty
-          ? Center(child: Text('No Points Available'))
-          : Stack(
-              children: [
-                FlutterMap(
-                  options: MapOptions(
-                    initialCenter: initialPoint,
-                    initialZoom: 13,
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.example.app',
+      body:
+          points.isEmpty
+              ? Center(child: Text('No Points Available'))
+              : Stack(
+                children: [
+                  FlutterMap(
+                    options: MapOptions(
+                      initialCenter: initialPoint,
+                      initialZoom: 13,
                     ),
-                    PolylineLayer(
-                      polylines: [
-                        Polyline(
-                          points: points,
-                          strokeWidth: 4.0,
-                          color: Colors.blue,
-                        ),
-                      ],
-                    ),
-                    MarkerLayer(
-                      markers: points.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final point = entry.value;
-
-                        return Marker(
-                          width: 60,
-                          height: 60,
-                          point: point,
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                color: index == 0
-                                    ? Colors.green // start
-                                    : (index == points.length - 1
-                                        ? Colors.red // end
-                                        : Colors.orange), // middle
-                                size: 35,
-                              ),
-                              Text(
-                                'V${index + 1}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'com.example.app',
+                      ),
+                      PolylineLayer(
+                        polylines: [
+                          Polyline(
+                            points: points,
+                            strokeWidth: 4.0,
+                            color: Colors.blue,
                           ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
-                ),
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 4)],
-                    ),
-                    child: Text(
-                      'Total Distance: ${totalDistance.toStringAsFixed(2)} km',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                        ],
+                      ),
+                      MarkerLayer(
+                        markers:
+                            points.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final point = entry.value;
+
+                              return Marker(
+                                width: 60,
+                                height: 60,
+                                point: point,
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                      Icons.location_on,
+                                      color:
+                                          index == 0
+                                              ? Colors
+                                                  .green // start
+                                              : (index == points.length - 1
+                                                  ? Colors
+                                                      .red // end
+                                                  : Colors.orange), // middle
+                                      size: 35,
+                                    ),
+                                    Text(
+                                      'V${index + 1}',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    top: 16,
+                    right: 16,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black26, blurRadius: 4),
+                        ],
+                      ),
+                      child: Text(
+                        'Total Distance: ${totalDistance.toStringAsFixed(2)} km',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
     );
   }
 }

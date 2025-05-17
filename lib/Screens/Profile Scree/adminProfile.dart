@@ -1,3 +1,4 @@
+import 'package:employee_tracker/Screens/Home%20Screen/AdminHome.dart';
 import 'package:employee_tracker/main.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -131,11 +132,16 @@ class AdminprofileState extends State<Adminprofile> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Color(0xFF03a9f4),
-        title: Text('Admin Profile',style: TextStyle(color: Colors.white),),
+        title: Text(
+          'Admin Profile',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(screenWidth * 0.05),
@@ -154,7 +160,8 @@ class AdminprofileState extends State<Adminprofile> {
                 child: Column(
                   children: [
                     /// Profile image
-                    if (userdata!['image'] != null && userdata!['image'].toString().isNotEmpty)
+                    if (userdata!['image'] != null &&
+                        userdata!['image'].toString().isNotEmpty)
                       CircleAvatar(
                         radius: screenWidth * 0.18,
                         backgroundImage: NetworkImage(
@@ -216,12 +223,17 @@ class AdminprofileState extends State<Adminprofile> {
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
-                    clearStorage(context);
+                   Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AdminHome(),
+                        ),
+                      );
                   },
-                  icon: Icon(Icons.logout),
-                  label: Text("Sign Out"),
+                  icon: Icon(Icons.home),
+                  label: Text("Go To Home"),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
+                    backgroundColor: Color(0xFF03a9f4),
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(
                       horizontal: screenWidth * 0.06,

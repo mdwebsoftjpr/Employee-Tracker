@@ -14,8 +14,6 @@ import 'dart:typed_data';
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
@@ -50,14 +48,14 @@ class VisitOutState extends State<VisitOut> {
     await getCurrentLocation();
   }
 
-   void _loadUser() {
+  void _loadUser() {
     var userJson = localStorage.getItem('user');
     if (userJson != null) {
       try {
         var user = jsonDecode(userJson);
         setState(() {
-          empid=user['id']??0;
-          comid=user['company_id']??0;
+          empid = user['id'] ?? 0;
+          comid = user['company_id'] ?? 0;
         });
         print("$comid,$empid");
       } catch (e) {
@@ -72,20 +70,20 @@ class VisitOutState extends State<VisitOut> {
         'https://testapi.rabadtechnology.com/getvisitstatus.php',
       );
       final Map<String, dynamic> requestBody = {
-        "emp_id":empid.toString(),
+        "emp_id": empid.toString(),
         "company_id": comid.toString(),
       };
-    final response = await http.post(
+      final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode(requestBody),
       );
 
       final responseData = jsonDecode(response.body);
-      var data=responseData['data'];
-      for(var item in data){
+      var data = responseData['data'];
+      for (var item in data) {
         setState(() {
-          VisitId=item['id'];
+          VisitId = item['id'];
         });
       }
     } catch (e) {
@@ -202,37 +200,40 @@ class VisitOutState extends State<VisitOut> {
   }
 
   Future<File> compressImage(File file, {int maxSizeKB = 75}) async {
-  final originalBytes = await file.readAsBytes();
-  img.Image? image = img.decodeImage(originalBytes);
-  if (image == null) throw Exception("Could not decode image");
+    final originalBytes = await file.readAsBytes();
+    img.Image? image = img.decodeImage(originalBytes);
+    if (image == null) throw Exception("Could not decode image");
 
-  int quality = 90;
-  late Uint8List compressedBytes;
-  while (quality > 10) {
-    compressedBytes = Uint8List.fromList(img.encodeJpg(image, quality: quality));
-    if (compressedBytes.lengthInBytes / 1024 <= maxSizeKB) break;
-    quality -= 5;
+    int quality = 90;
+    late Uint8List compressedBytes;
+    while (quality > 10) {
+      compressedBytes = Uint8List.fromList(
+        img.encodeJpg(image, quality: quality),
+      );
+      if (compressedBytes.lengthInBytes / 1024 <= maxSizeKB) break;
+      quality -= 5;
+    }
+
+    final dir = await getTemporaryDirectory();
+    final targetPath =
+        '${dir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    File compressedFile = await File(targetPath).writeAsBytes(compressedBytes);
+    return compressedFile;
   }
 
-  final dir = await getTemporaryDirectory();
-  final targetPath = '${dir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
-  File compressedFile = await File(targetPath).writeAsBytes(compressedBytes);
-  return compressedFile;
-}
+  Future<void> _pickImageFromCamera() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.camera,
+    );
 
-
- Future<void> _pickImageFromCamera() async {
-  final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
-
-  if (pickedFile != null) {
-    File rawFile = File(pickedFile.path);
-    File compressed = await compressImage(rawFile, maxSizeKB: 75);
-    setState(() {
-      _imageFile = XFile(compressed.path); // or store File if needed
-    });
+    if (pickedFile != null) {
+      File rawFile = File(pickedFile.path);
+      File compressed = await compressImage(rawFile, maxSizeKB: 75);
+      setState(() {
+        _imageFile = XFile(compressed.path); // or store File if needed
+      });
+    }
   }
-}
-
 
   void VisitOut(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
@@ -320,13 +321,13 @@ class VisitOutState extends State<VisitOut> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
           'Visit Out',
           style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),

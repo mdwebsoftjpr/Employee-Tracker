@@ -20,8 +20,14 @@ class CreateCom extends StatefulWidget {
 
 class UpperCaseTextFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
-    return newValue.copyWith(text: newValue.text.toUpperCase(), selection: newValue.selection);
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    return newValue.copyWith(
+      text: newValue.text.toUpperCase(),
+      selection: newValue.selection,
+    );
   }
 }
 
@@ -48,7 +54,9 @@ class CreateComState extends State<CreateCom> {
 
   // Compress image under 75KB
   Future<void> _pickImageFromGallery() async {
-    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
 
     if (pickedFile != null) {
       File imageFile = File(pickedFile.path);
@@ -56,11 +64,15 @@ class CreateComState extends State<CreateCom> {
 
       if (image != null) {
         int quality = 85;
-        Uint8List compressedBytes = Uint8List.fromList(img.encodeJpg(image, quality: quality));
+        Uint8List compressedBytes = Uint8List.fromList(
+          img.encodeJpg(image, quality: quality),
+        );
 
         while (compressedBytes.lengthInBytes > 75 * 1024 && quality > 10) {
           quality -= 5;
-          compressedBytes = Uint8List.fromList(img.encodeJpg(image, quality: quality));
+          compressedBytes = Uint8List.fromList(
+            img.encodeJpg(image, quality: quality),
+          );
         }
 
         File compressedFile = await _saveCompressedImage(compressedBytes);
@@ -81,21 +93,30 @@ class CreateComState extends State<CreateCom> {
     if (_formKey.currentState?.validate() ?? false) {
       if (!TermCondition) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please accept the terms and conditions.'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Please accept the terms and conditions.'),
+            backgroundColor: Colors.red,
+          ),
         );
         return;
       }
 
       if (!privacyPolicy) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please accept Privacy And Policy.'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Please accept Privacy And Policy.'),
+            backgroundColor: Colors.red,
+          ),
         );
         return;
       }
 
       if (_imageFile == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('No image selected.'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('No image selected.'),
+            backgroundColor: Colors.red,
+          ),
         );
         return;
       }
@@ -122,7 +143,9 @@ class CreateComState extends State<CreateCom> {
         'conditions': privacyPolicy.toString(),
       });
 
-      request.files.add(await http.MultipartFile.fromPath('image', _imageFile!.path));
+      request.files.add(
+        await http.MultipartFile.fromPath('image', _imageFile!.path),
+      );
 
       try {
         var response = await request.send();
@@ -150,7 +173,9 @@ class CreateComState extends State<CreateCom> {
         labelText: label,
         contentPadding: EdgeInsets.all(4 * scale),
         labelStyle: TextStyle(fontSize: 5 * scale, color: Colors.black),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4 * scale)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4 * scale),
+        ),
         filled: true,
         fillColor: Colors.grey[200],
         prefixIcon: Icon(icon),
@@ -179,11 +204,16 @@ class CreateComState extends State<CreateCom> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Color(0xFF03a9f4),
-        title: Text('Create Company', style: TextStyle(color: Colors.white)),
+        title: Text(
+          'Create Company',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -193,88 +223,219 @@ class CreateComState extends State<CreateCom> {
             children: [
               SizedBox(height: 20),
               _imageFile != null
-                  ? CircleAvatar(radius: size.width * 0.18, backgroundImage: FileImage(_imageFile!))
-                  : Container(width: size.width * 0.32, height: size.width * 0.32, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(50))),
+                  ? CircleAvatar(
+                    radius: size.width * 0.18,
+                    backgroundImage: FileImage(_imageFile!),
+                  )
+                  : Container(
+                    width: size.width * 0.32,
+                    height: size.width * 0.32,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                  ),
               ElevatedButton(
                 onPressed: _pickImageFromGallery,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: [Text("Upload Company Logo", style: TextStyle(color: Colors.black)), Icon(Icons.edit, color: Colors.black)],
+                  children: [
+                    Text(
+                      "Upload Company Logo",
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    Icon(Icons.edit, color: Colors.black),
+                  ],
                 ),
               ),
               SizedBox(height: 10),
 
-              buildTextField(controller: cname, label: 'Enter Your Company Name', icon: Icons.business, validator: (v) => v!.isEmpty ? 'Company name is required' : null),
+              buildTextField(
+                controller: cname,
+                label: 'Enter Your Company Name',
+                icon: Icons.business,
+                validator:
+                    (v) => v!.isEmpty ? 'Company name is required' : null,
+              ),
               SizedBox(height: 10),
-              buildTextField(controller: Tradename, label: 'Enter your 10 Digit Id', icon: Icons.apartment, inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))], validator: (v) => (v == null || v.length < 6 || v.length > 15) ? 'ID must be 6-15 characters' : null),
+              buildTextField(
+                controller: Tradename,
+                label: 'Enter your 10 Digit Id',
+                icon: Icons.apartment,
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                ],
+                validator:
+                    (v) =>
+                        (v == null || v.length < 6 || v.length > 15)
+                            ? 'ID must be 6-15 characters'
+                            : null,
+              ),
               SizedBox(height: 10),
-              buildTextField(controller: keyPerson, label: 'Enter Your Key Person', icon: Icons.person, validator: (v) => v!.isEmpty ? 'Key person is required' : null),
+              buildTextField(
+                controller: keyPerson,
+                label: 'Enter Your Key Person',
+                icon: Icons.person,
+                validator: (v) => v!.isEmpty ? 'Key person is required' : null,
+              ),
               SizedBox(height: 10),
-              buildTextField(controller: Gst, label: 'Enter Your GSTIN No.', icon: Icons.account_balance, inputFormatters: [UpperCaseTextFormatter()], validator: (v) => v!.length != 15 ? 'GSTIN must be exactly 15 characters' : null),
+              buildTextField(
+                controller: Gst,
+                label: 'Enter Your GSTIN No.',
+                icon: Icons.account_balance,
+                inputFormatters: [UpperCaseTextFormatter()],
+                validator:
+                    (v) =>
+                        v!.length != 15
+                            ? 'GSTIN must be exactly 15 characters'
+                            : null,
+              ),
               SizedBox(height: 10),
 
-              Row(children: [
-                Expanded(
-                  child: buildTextField(controller: PanNo, label: 'Enter Your Pan Card No.', icon: Icons.credit_card, inputFormatters: [UpperCaseTextFormatter()], validator: (v) => v!.length != 10 ? 'PAN must be 10 characters' : null),
-                ),
-                SizedBox(width: 8),
-                TextButton(onPressed: () {}, child: Text("Verify")),
-              ]),
+              Row(
+                children: [
+                  Expanded(
+                    child: buildTextField(
+                      controller: PanNo,
+                      label: 'Enter Your Pan Card No.',
+                      icon: Icons.credit_card,
+                      inputFormatters: [UpperCaseTextFormatter()],
+                      validator:
+                          (v) =>
+                              v!.length != 10
+                                  ? 'PAN must be 10 characters'
+                                  : null,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(onPressed: () {}, child: Text("Verify")),
+                ],
+              ),
               SizedBox(height: 10),
 
-              Row(children: [
-                Expanded(
-                  child: buildTextField(controller: mobile, label: 'Enter Your Mobile No.', icon: Icons.mobile_friendly, keyboardType: TextInputType.phone, validator: (v) => v!.length != 10 ? 'Mobile number must be 10 digits' : null),
-                ),
-                SizedBox(width: 8),
-                TextButton(onPressed: () {}, child: Text("Verify")),
-              ]),
+              Row(
+                children: [
+                  Expanded(
+                    child: buildTextField(
+                      controller: mobile,
+                      label: 'Enter Your Mobile No.',
+                      icon: Icons.mobile_friendly,
+                      keyboardType: TextInputType.phone,
+                      validator:
+                          (v) =>
+                              v!.length != 10
+                                  ? 'Mobile number must be 10 digits'
+                                  : null,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(onPressed: () {}, child: Text("Verify")),
+                ],
+              ),
               SizedBox(height: 10),
 
-              Row(children: [
-                Expanded(
-                  child: buildTextField(controller: email, label: 'Enter Your Email', icon: Icons.email, validator: (v) => !v!.contains('@') ? 'Invalid email' : null),
-                ),
-                SizedBox(width: 8),
-                TextButton(onPressed: () {}, child: Text("Verify")),
-              ]),
+              Row(
+                children: [
+                  Expanded(
+                    child: buildTextField(
+                      controller: email,
+                      label: 'Enter Your Email',
+                      icon: Icons.email,
+                      validator:
+                          (v) => !v!.contains('@') ? 'Invalid email' : null,
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  TextButton(onPressed: () {}, child: Text("Verify")),
+                ],
+              ),
               SizedBox(height: 10),
 
-              buildTextField(controller: address, label: 'Enter Your Company Address', icon: Icons.location_on, validator: (v) => v!.isEmpty ? 'Address required' : null),
+              buildTextField(
+                controller: address,
+                label: 'Enter Your Company Address',
+                icon: Icons.location_on,
+                validator: (v) => v!.isEmpty ? 'Address required' : null,
+              ),
               SizedBox(height: 10),
-              buildTextField(controller: website, label: 'Enter Your Website Link', icon: Icons.web),
+              buildTextField(
+                controller: website,
+                label: 'Enter Your Website Link',
+                icon: Icons.web,
+              ),
               SizedBox(height: 10),
-              buildTextField(controller: NoOfEmp, label: 'Enter No. Of Employee', icon: Icons.group, keyboardType: TextInputType.number),
+              buildTextField(
+                controller: NoOfEmp,
+                label: 'Enter No. Of Employee',
+                icon: Icons.group,
+                keyboardType: TextInputType.number,
+              ),
               SizedBox(height: 10),
-              buildTextField(controller: loginUserName, label: 'Enter Your Login User Name', icon: Icons.account_circle, validator: (v) => v!.isEmpty ? 'Login username is required' : null),
+              buildTextField(
+                controller: loginUserName,
+                label: 'Enter Your Login User Name',
+                icon: Icons.account_circle,
+                validator:
+                    (v) => v!.isEmpty ? 'Login username is required' : null,
+              ),
               SizedBox(height: 10),
               buildTextField(
                 controller: password,
                 label: 'Enter Your Password',
                 icon: Icons.lock,
                 obscure: _obscureText,
-                inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                ],
                 validator: (v) => v!.isEmpty ? 'Password is required' : null,
                 suffixIcon: IconButton(
-                  icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
+                  icon: Icon(
+                    _obscureText ? Icons.visibility_off : Icons.visibility,
+                  ),
                   onPressed: () => setState(() => _obscureText = !_obscureText),
                 ),
               ),
-              Row(children: [
-                Checkbox(value: TermCondition, onChanged: (v) => setState(() => TermCondition = v!)),
-                Text("I accept"),
-                TextButton(onPressed: () {}, child: Text("Terms & Conditions")),
-              ]),
-              Row(children: [
-                Checkbox(value: privacyPolicy, onChanged: (v) => setState(() => privacyPolicy = v!)),
-                Text("I accept"),
-                TextButton(onPressed: () {}, child: Text("Privacy Policy")),
-              ]),
+              Row(
+                children: [
+                  Checkbox(
+                    value: TermCondition,
+                    onChanged: (v) => setState(() => TermCondition = v!),
+                  ),
+                  Text("I accept"),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text("Terms & Conditions"),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                    value: privacyPolicy,
+                    onChanged: (v) => setState(() => privacyPolicy = v!),
+                  ),
+                  Text("I accept"),
+                  TextButton(onPressed: () {}, child: Text("Privacy Policy")),
+                ],
+              ),
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () => compLogin(context),
-                style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF03a9f4), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)), padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10)),
-                child: Text('Create Company', style: TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.w700)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF03a9f4),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                ),
+                child: Text(
+                  'Create Company',
+                  style: TextStyle(
+                    fontSize: 17,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ),
               SizedBox(height: 20),
             ],

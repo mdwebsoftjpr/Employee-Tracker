@@ -222,6 +222,8 @@ class MasterState extends State<Master> {
         title: Text(
           'Create Designation',
           style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
@@ -310,7 +312,18 @@ class MasterState extends State<Master> {
                                     children: [
                                       SizedBox(height: 4),
                                       Text(
-                                        "Designation: ${item['designationname']}",
+                                        "Designation:",
+                                        style: TextStyle(
+                                          fontSize:
+                                              5 *
+                                              MediaQuery.of(
+                                                context,
+                                              ).devicePixelRatio,
+                                              fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                      Text(
+                                        "${item['designationname']}",
                                         style: TextStyle(
                                           fontSize:
                                               5 *

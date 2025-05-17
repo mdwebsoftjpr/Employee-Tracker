@@ -114,21 +114,19 @@ class AttendancerepState extends State<Attendancerep> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Color(0xFF03a9f4),
         title: Row(
           children: [
             Text(
               'Attendance Report',
               style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
