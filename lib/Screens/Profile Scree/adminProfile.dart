@@ -131,8 +131,11 @@ class AdminprofileState extends State<Adminprofile> {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Color(0xFF03a9f4),
-        title: Text('Admin Profile'),
+        title: Text('Admin Profile',style: TextStyle(color: Colors.white),),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(screenWidth * 0.05),

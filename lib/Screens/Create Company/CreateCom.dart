@@ -1,11 +1,13 @@
 import 'dart:convert';
-import 'package:employee_tracker/Screens/Components/Alert.dart';
-import 'package:employee_tracker/main.dart';
-import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart';
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 
 void main() {
   runApp(CreateCom());
@@ -18,14 +20,8 @@ class CreateCom extends StatefulWidget {
 
 class UpperCaseTextFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    return newValue.copyWith(
-      text: newValue.text.toUpperCase(),
-      selection: newValue.selection,
-    );
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    return newValue.copyWith(text: newValue.text.toUpperCase(), selection: newValue.selection);
   }
 }
 
@@ -36,6 +32,7 @@ class CreateComState extends State<CreateCom> {
   bool privacyPolicy = false;
   bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
+
   final TextEditingController cname = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController mobile = TextEditingController();
@@ -49,738 +46,238 @@ class CreateComState extends State<CreateCom> {
   final TextEditingController PanNo = TextEditingController();
   final TextEditingController NoOfEmp = TextEditingController();
 
-  // Image picking function
+  // Compress image under 75KB
   Future<void> _pickImageFromGallery() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-    );
+    final XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      setState(() {
-        _imageFile = File(pickedFile.path);
-      });
-      print('$TermCondition,$privacyPolicy');
+      File imageFile = File(pickedFile.path);
+      img.Image? image = img.decodeImage(await imageFile.readAsBytes());
+
+      if (image != null) {
+        int quality = 85;
+        Uint8List compressedBytes = Uint8List.fromList(img.encodeJpg(image, quality: quality));
+
+        while (compressedBytes.lengthInBytes > 75 * 1024 && quality > 10) {
+          quality -= 5;
+          compressedBytes = Uint8List.fromList(img.encodeJpg(image, quality: quality));
+        }
+
+        File compressedFile = await _saveCompressedImage(compressedBytes);
+        setState(() => _imageFile = compressedFile);
+      }
     }
   }
 
-  // Submit the form and send data to the API
+  Future<File> _saveCompressedImage(Uint8List bytes) async {
+    final dir = await getTemporaryDirectory();
+    final path = '${dir.path}/compressed_image.jpg';
+    final file = File(path);
+    await file.writeAsBytes(bytes);
+    return file;
+  }
+
   void compLogin(context) async {
     if (_formKey.currentState?.validate() ?? false) {
       if (!TermCondition) {
-        // Show an error message if checkbox is not checked
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Please accept the terms and conditions.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return; // Exit the function without proceeding further
-      } else if (!privacyPolicy) {
-        // Show an error message if checkbox is not checked
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Please accept Privacy And Policy.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return; // Exit the function without proceeding further
-      }
-
-      String ComName = cname.text;
-      String Cemail = email.text;
-      String Cmobile = mobile.text;
-      String Cpassword = password.text;
-      String Caddress = address.text;
-      String GSTIN = Gst.text;
-      String Ctradename = Tradename.text;
-      String CkeyPerson = keyPerson.text;
-      String CloginUserName = loginUserName.text;
-      String Cwebsite = website.text;
-      String CPanNo = PanNo.text;
-      String EmpNo = NoOfEmp.text;
-
-      // Check if an image has been selected
-      if (_imageFile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('No image selected.'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('Please accept the terms and conditions.'), backgroundColor: Colors.red),
         );
         return;
       }
 
-      final url = Uri.parse('https://testapi.rabadtechnology.com/create.php');
-      var request = http.MultipartRequest('POST', url);
+      if (!privacyPolicy) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Please accept Privacy And Policy.'), backgroundColor: Colors.red),
+        );
+        return;
+      }
 
-      // Add the other form fields as part of the body
-      request.fields['company_name'] = ComName;
-      request.fields['trade_name'] = Ctradename;
-      request.fields['key_person'] = CkeyPerson;
-      request.fields['gstin_no'] = GSTIN;
-      request.fields['pan_card'] = CPanNo;
-      request.fields['mobile_no'] = Cmobile;
-      request.fields['email'] = Cemail;
-      request.fields['address'] = Caddress;
-      request.fields['website_link'] = Cwebsite;
-      request.fields['username'] = CloginUserName;
-      request.fields['password'] = Cpassword;
-      request.fields['noofemp'] = EmpNo;
-      request.fields['terms'] = TermCondition.toString();
-      request.fields['conditions'] = privacyPolicy.toString();
-      // Add the image as a multipart file
-      var image = await http.MultipartFile.fromPath(
-        'image', // The field name expected by your API (change this to match your API's expected field name)
-        _imageFile!.path,
+      if (_imageFile == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('No image selected.'), backgroundColor: Colors.red),
+        );
+        return;
+      }
+
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://testapi.rabadtechnology.com/create.php'),
       );
-      request.files.add(image);
+
+      request.fields.addAll({
+        'company_name': cname.text,
+        'trade_name': Tradename.text,
+        'key_person': keyPerson.text,
+        'gstin_no': Gst.text,
+        'pan_card': PanNo.text,
+        'mobile_no': mobile.text,
+        'email': email.text,
+        'address': address.text,
+        'website_link': website.text,
+        'username': loginUserName.text,
+        'password': password.text,
+        'noofemp': NoOfEmp.text,
+        'terms': TermCondition.toString(),
+        'conditions': privacyPolicy.toString(),
+      });
+
+      request.files.add(await http.MultipartFile.fromPath('image', _imageFile!.path));
 
       try {
-        // Send the request
         var response = await request.send();
         final responseBody = await http.Response.fromStream(response);
+        final Map<String, dynamic> data = jsonDecode(responseBody.body);
 
-        final Map<String, dynamic> responseData = jsonDecode(responseBody.body);
-        var success = responseData['success'];
-        var message = responseData['message'];
-
-        if (success == true) {
-          Alert.alert(context, 'Thank You $message');
+        if (data['success'] == true) {
+          Alert.alert(context, 'Thank You ${data['message']}');
         } else {
-          Alert.alert(context,message);
+          Alert.alert(context, data['message']);
         }
       } catch (e) {
-        Alert.alert(context,e);
+        Alert.alert(context, e.toString());
       }
     }
   }
 
-
-
+  @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final scale = MediaQuery.of(context).devicePixelRatio;
+
+    InputDecoration buildInput(String label, IconData icon) {
+      return InputDecoration(
+        labelText: label,
+        contentPadding: EdgeInsets.all(4 * scale),
+        labelStyle: TextStyle(fontSize: 5 * scale, color: Colors.black),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4 * scale)),
+        filled: true,
+        fillColor: Colors.grey[200],
+        prefixIcon: Icon(icon),
+      );
+    }
+
+    Widget buildTextField({
+      required TextEditingController controller,
+      required String label,
+      required IconData icon,
+      String? Function(String?)? validator,
+      bool obscure = false,
+      List<TextInputFormatter>? inputFormatters,
+      TextInputType? keyboardType,
+      Widget? suffixIcon,
+    }) {
+      return TextFormField(
+        controller: controller,
+        decoration: buildInput(label, icon).copyWith(suffixIcon: suffixIcon),
+        obscureText: obscure,
+        validator: validator,
+        inputFormatters: inputFormatters,
+        keyboardType: keyboardType,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF03a9f4),
-        elevation: 0,
-        title: Text(
-          'Create Company',
-          style: TextStyle(
-            color: Color.fromARGB(255, 254, 255, 255),
-            fontSize: 8 * MediaQuery.of(context).devicePixelRatio,
-            fontWeight: FontWeight.bold,
-          ),
+        iconTheme: IconThemeData(
+          color: Colors.white,
         ),
+        backgroundColor: Color(0xFF03a9f4),
+        title: Text('Create Company', style: TextStyle(color: Colors.white)),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: 20),
-                  _imageFile != null
-                      ? CircleAvatar(
-                        radius:
-                            MediaQuery.of(context).size.width *
-                            0.18, // Size of the avatar, this is half the diameter
-                        backgroundImage: FileImage(
-                          File(_imageFile!.path),
-                        ), // If you are using an image
-                        backgroundColor:
-                            Colors
-                                .grey, // Background color if no image is provided
-                      )
-                      : Container(
-                        width: MediaQuery.of(context).size.width * 0.32,
-                        height: MediaQuery.of(context).size.width * 0.32,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                      ),
-                  ElevatedButton(
-                    onPressed: () => _pickImageFromGallery(),
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.51,
-                      child: Row(
-                        children: [
-                          Text(
-                            "Upload Company Logo",
-                            style: TextStyle(fontSize: 15, color: Colors.black),
-                          ),
-                          SizedBox(width: 10),
-                          Icon(Icons.edit, color: Colors.black),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 10),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          controller: cname,
-                          textCapitalization: TextCapitalization.words,
-                          decoration: InputDecoration(
-                            labelText: 'Enter Your Company Name',
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                              horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
-                              ), // Set the border radius
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            prefixIcon: Icon(Icons.person),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'ID must be Greater Then And Equal To 15 characters';
-                            } else if (value.length < 6) {
-                              return 'ID must be Less Then 6 characters';
-                            }
-                          },
-                        ),
-                        SizedBox(height: 10),
-
-                        // Make sure this is imported
-                        TextFormField(
-                          controller: Tradename,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                          ],
-                          decoration: InputDecoration(
-                            labelText: 'Enter your 10 Digit Id',
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                              horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            prefixIcon: Icon(Icons.apartment),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Enter your 10 Digit Id';
-                            } else if (value.length < 6 || value.length > 15) {
-                              return 'ID must be 6 to 15 characters';
-                            }
-                            return null;
-                          },
-                        ),
-
-                        SizedBox(height: 10),
-                        TextFormField(
-                          textCapitalization: TextCapitalization.words,
-                          controller: keyPerson,
-                          decoration: InputDecoration(
-                            labelText: 'Enter Your Key Person',
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                              horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
-                              ), // Set the border radius
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            prefixIcon: Icon(Icons.person),
-                          ),
-
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Enter Your Key Person';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 10),
-
-                        TextFormField(
-                          controller: Gst,
-                          inputFormatters: [
-                            UpperCaseTextFormatter(), 
-                          ],
-                          decoration: InputDecoration(
-                            labelText: 'Enter Your GSTIN No.',
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                              horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            prefixIcon: Icon(Icons.account_balance),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'GSTIN is required';
-                            } else if (value.length < 15) {
-                              return 'GSTIN must be exactly 15 characters';
-                            }
-                            return null;
-                          },
-                        ),
-
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              child: TextFormField(
-                                controller: PanNo,
-                                inputFormatters: [UpperCaseTextFormatter()],
-                                decoration: InputDecoration(
-                                  labelText: 'Enter Your Pan Card No.',
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 10.0,
-                                    horizontal: 5.0,
-                                  ),
-                                  labelStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontSize:
-                                        5 *
-                                        MediaQuery.of(context).devicePixelRatio,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      10.0,
-                                    ), // Set the border radius
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.grey[200],
-                                  prefixIcon: Icon(Icons.credit_card),
-                                ),
-
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Pan Card No. must be Less Then 15 characters';
-                                  } else if (value.length < 10) {
-                                    return 'Pan Card No. must be Less Then 10 characters';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                            SizedBox(width: 5),
-                            Container(
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Colors.grey[200],
-                                ),
-                                onPressed: () => print('Verify'),
-                                child: Text(
-                                  "verify",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ), // Width is fixed here, not influenced by the flex
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              child: TextFormField(
-                                controller: mobile,
-                                decoration: InputDecoration(
-                                  labelText: 'Enter Your Mobile No.',
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 10.0,
-                                    horizontal: 5.0,
-                                  ),
-                                  labelStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontSize:
-                                        5 *
-                                        MediaQuery.of(context).devicePixelRatio,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      10.0,
-                                    ), // Set the border radius
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.grey[200],
-                                  prefixIcon: Icon(Icons.mobile_friendly),
-                                ),
-                                keyboardType: TextInputType.phone,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Enter Your Mobile No.';
-                                  } else if (value.length != 10) {
-                                    return 'Mobile number must be 10 digits';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                            SizedBox(width: 5),
-                            Container(
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Colors.grey[200],
-                                ),
-                                onPressed: () => print('Verify'),
-                                child: Text(
-                                  "verify",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ), // Width is fixedhere, not influenced by the flex
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.7,
-                              child: TextFormField(
-                                controller: email,
-                                decoration: InputDecoration(
-                                  labelText: 'Enter Your Email.',
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 10.0,
-                                    horizontal: 5.0,
-                                  ),
-                                  labelStyle: TextStyle(
-                                    color: Colors.black,
-                                    fontSize:
-                                        5 *
-                                        MediaQuery.of(context).devicePixelRatio,
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      10.0,
-                                    ), // Set the border radius
-                                  ),
-                                  filled: true,
-                                  fillColor: Colors.grey[200],
-                                  prefixIcon: Icon(Icons.email),
-                                ),
-
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Enter Your Email';
-                                  } else if (!value.contains('@')) {
-                                    return 'Email must contain @';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                            SizedBox(width: 5),
-                            Container(
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Colors.grey[200],
-                                ),
-                                onPressed: () => print('Verify'),
-                                child: Text(
-                                  "verify",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ), // Width is fixedxed here, not influenced by the flex
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          controller: address,
-                          decoration: InputDecoration(
-                            labelText: 'Enter Your Company Address.',
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                              horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
-                              ), // Set the border radius
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            prefixIcon: Icon(Icons.location_on),
-                          ),
-
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Enter Your Company Address';
-                            }
-                            return null;
-                          },
-                        ),
-
-                        SizedBox(height: 10),
-                        TextFormField(
-                          controller: website,
-                          decoration: InputDecoration(
-                            labelText: 'Enter Your Website Link',
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                              horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
-                              ), // Set the border radius
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            prefixIcon: Icon(Icons.web),
-                          ),
-                        ),
-                        SizedBox(height: 10), SizedBox(height: 10),
-                        TextFormField(
-                          controller: NoOfEmp,
-                          decoration: InputDecoration(
-                            labelText: 'Enter No. Of Employee',
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                              horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            prefixIcon: Icon(Icons.group),
-                          ),
-                          keyboardType: TextInputType.phone,
-                        ),
-                        SizedBox(height: 10), SizedBox(height: 10),
-                        TextFormField(
-                          textCapitalization: TextCapitalization.words,
-                          controller: loginUserName,
-                          decoration: InputDecoration(
-                            labelText: 'Enter Your Login User Name',
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                              horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
-                              ), // Set the border radius
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            prefixIcon: Icon(Icons.account_circle),
-                          ),
-
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Enter Your Login User Name';
-                            }
-                            return null;
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        TextFormField(
-                          controller: password,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                          ],
-                          obscureText: _obscureText,
-                          decoration: InputDecoration(
-                            labelText: 'Enter Your Password',
-                            contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                              horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            labelStyle: TextStyle(
-                              color: Colors.black,
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[200],
-                            prefixIcon: Icon(Icons.lock),
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscureText
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _obscureText = !_obscureText;
-                                });
-                              },
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Enter Your Password';
-                            }
-                            return null;
-                          },
-                        ),
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: TermCondition,
-                              onChanged: (bool? newValue) {
-                                setState(() {
-                                  TermCondition = newValue!;
-                                });
-                              },
-                            ),
-                            Text(
-                              "I accept",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            TextButton(
-                              onPressed: () => print("term Com"),
-                              child: Text("Term And Condition"),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Checkbox(
-                              value: privacyPolicy,
-                              onChanged: (bool? newValue) {
-                                setState(() {
-                                  privacyPolicy = newValue!;
-                                });
-                              },
-                            ),
-                            Text(
-                              "I accept",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            TextButton(
-                              onPressed: () => print("privacy"),
-                              child: Text("Privacy Policy"),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                        // Submit button
-                        ElevatedButton(
-                          onPressed: () => compLogin(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF03a9f4),
-                            padding: EdgeInsets.only(
-                              top: 5,
-                              bottom: 5,
-                              left: 10,
-                              right: 10,
-                            ),
-                            maximumSize: Size(150, 40),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(40),
-                            ),
-                          ),
-                          child: Text(
-                            'Create Company',
-                            style: TextStyle(
-                              fontSize: 17,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                ],
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              SizedBox(height: 20),
+              _imageFile != null
+                  ? CircleAvatar(radius: size.width * 0.18, backgroundImage: FileImage(_imageFile!))
+                  : Container(width: size.width * 0.32, height: size.width * 0.32, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(50))),
+              ElevatedButton(
+                onPressed: _pickImageFromGallery,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [Text("Upload Company Logo", style: TextStyle(color: Colors.black)), Icon(Icons.edit, color: Colors.black)],
+                ),
               ),
-            ),
+              SizedBox(height: 10),
+
+              buildTextField(controller: cname, label: 'Enter Your Company Name', icon: Icons.business, validator: (v) => v!.isEmpty ? 'Company name is required' : null),
+              SizedBox(height: 10),
+              buildTextField(controller: Tradename, label: 'Enter your 10 Digit Id', icon: Icons.apartment, inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))], validator: (v) => (v == null || v.length < 6 || v.length > 15) ? 'ID must be 6-15 characters' : null),
+              SizedBox(height: 10),
+              buildTextField(controller: keyPerson, label: 'Enter Your Key Person', icon: Icons.person, validator: (v) => v!.isEmpty ? 'Key person is required' : null),
+              SizedBox(height: 10),
+              buildTextField(controller: Gst, label: 'Enter Your GSTIN No.', icon: Icons.account_balance, inputFormatters: [UpperCaseTextFormatter()], validator: (v) => v!.length != 15 ? 'GSTIN must be exactly 15 characters' : null),
+              SizedBox(height: 10),
+
+              Row(children: [
+                Expanded(
+                  child: buildTextField(controller: PanNo, label: 'Enter Your Pan Card No.', icon: Icons.credit_card, inputFormatters: [UpperCaseTextFormatter()], validator: (v) => v!.length != 10 ? 'PAN must be 10 characters' : null),
+                ),
+                SizedBox(width: 8),
+                TextButton(onPressed: () {}, child: Text("Verify")),
+              ]),
+              SizedBox(height: 10),
+
+              Row(children: [
+                Expanded(
+                  child: buildTextField(controller: mobile, label: 'Enter Your Mobile No.', icon: Icons.mobile_friendly, keyboardType: TextInputType.phone, validator: (v) => v!.length != 10 ? 'Mobile number must be 10 digits' : null),
+                ),
+                SizedBox(width: 8),
+                TextButton(onPressed: () {}, child: Text("Verify")),
+              ]),
+              SizedBox(height: 10),
+
+              Row(children: [
+                Expanded(
+                  child: buildTextField(controller: email, label: 'Enter Your Email', icon: Icons.email, validator: (v) => !v!.contains('@') ? 'Invalid email' : null),
+                ),
+                SizedBox(width: 8),
+                TextButton(onPressed: () {}, child: Text("Verify")),
+              ]),
+              SizedBox(height: 10),
+
+              buildTextField(controller: address, label: 'Enter Your Company Address', icon: Icons.location_on, validator: (v) => v!.isEmpty ? 'Address required' : null),
+              SizedBox(height: 10),
+              buildTextField(controller: website, label: 'Enter Your Website Link', icon: Icons.web),
+              SizedBox(height: 10),
+              buildTextField(controller: NoOfEmp, label: 'Enter No. Of Employee', icon: Icons.group, keyboardType: TextInputType.number),
+              SizedBox(height: 10),
+              buildTextField(controller: loginUserName, label: 'Enter Your Login User Name', icon: Icons.account_circle, validator: (v) => v!.isEmpty ? 'Login username is required' : null),
+              SizedBox(height: 10),
+              buildTextField(
+                controller: password,
+                label: 'Enter Your Password',
+                icon: Icons.lock,
+                obscure: _obscureText,
+                inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                validator: (v) => v!.isEmpty ? 'Password is required' : null,
+                suffixIcon: IconButton(
+                  icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () => setState(() => _obscureText = !_obscureText),
+                ),
+              ),
+              Row(children: [
+                Checkbox(value: TermCondition, onChanged: (v) => setState(() => TermCondition = v!)),
+                Text("I accept"),
+                TextButton(onPressed: () {}, child: Text("Terms & Conditions")),
+              ]),
+              Row(children: [
+                Checkbox(value: privacyPolicy, onChanged: (v) => setState(() => privacyPolicy = v!)),
+                Text("I accept"),
+                TextButton(onPressed: () {}, child: Text("Privacy Policy")),
+              ]),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () => compLogin(context),
+                style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF03a9f4), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(40)), padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10)),
+                child: Text('Create Company', style: TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.w700)),
+              ),
+              SizedBox(height: 20),
+            ],
           ),
         ),
       ),

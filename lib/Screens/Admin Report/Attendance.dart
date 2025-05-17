@@ -121,13 +121,12 @@ class AttendanceState extends State<Attendance> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF03a9f4),
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ), // <- this makes the back button white
         title: Text(
           'Daily Attendance Detail',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: deviceWidth * 0.06,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white),
         ),
       ),
       body:

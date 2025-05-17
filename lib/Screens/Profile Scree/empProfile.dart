@@ -130,8 +130,11 @@ class EmpprofileState extends State<Empprofile> {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Color(0xFF03a9f4),
-        title: Text('Employee Profile'),
+        title: Text('Employee Profile',style: TextStyle(color: Colors.white),),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),

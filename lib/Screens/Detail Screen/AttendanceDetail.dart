@@ -122,13 +122,14 @@ class AttendanceDetailState extends State<AttendanceDetail> {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
           'Monthly Attendance Detail',
           style: TextStyle(
             color: Colors.white,
-            fontSize: deviceWidth * 0.06,
-            fontWeight: FontWeight.bold,
           ),
         ),
         actions: [

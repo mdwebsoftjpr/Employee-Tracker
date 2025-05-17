@@ -265,13 +265,14 @@ class EmpvisitrepState extends State<Empvisitrep> {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
           'Employee Visit',
           style: TextStyle(
             color: Colors.white,
-            fontSize: devicePixelRatio * 7,
-            fontWeight: FontWeight.bold,
           ),
         ),
         actions: [

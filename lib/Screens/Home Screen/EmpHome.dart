@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/EmpVisitRep.dart';
 import 'package:employee_tracker/Screens/Detail%20Screen/EmpAttDetail.dart';
-import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/empProfile.dart';
 import 'package:employee_tracker/Screens/VisitOut%20Screen/VisitOut.dart';
 import 'package:employee_tracker/main.dart';
@@ -17,6 +16,9 @@ import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -208,18 +210,46 @@ class _EmpHomeState extends State<EmpHome> {
     }
   }
 
-  Future<void> _pickImageFromCamera() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
+  Future<File?> compressImage(XFile xFile) async {
+  final File file = File(xFile.path);
+  final dir = await getTemporaryDirectory();
+  final targetPath = p.join(dir.path, 'compressed_${p.basename(file.path)}');
+
+  int quality = 70;
+  File? compressedFile;
+  const int maxSizeInBytes = 100 * 1024;
+
+  for (int q = quality; q >= 10; q -= 10) {
+    final result = await FlutterImageCompress.compressAndGetFile(
+      file.path,
+      targetPath,
+      quality: q,
+      format: CompressFormat.jpeg,
     );
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = pickedFile;
-      });
+
+    if (result != null && await result.length() <= maxSizeInBytes) {
+      compressedFile = File(result.path);
+      break;
     }
   }
 
+  return compressedFile;
+}
+
+Future<void> _pickImageFromCamera() async {
+  final XFile? pickedFile = await _picker.pickImage(
+    source: ImageSource.camera,
+    preferredCameraDevice: CameraDevice.front,
+  );
+
+  if (pickedFile != null) {
+    File? compressed = await compressImage(pickedFile);
+
+    setState(() {
+      _imageFile = compressed != null ? XFile(compressed.path) : pickedFile;
+    });
+  }
+}
   // Notification method to navigate to Notification screen
   void _onItemTapped(int index) {
     setState(() {
@@ -897,18 +927,13 @@ class _EmpHomeState extends State<EmpHome> {
                             Column(
                               children: [
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(20),
                                       ),
-                                      margin: EdgeInsets.only(
-                                        top: 10,
-                                        bottom: 0,
-                                        left: 10,
-                                        right: 10,
-                                      ),
+                                      margin: EdgeInsets.all(10),
                                       child:
                                           (UserImage != '')
                                               ? ClipRRect(
@@ -921,31 +946,43 @@ class _EmpHomeState extends State<EmpHome> {
                                                   fit: BoxFit.cover,
                                                 ),
                                               )
-                                              : SizedBox(),
+                                              : SizedBox(width: 80, height: 80),
                                     ),
 
                                     SizedBox(width: 10),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          name,
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
+
+                                    /// 👇 Wrap this in Flexible so the Column can wrap text
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment
+                                                .start, // Align text to the start
+                                        children: [
+                                          Text(
+                                            name,
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                        ),
-                                        Text(
-                                          CurrentAddress,
-                                          style: TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
+                                          SizedBox(height: 4),
+                                          Text(
+                                            CurrentAddress,
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                            ),
+                                            softWrap: true,
+                                            overflow:
+                                                TextOverflow
+                                                    .visible, // or TextOverflow.ellipsis
+                                            maxLines:
+                                                null, // allow multiple lines
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),

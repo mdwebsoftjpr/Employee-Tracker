@@ -263,13 +263,14 @@ class CreateEmpState extends State<CreateEmployee> {
     
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
           'Create Employee',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 8 * MediaQuery.of(context).devicePixelRatio,
-            fontWeight: FontWeight.bold,
           ),
         ),
       ),

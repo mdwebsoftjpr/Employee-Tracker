@@ -305,13 +305,14 @@ class AdminVisitreportState extends State<AdminVisitreport> {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
           'Visit Report',
           style: TextStyle(
             color: Colors.white,
-            fontSize: deviceWidth * 0.06,
-            fontWeight: FontWeight.bold,
           ),
         ),
         actions: [

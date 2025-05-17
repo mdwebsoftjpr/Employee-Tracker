@@ -24,6 +24,9 @@ class SimpleMapScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         title: Text('Visit Map'),
         backgroundColor: Colors.blue,
       ),

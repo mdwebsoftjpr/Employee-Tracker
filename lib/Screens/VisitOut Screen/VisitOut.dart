@@ -10,6 +10,11 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:http/http.dart';
+import 'dart:typed_data';
+import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart';
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -196,17 +201,37 @@ class VisitOutState extends State<VisitOut> {
     });
   }
 
-  Future<void> _pickImageFromCamera() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
-    );
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = pickedFile;
-      });
-    }
+  Future<File> compressImage(File file, {int maxSizeKB = 75}) async {
+  final originalBytes = await file.readAsBytes();
+  img.Image? image = img.decodeImage(originalBytes);
+  if (image == null) throw Exception("Could not decode image");
+
+  int quality = 90;
+  late Uint8List compressedBytes;
+  while (quality > 10) {
+    compressedBytes = Uint8List.fromList(img.encodeJpg(image, quality: quality));
+    if (compressedBytes.lengthInBytes / 1024 <= maxSizeKB) break;
+    quality -= 5;
   }
+
+  final dir = await getTemporaryDirectory();
+  final targetPath = '${dir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
+  File compressedFile = await File(targetPath).writeAsBytes(compressedBytes);
+  return compressedFile;
+}
+
+
+ Future<void> _pickImageFromCamera() async {
+  final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
+
+  if (pickedFile != null) {
+    File rawFile = File(pickedFile.path);
+    File compressed = await compressImage(rawFile, maxSizeKB: 75);
+    setState(() {
+      _imageFile = XFile(compressed.path); // or store File if needed
+    });
+  }
+}
 
 
   void VisitOut(BuildContext context) async {
@@ -295,13 +320,14 @@ class VisitOutState extends State<VisitOut> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
           'Visit Out',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
           ),
         ),
       ),

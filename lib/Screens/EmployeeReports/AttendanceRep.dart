@@ -120,6 +120,9 @@ class AttendancerepState extends State<Attendancerep> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
         backgroundColor: Color(0xFF03a9f4),
         title: Row(
           children: [
@@ -127,8 +130,6 @@ class AttendancerepState extends State<Attendancerep> {
               'Attendance Report',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: MediaQuery.of(context).size.width * 0.05,
-                fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(width: MediaQuery.of(context).size.width * 0.075),
