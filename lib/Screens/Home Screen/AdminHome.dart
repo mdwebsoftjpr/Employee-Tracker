@@ -154,7 +154,7 @@ class AdminhomeState extends State<AdminHome> {
   // This is the value that will hold the selected item
   String _selectedItem = 'One';
 
-    void _openDropdown(TapDownDetails details) async {
+  void _openDropdown(TapDownDetails details) async {
     final selectedItem = await showMenu<String>(
       context: context,
       position: RelativeRect.fromLTRB(
@@ -203,8 +203,6 @@ class AdminhomeState extends State<AdminHome> {
       clearStorage(context);
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -280,12 +278,12 @@ class AdminhomeState extends State<AdminHome> {
                       ), // Background color for the entire drawer
                     ),
                     accountName: Text(
-                      key_person,
-                      style: TextStyle(color: Colors.black),
+                      comName,
+                      style: TextStyle(color: Colors.white),
                     ),
                     accountEmail: Text(
                       email,
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color: Colors.white),
                     ),
                     currentAccountPicture: Container(
                       width: 25 * MediaQuery.of(context).devicePixelRatio,
@@ -351,7 +349,7 @@ class AdminhomeState extends State<AdminHome> {
                   ),
 
                   ListTile(
-                    leading:Icon(Icons.person_add_alt_1),
+                    leading: Icon(Icons.person_add_alt_1),
                     title: Text("Create Designation"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
@@ -362,7 +360,7 @@ class AdminhomeState extends State<AdminHome> {
                     },
                   ),
                   ListTile(
-                    leading:Icon(Icons.person),
+                    leading: Icon(Icons.person),
                     title: Text("Profile"),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
@@ -373,13 +371,14 @@ class AdminhomeState extends State<AdminHome> {
                     },
                   ),
                   ListTile(
-                    leading:Icon(Icons.logout),
+                    leading: Icon(Icons.logout),
                     title: Text("Logout"),
                     onTap: () {
                       clearStorage(context);
                     },
                   ),
-                   Divider(),
+                  SizedBox(height: 60),
+                  Divider(),
 
                   Padding(
                     padding: const EdgeInsets.only(bottom: 20.0, top: 10),
@@ -414,7 +413,7 @@ class AdminhomeState extends State<AdminHome> {
                               ),
                               SizedBox(width: 4),
                               Text(
-                                '2025 Md Websoft',
+                                '2025 $comName',
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: Colors.grey[600],
@@ -422,6 +421,15 @@ class AdminhomeState extends State<AdminHome> {
                                 ),
                               ),
                             ],
+                          ),
+
+                          Text(
+                            'Maintain By Md Websoft',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ],
                       ),
@@ -520,200 +528,37 @@ class AdminhomeState extends State<AdminHome> {
                                     ),
                                   ),
                                   SizedBox(width: 10),
-                                  Text(
-                                    key_person,
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                    comName,
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
+                                  Text(
+                                    key_person,
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  Text(
+                                    email,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                    ],
+                                  )
                                 ],
                               ),
                             ],
                           ),
                           SizedBox(height: 10),
-                          /*  Container(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Container(
-                                    width:
-                                        MediaQuery.of(context).size.width *
-                                        0.85,
-                                    margin: EdgeInsets.only(bottom: 5),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            drop
-                                                ? TextButton(
-                                                  onPressed: () => dropdown(),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        '#@Today Report: $currentDate',
-                                                        style: TextStyle(
-                                                          fontSize: 15,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                      Icon(
-                                                        Icons.arrow_drop_up,
-                                                        size: 15,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  style: TextButton.styleFrom(
-                                                    iconColor: Colors.black,
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                  ),
-                                                )
-                                                : TextButton(
-                                                  onPressed: () => dropUp(),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        'Today Report: $currentDate',
-                                                        style: TextStyle(
-                                                          fontSize: 15,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                      Icon(
-                                                        Icons.arrow_drop_down,
-                                                        size: 15,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  style: TextButton.styleFrom(
-                                                    iconColor: Colors.black,
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                  ),
-                                                ),
-                                          ],
-                                        ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
-                                          child:
-                                              drop
-                                                  ? Column(
-                                                    children: [
-                                                      Container(
-                                                        height: 30,
-                                                        color: Colors.black,
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceEvenly,
-                                                          children: [
-                                                            Text(
-                                                              "View",
-                                                              style: TextStyle(
-                                                                color:
-                                                                    Colors
-                                                                        .white,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              "Attendance",
-                                                              style: TextStyle(
-                                                                color:
-                                                                    Colors
-                                                                        .white,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              "In",
-                                                              style: TextStyle(
-                                                                color:
-                                                                    Colors
-                                                                        .white,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              "Out",
-                                                              style: TextStyle(
-                                                                color:
-                                                                    Colors
-                                                                        .white,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceEvenly,
-                                                          children: [
-                                                            TextButton(
-                                                              onPressed:
-                                                                  () => print(
-                                                                    "Row",
-                                                                  ),
-                                                              child: Icon(
-                                                                Icons
-                                                                    .remove_red_eye,
-                                                                size: 30,
-                                                              ),
-                                                            ),
-                                                            TextButton(
-                                                              onPressed:
-                                                                  () => print(
-                                                                    "Row",
-                                                                  ),
-                                                              child: Icon(
-                                                                Icons
-                                                                    .remove_red_eye,
-                                                                size: 30,
-                                                              ),
-                                                            ),
-                                                            TextButton(
-                                                              onPressed:
-                                                                  () => print(
-                                                                    "Row",
-                                                                  ),
-                                                              child: Icon(
-                                                                Icons
-                                                                    .remove_red_eye,
-                                                                size: 30,
-                                                              ),
-                                                            ),
-                                                            TextButton(
-                                                              onPressed:
-                                                                  () => print(
-                                                                    "Row",
-                                                                  ),
-                                                              child: Icon(
-                                                                Icons
-                                                                    .remove_red_eye,
-                                                                size: 30,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                                  : Text(""),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(height: 5), */
                         ],
                       ),
                     ),

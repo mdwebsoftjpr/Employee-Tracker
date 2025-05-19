@@ -328,7 +328,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                       "Date",
                       style: TextStyle(
                         fontSize: devicePixelRatio * 5,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                     SizedBox(width: 3),
@@ -351,7 +351,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                       "Month",
                       style: TextStyle(
                         fontSize: devicePixelRatio * 5,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                     SizedBox(width: 3),

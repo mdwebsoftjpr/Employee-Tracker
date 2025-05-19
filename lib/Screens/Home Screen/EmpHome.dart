@@ -640,7 +640,7 @@ class _EmpHomeState extends State<EmpHome> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child:
-                      (userImg != null )
+                      (userImg != null)
                           ? Image.network(
                             'https://testapi.rabadtechnology.com/$userImg',
                             width: MediaQuery.of(context).size.width * 0.10,
@@ -846,7 +846,7 @@ class _EmpHomeState extends State<EmpHome> {
                               ),
                               SizedBox(width: 4),
                               Text(
-                                '2025 Md Websoft',
+                                '2025 $comName',
                                 style: TextStyle(
                                   fontSize: 13,
                                   color: Colors.grey[600],
@@ -854,6 +854,15 @@ class _EmpHomeState extends State<EmpHome> {
                                 ),
                               ),
                             ],
+                          ),
+
+                          Text(
+                            'Maintain By Md Websoft',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ],
                       ),
@@ -934,7 +943,8 @@ class _EmpHomeState extends State<EmpHome> {
                                       ),
                                       margin: EdgeInsets.all(10),
                                       child:
-                                          (UserImage != '' && UserImage.isNotEmpty)
+                                          (UserImage != '' &&
+                                                  UserImage.isNotEmpty)
                                               ? ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(10),
