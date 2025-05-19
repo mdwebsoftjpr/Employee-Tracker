@@ -7,20 +7,24 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <!-- For Android 13+ media access -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <!-- Legacy permissions (Android 12 and lower) -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
 
+    <!-- 👇 Add this only if targetSdkVersion < 33 -->
     <application
         android:label="Staff-Tracking"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"> <!-- 👈 Important for Android 10 -->
 
-        <!-- Main Activity with Autofill enabled -->
+        <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,7 +34,7 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize"
-            android:importantForAutofill="yes"> <!-- ✅ Autofill support -->
+            android:importantForAutofill="yes">
 
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
@@ -42,6 +46,7 @@
             </intent-filter>
         </activity>
 
+        <!-- Flutter version -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
@@ -54,4 +59,5 @@
             <data android:mimeType="text/plain" />
         </intent>
     </queries>
+
 </manifest>

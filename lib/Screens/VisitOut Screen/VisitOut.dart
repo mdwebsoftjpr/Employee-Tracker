@@ -10,9 +10,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:http/http.dart';
-import 'dart:typed_data';
-import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path/path.dart' as p;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -202,38 +202,43 @@ class VisitOutState extends State<VisitOut> {
     });
   }
 
-  Future<File> compressImage(File file, {int maxSizeKB = 75}) async {
-    final originalBytes = await file.readAsBytes();
-    img.Image? image = img.decodeImage(originalBytes);
-    if (image == null) throw Exception("Could not decode image");
+   Future<File?> compressImage(XFile xFile) async {
+    final File file = File(xFile.path);
+    final dir = await getTemporaryDirectory();
+    final targetPath = p.join(dir.path, 'compressed_${p.basename(file.path)}');
 
-    int quality = 90;
-    late Uint8List compressedBytes;
-    while (quality > 10) {
-      compressedBytes = Uint8List.fromList(
-        img.encodeJpg(image, quality: quality),
+    int quality = 70;
+    File? compressedFile;
+    const int maxSizeInBytes = 100 * 1024;
+
+    for (int q = quality; q >= 10; q -= 10) {
+      final result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        targetPath,
+        quality: q,
+        format: CompressFormat.jpeg,
       );
-      if (compressedBytes.lengthInBytes / 1024 <= maxSizeKB) break;
-      quality -= 5;
+
+      if (result != null && await result.length() <= maxSizeInBytes) {
+        compressedFile = File(result.path);
+        break;
+      }
     }
 
-    final dir = await getTemporaryDirectory();
-    final targetPath =
-        '${dir.path}/compressed_${DateTime.now().millisecondsSinceEpoch}.jpg';
-    File compressedFile = await File(targetPath).writeAsBytes(compressedBytes);
     return compressedFile;
   }
 
   Future<void> _pickImageFromCamera() async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.camera,
+      preferredCameraDevice: CameraDevice.front,
     );
 
     if (pickedFile != null) {
-      File rawFile = File(pickedFile.path);
-      File compressed = await compressImage(rawFile, maxSizeKB: 75);
+      File? compressed = await compressImage(pickedFile);
+
       setState(() {
-        _imageFile = XFile(compressed.path); // or store File if needed
+        _imageFile = compressed != null ? XFile(compressed.path) : pickedFile;
       });
     }
   }
