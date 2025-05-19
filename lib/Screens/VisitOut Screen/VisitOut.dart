@@ -35,6 +35,8 @@ class VisitOutState extends State<VisitOut> {
   int? empid;
   int? comid;
   int? VisitId;
+  String? trade_name;
+
   void initState() {
     super.initState();
     _loadUser();
@@ -56,6 +58,7 @@ class VisitOutState extends State<VisitOut> {
         setState(() {
           empid = user['id'] ?? 0;
           comid = user['company_id'] ?? 0;
+          trade_name = user['trade_name'] ?? 0;
         });
         print("$comid,$empid");
       } catch (e) {
@@ -278,6 +281,7 @@ class VisitOutState extends State<VisitOut> {
         // Add other fields to the request
         request.fields['NameOfCustomer'] = Corganization;
         request.fields['concernedperson'] = CconcernedPerson;
+        request.fields['trade_name'] = trade_name.toString();
         request.fields['phoneno'] = Cphone;
         request.fields['item'] = Citem;
         request.fields['volume'] = Cvalue;

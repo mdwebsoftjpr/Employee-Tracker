@@ -123,7 +123,7 @@ class AttendanceState extends State<Attendance> {
                     },
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        vertical: 6,
+                        vertical: deviceWidth * 0.01,
                         horizontal: deviceWidth * 0.04,
                       ),
                       child: Container(
@@ -181,7 +181,7 @@ class AttendanceState extends State<Attendance> {
                                               Column(
                                                 children: [
                                                   Text(
-                                                    "Punch in",
+                                                    "Punch in:-",
                                                     style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
@@ -202,7 +202,7 @@ class AttendanceState extends State<Attendance> {
                                               Column(
                                                 children: [
                                                   Text(
-                                                    "Punch Out",
+                                                    "Punch Out:-",
                                                     style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,
@@ -269,14 +269,14 @@ class AttendanceState extends State<Attendance> {
                                           Row(
                                             children: [
                                               Text(
-                                                "Hours: ",
+                                                "Working Hours: ",
                                                 style: TextStyle(
                                                   fontSize: deviceWidth * 0.035,
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
                                               Text(
-                                                "Hours: ${item['hours'] ?? '0'}",
+                                                "${item['hours'] ?? '0'}",
                                                 style: TextStyle(
                                                   fontSize: deviceWidth * 0.035,
                                                 ),

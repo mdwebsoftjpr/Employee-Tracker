@@ -80,6 +80,7 @@ class _EmpHomeState extends State<EmpHome> {
   String? visitStatus;
   String? userImg;
   String? comimage;
+  String? trade_name;
 
   Future<String?> getDeviceId() async {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -110,6 +111,7 @@ class _EmpHomeState extends State<EmpHome> {
       setState(() {
         comName = user['company_name'] ?? 'Default Company';
         Comid = user['company_id'] ?? 0;
+        trade_name = user['trade_name'] ?? 0;
         name = user['name'] ?? 'Default User';
         username = user['username'] ?? 'Default User';
         userid = user['id'] ?? 'Default User';
@@ -323,6 +325,7 @@ class _EmpHomeState extends State<EmpHome> {
     );
 
     // Optional: send extra fields
+    request.fields['trade_name'] = trade_name.toString();
     request.fields['multipoint'] = '${latitude}_${longitude}';
     request.fields['diviceid'] = deviceId;
     request.fields['address'] = CurrentAddress;
@@ -366,6 +369,7 @@ class _EmpHomeState extends State<EmpHome> {
     );
     print(Comid);
     // Optional: send extra fields
+    request.fields['trade_name'] = trade_name.toString();
     request.fields['multipoint'] = '${latitude}_${longitude}';
     request.fields['diviceid'] = deviceId;
     request.fields['address'] = CurrentAddress;
@@ -407,6 +411,7 @@ class _EmpHomeState extends State<EmpHome> {
       request.files.add(
         await http.MultipartFile.fromPath('image', _imageFile!.path),
       );
+      request.fields['trade_name'] = trade_name.toString();
       request.fields['coordinate'] = '$latitude,$longitude';
       request.fields['diviceid'] = deviceId;
       request.fields['company_id'] = Comid.toString();

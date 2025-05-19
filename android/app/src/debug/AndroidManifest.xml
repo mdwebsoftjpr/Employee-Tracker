@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:label="Employee Tracker"
+        android:label="Staff-Tracking"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="false"
         tools:replace="android:usesCleartextTraffic">

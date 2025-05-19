@@ -1,3 +1,4 @@
+import 'package:employee_tracker/Screens/Create%20Company/updateCom.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/AdminHome.dart';
 import 'package:employee_tracker/main.dart';
 import 'package:flutter/material.dart';
@@ -48,43 +49,6 @@ class AdminprofileState extends State<Adminprofile> {
       } catch (e) {
         print("Error decoding user data: $e");
       }
-    }
-  }
-
-  Future<void> alert(BuildContext context, message) async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Center(child: Text('Employee Tracker')),
-          content: Text(message, textAlign: TextAlign.center),
-          actions: [
-            ElevatedButton(
-              child: Text('OK'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF03a9f4),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void clearStorage(context) async {
-    try {
-      await localStorage.clear();
-      await alert(context, "Successfully Logged Out");
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => CreateScreen()),
-        (route) => false,
-      );
-    } catch (e) {
-      print('Error clearing local storage: $e');
     }
   }
 
@@ -204,7 +168,14 @@ class AdminprofileState extends State<Adminprofile> {
               children: [
                 ElevatedButton.icon(
                   onPressed: () {
-                    // TODO: Navigate to edit screen
+                    if (userdata != null && userdata!['id'] != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Updatecom(),
+                        ),
+                      );
+                    }
                   },
                   icon: Icon(Icons.edit),
                   label: Text("Edit Profile"),
@@ -223,12 +194,10 @@ class AdminprofileState extends State<Adminprofile> {
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
-                   Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AdminHome(),
-                        ),
-                      );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AdminHome()),
+                    );
                   },
                   icon: Icon(Icons.home),
                   label: Text("Go To Home"),
