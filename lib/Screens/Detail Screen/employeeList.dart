@@ -26,7 +26,9 @@ class Employeelist extends StatefulWidget {
 class EmployeelistState extends State<Employeelist> {
   int? comId;
   List<Map<String, dynamic>> EmpDetail = [];
-    List<bool> isSwitchedList = [];
+  List<bool> isSwitchedList = [];
+  bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -67,16 +69,19 @@ class EmployeelistState extends State<Employeelist> {
 
       if (responseData['success'] == true && responseData['data'] != null) {
         setState(() {
+          isLoading = false;
           EmpDetail = List<Map<String, dynamic>>.from(responseData['data']);
           isSwitchedList = List<bool>.filled(EmpDetail.length, false);
         });
       } else {
+        isLoading = false;
         Alert.alert(
           context,
           responseData['message'] ?? 'Unknown error occurred',
         );
       }
     } catch (e) {
+      isLoading = false;
       Alert.alert(context, 'Failed to fetch data: $e');
     }
   }
@@ -390,7 +395,11 @@ class EmployeelistState extends State<Employeelist> {
         ),
       ),
       body:
-          EmpDetail.isEmpty
+          isLoading
+              ? Center(
+                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+              ) // ✅ Show loader first
+              : EmpDetail.isEmpty
               ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -573,7 +582,7 @@ class EmployeelistState extends State<Employeelist> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                EmpData(context,item);
+                                EmpData(context, item);
                               },
                               child: Container(
                                 padding: EdgeInsets.zero,

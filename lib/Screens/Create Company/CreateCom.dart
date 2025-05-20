@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'package:path_provider/path_provider.dart';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(CreateCom());
@@ -402,9 +403,17 @@ class CreateComState extends State<CreateCom> {
                     onChanged: (v) => setState(() => TermCondition = v!),
                   ),
                   Text("I accept"),
-                  TextButton(
-                    onPressed: () {},
-                    child: Text("Terms & Conditions"),
+                  SizedBox(width: 10),
+                  InkWell(
+                    onTap: () async {
+                      const url = 'https://www.mdwebsoft.com/';
+                      if (await canLaunchUrl(Uri.parse(url))) {
+                        await launchUrl(Uri.parse(url));
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                    child: Text("Terms & Condition's",style: TextStyle(color: Colors.blue),),
                   ),
                 ],
               ),
@@ -415,7 +424,18 @@ class CreateComState extends State<CreateCom> {
                     onChanged: (v) => setState(() => privacyPolicy = v!),
                   ),
                   Text("I accept"),
-                  TextButton(onPressed: () {}, child: Text("Privacy Policy")),
+                  SizedBox(width: 10),
+                  InkWell(
+                    onTap: () async {
+                      const url = 'https://www.mdwebsoft.com/';
+                      if (await canLaunchUrl(Uri.parse(url))) {
+                        await launchUrl(Uri.parse(url));
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                    child: Text("Privacy Policy",style: TextStyle(color: Colors.blue),),
+                  ),
                 ],
               ),
               SizedBox(height: 10),
@@ -432,8 +452,8 @@ class CreateComState extends State<CreateCom> {
                   'Create Company',
                   style: TextStyle(
                     color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),

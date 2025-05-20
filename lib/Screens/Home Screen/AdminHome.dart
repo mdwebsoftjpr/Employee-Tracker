@@ -270,35 +270,40 @@ class AdminhomeState extends State<AdminHome> {
           children: <Widget>[
             Container(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  UserAccountsDrawerHeader(
-                    decoration: BoxDecoration(
-                      color: Color(
-                        0xFF03a9f4,
-                      ), // Background color for the entire drawer
-                    ),
-                    accountName: Text(
-                      comName,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    accountEmail: Text(
-                      email,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    currentAccountPicture: Container(
-                      width: 25 * MediaQuery.of(context).devicePixelRatio,
-                      height: 25 * MediaQuery.of(context).devicePixelRatio,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                          4 * MediaQuery.of(context).devicePixelRatio,
-                        ),
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            'https://testapi.rabadtechnology.com/$image',
+                  Container(
+                    width: double.infinity,
+                    height: 55 * MediaQuery.of(context).devicePixelRatio,
+                    decoration: BoxDecoration(color: Color(0xFF03a9f4)),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                            4 * MediaQuery.of(context).devicePixelRatio,
                           ),
-                          fit: BoxFit.cover,
+                          child: Image.network(
+                            'https://testapi.rabadtechnology.com/$image',
+                            width: 30 * MediaQuery.of(context).devicePixelRatio,
+                            height:
+                                26 * MediaQuery.of(context).devicePixelRatio,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
+                        SizedBox(height: 12),
+                        Text(
+                          comName,
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          email,
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   ),
                   ListTile(
@@ -377,7 +382,7 @@ class AdminhomeState extends State<AdminHome> {
                       clearStorage(context);
                     },
                   ),
-                  SizedBox(height: 60),
+                  SizedBox(height: 10),
                   Divider(),
 
                   Padding(
@@ -425,6 +430,34 @@ class AdminhomeState extends State<AdminHome> {
 
                           Text(
                             'Maintain By Md Websoft',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Divider(),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+                    child: InkWell(
+                      onTap: () async {
+                        const url = 'https://www.mdwebsoft.com/';
+                        if (await canLaunchUrl(Uri.parse(url))) {
+                          await launchUrl(Uri.parse(url));
+                        } else {
+                          throw 'Could not launch $url';
+                        }
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'About Us',
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.grey[600],
@@ -533,19 +566,18 @@ class AdminhomeState extends State<AdminHome> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                            comName,
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.black,
-                                            ),
-                                            softWrap: true,
-                                            overflow:
-                                                TextOverflow
-                                                    .visible, // or TextOverflow.ellipsis
-                                            maxLines:
-                                                null, // allow multiple lines
-                                          ),
+                                        comName,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                          color: Colors.black,
+                                        ),
+                                        softWrap: true,
+                                        overflow:
+                                            TextOverflow
+                                                .visible, // or TextOverflow.ellipsis
+                                        maxLines: null, // allow multiple lines
+                                      ),
                                       Text(
                                         key_person,
                                         style: TextStyle(

@@ -34,6 +34,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
   String day = '';
   String month = '';
   List<Map<String, dynamic>> attendanceData = [];
+  bool isLoading=true;
 
   @override
   void initState() {
@@ -79,9 +80,11 @@ class AdminVisitreportState extends State<AdminVisitreport> {
           attendanceData = List<Map<String, dynamic>>.from(
             responseData['data'],
           );
+          isLoading=false;
         });
       } else {
         setState(() {
+          isLoading=false;
           attendanceData.clear(); // clears the list in place
         });
 
@@ -109,23 +112,35 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     }
   }
 
-  void _pickMonth() async {
-    DateTime? selected = await showMonthPicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
+Future<void> _pickMonth(BuildContext context) async {
+  DateTime? selected = await showMonthPicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2100),
+   /*  builder: (BuildContext context, Widget? child) {
+      return Theme(
+        data: Theme.of(context).copyWith(
+          dialogTheme: DialogTheme(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+        ),
+        child: child!,
+      );
+    }, */
+  );
 
-    if (selected != null) {
-      setState(() {
-        // Format month as yyyy-MM
-        month = DateFormat('MM').format(selected);
-        day = '';
-      });
-      VisitDetail();
-    }
+  if (selected != null) {
+    setState(() {
+      month = DateFormat('MM').format(selected);
+      day = '';
+    });
+    VisitDetail();
   }
+}
+
 
   double safeParseDouble(String input) {
     try {
@@ -361,7 +376,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                         color: Colors.white,
                         size: deviceWidth * 0.07,
                       ),
-                      onPressed: _pickMonth,
+                      onPressed: ()=>_pickMonth(context),
                       tooltip: "Pick Month",
                     ),
                   ],
@@ -371,8 +386,10 @@ class AdminVisitreportState extends State<AdminVisitreport> {
           ),
         ],
       ),
-      body:
-          attendanceData.isEmpty
+      body:isLoading
+              ? Center(
+                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+              ):attendanceData.isEmpty
               ? Center(
                 child: Text(
                   "Visit Not Found",
@@ -397,7 +414,8 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                     }
                   }
 
-                  return Padding(
+                  return SingleChildScrollView(
+                    child: Padding(
                     padding: EdgeInsets.all(devicePixelRatio * .5),
                     child: Container(
                       margin: EdgeInsets.symmetric(
@@ -598,6 +616,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                         ],
                       ),
                     ),
+                  ),
                   );
                 },
               ),

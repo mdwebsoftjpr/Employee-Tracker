@@ -28,6 +28,7 @@ class MasterState extends State<Master> {
   List<dynamic> designationList = [];
   final _formKey = GlobalKey<FormState>();
   final TextEditingController designation = TextEditingController();
+  bool isLoading=true;
 
   @override
   void initState() {
@@ -62,12 +63,19 @@ class MasterState extends State<Master> {
       final responseData = jsonDecode(response.body);
       if (responseData['success']) {
         setState(() {
+          isLoading=false;
           designationList = responseData['data'];
         });
       } else {
+        setState(() {
+          isLoading=false;
+          });
         Alert.alert(context, responseData['message']);
       }
     } catch (e) {
+      setState(() {
+          isLoading=false;
+          });
       Alert.alert(context, e);
     }
   }
@@ -92,11 +100,20 @@ class MasterState extends State<Master> {
       final responseData = jsonDecode(response.body);
       if (responseData['success']) {
         ShowMaster();
+        setState(() {
+          isLoading=false;
+          });
         Alert.alert(context, responseData['message']);
       } else {
+        setState(() {
+          isLoading=false;
+          });
         Alert.alert(context, responseData['message']);
       }
     } catch (e) {
+      setState(() {
+          isLoading=false;
+          });
       Alert.alert(context, e);
     }
   }
@@ -118,11 +135,20 @@ class MasterState extends State<Master> {
       final responseData = jsonDecode(response.body);
       if (responseData['success']) {
         ShowMaster();
+        setState(() {
+          isLoading=false;
+          });
         Alert.alert(context, responseData['message']);
       } else {
+        setState(() {
+          isLoading=false;
+          });
         Alert.alert(context, responseData['message']);
       }
     } catch (e) {
+      setState(() {
+          isLoading=false;
+          });
       Alert.alert(context, e);
     }
   }
@@ -146,10 +172,16 @@ class MasterState extends State<Master> {
         final responseData = jsonDecode(response.body);
         Alert.alert(context, responseData['message']);
         if (responseData['success']) {
+          setState(() {
+          isLoading=false;
+          });
           designation.clear();
           ShowMaster();
         }
       } catch (e) {
+        setState(() {
+          isLoading=false;
+          });
         Alert.alert(context, e);
       }
     }
@@ -271,7 +303,11 @@ class MasterState extends State<Master> {
             SizedBox(height: 10),
             Expanded(
               child:
-                  designationList.isEmpty
+                  isLoading
+              ? Center(
+                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+              ) // ✅ Show loader first
+              :designationList.isEmpty
                       ? Center(
                         child: Text(
                           "Designation Not Found",

@@ -55,8 +55,7 @@ void checkConnection() async {
   bool isOnline = await isInternetAvailable();
   
   if (isOnline) {
-    await Alert.alert(context, "Internet is available");
-    // Do nothing or navigate to your main/home screen
+    navigateUser();
   } else {
     await Alert.alert(context, "No internet connection");
     Navigator.push(

@@ -21,7 +21,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:connectivity_plus/connectivity_plus.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
@@ -672,37 +671,38 @@ class _EmpHomeState extends State<EmpHome> {
             Container(
               child: Column(
                 children: [
-                  UserAccountsDrawerHeader(
-                    decoration: BoxDecoration(
-                      color: Color(
-                        0xFF03a9f4,
-                      ), // Background color for the entire drawer
-                    ),
-                    accountName: Text(
-                      comName,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    accountEmail: Text(
-                      name,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    currentAccountPicture: Container(
-                      margin: EdgeInsets.only(
-                        top: 10,
-                        bottom: 0,
-                        left: 10,
-                        right: 10,
-                      ),
-                      child:
-                          (comimage != '')
-                              ? ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.network(
-                                  'https://testapi.rabadtechnology.com/$comimage',
-                                  fit: BoxFit.cover,
-                                ),
-                              )
-                              : SizedBox(),
+                  Container(
+                    width: double.infinity,
+                    height: 55 * MediaQuery.of(context).devicePixelRatio,
+                    decoration: BoxDecoration(color: Color(0xFF03a9f4)),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                            4 * MediaQuery.of(context).devicePixelRatio,
+                          ),
+                          child: Image.network(
+                            'https://testapi.rabadtechnology.com/$comimage',
+                            width: 25 * MediaQuery.of(context).devicePixelRatio,
+                            height:
+                                25 * MediaQuery.of(context).devicePixelRatio,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        SizedBox(height: 12),
+                        Text(
+                          comName,
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          name,
+                          style: TextStyle(color: Colors.white, fontSize: 14),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
                     ),
                   ),
                   ListTile(
@@ -817,7 +817,7 @@ class _EmpHomeState extends State<EmpHome> {
                       clearStorage(context);
                     },
                   ),
-                  SizedBox(height: 60),
+                  SizedBox(height: 10),
                   Divider(),
 
                   Padding(
@@ -865,6 +865,34 @@ class _EmpHomeState extends State<EmpHome> {
 
                           Text(
                             'Maintain By Md Websoft',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Divider(),
+
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+                    child: InkWell(
+                      onTap: () async {
+                        const url = 'https://www.mdwebsoft.com/';
+                        if (await canLaunchUrl(Uri.parse(url))) {
+                          await launchUrl(Uri.parse(url));
+                        } else {
+                          throw 'Could not launch $url';
+                        }
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'About Us',
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.grey[600],

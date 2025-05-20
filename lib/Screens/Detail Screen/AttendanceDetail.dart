@@ -23,6 +23,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
   DateTime? selectedMonth;
   int MonthNo = DateTime.now().month;
   int YearNo = DateTime.now().year;
+  bool isLoading = true;
 
   final int currentExp = 85;
   final int totalExp = 100;
@@ -81,21 +82,25 @@ class AttendanceDetailState extends State<AttendanceDetail> {
           attendancePercentage = (totalPresentDays / 31) * 100;
 
           setState(() {
+            isLoading = false;
             attendanceData = tempList.reversed.toList();
           });
         } else {
           setState(() {
+            isLoading = false;
             attendanceData = [];
           });
           Alert.alert(context, message);
         }
       } else {
         setState(() {
-            attendanceData = [];
-          });
+          isLoading = false;
+          attendanceData = [];
+        });
         Alert.alert(context, message);
       }
     } catch (e) {
+      isLoading = false;
       Alert.alert(context, e);
     }
   }
@@ -220,7 +225,13 @@ class AttendanceDetailState extends State<AttendanceDetail> {
           ),
           Expanded(
             child:
-                attendanceData.isEmpty
+                isLoading
+                    ? Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF03a9f4),
+                      ),
+                    ) // ✅ Show loader first
+                    : attendanceData.isEmpty
                     ? Center(
                       child: Text(
                         "Attendance Not Found",
