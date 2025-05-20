@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +26,7 @@ class Employeelist extends StatefulWidget {
 class EmployeelistState extends State<Employeelist> {
   int? comId;
   List<Map<String, dynamic>> EmpDetail = [];
-  @override
+  bool isSwitched = false;
   @override
   void initState() {
     super.initState();
@@ -366,42 +367,6 @@ class EmployeelistState extends State<Employeelist> {
                 ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => UpdateEmp(item: [item]),
-                        ),
-                      ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.edit, color: Colors.white),
-                      Text(
-                        "Edit",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                        ),
-                      ),
-                    ],
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF03a9f4),
-                    padding: EdgeInsets.only(
-                      top: 1 * MediaQuery.of(context).devicePixelRatio,
-                      bottom: 1 * MediaQuery.of(context).devicePixelRatio,
-                      left: 20 * MediaQuery.of(context).devicePixelRatio,
-                      right: 20 * MediaQuery.of(context).devicePixelRatio,
-                    ),
-                    alignment: Alignment.center,
-                  ),
-                ),
-              ],
-            ),
           ],
         );
       },
@@ -445,11 +410,7 @@ class EmployeelistState extends State<Employeelist> {
                 itemCount: EmpDetail.length,
                 itemBuilder: (context, index) {
                   final item = EmpDetail[index];
-                  return GestureDetector(
-                    onTap: () {
-                      EmpData(context, item);
-                    },
-                    child: Container(
+                  return  Container(
                       margin: EdgeInsets.only(
                         top: 5,
                         left: MediaQuery.of(context).size.width * 0.03,
@@ -464,120 +425,240 @@ class EmployeelistState extends State<Employeelist> {
                           2 * MediaQuery.of(context).devicePixelRatio,
                         ),
                       ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                      child: Column(
                         children: [
-                          Expanded(
-                            child: Column(
-                              children: [
-                                ClipRRect(
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        4 *
+                                            MediaQuery.of(
+                                              context,
+                                            ).devicePixelRatio,
+                                      ),
+                                      child: Image.network(
+                                        item['image'] ?? '',
+                                        width:
+                                            25 *
+                                            MediaQuery.of(
+                                              context,
+                                            ).devicePixelRatio,
+                                        height:
+                                            25 *
+                                            MediaQuery.of(
+                                              context,
+                                            ).devicePixelRatio,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      item['name']?.length > 10
+                                          ? '${item['name'].substring(0, 10)}...'
+                                          : item['name'] ?? '',
+                                      style: TextStyle(
+                                        fontSize:
+                                            4 *
+                                            MediaQuery.of(
+                                              context,
+                                            ).devicePixelRatio,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                width:
+                                    6 * MediaQuery.of(context).devicePixelRatio,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Salary:-",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      (item['salary'] ?? 0).toString(),
+                                      style: TextStyle(
+                                        fontSize:
+                                            4 *
+                                            MediaQuery.of(
+                                              context,
+                                            ).devicePixelRatio,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      "Designation:-",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      item['designation'] ?? '',
+                                      style: TextStyle(
+                                        fontSize:
+                                            4 *
+                                            MediaQuery.of(
+                                              context,
+                                            ).devicePixelRatio,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                width:
+                                    4 * MediaQuery.of(context).devicePixelRatio,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      "Mobile No.:-",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      (item['mobile_no'] ?? '').toString(),
+                                      style: TextStyle(
+                                        fontSize:
+                                            4 *
+                                            MediaQuery.of(
+                                              context,
+                                            ).devicePixelRatio,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      "Working Hour:-",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      (item['hours'] ?? '').toString(),
+                                      style: TextStyle(
+                                        fontSize:
+                                            4 *
+                                            MediaQuery.of(
+                                              context,
+                                            ).devicePixelRatio,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 5),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(
                                     4 * MediaQuery.of(context).devicePixelRatio,
                                   ),
-                                  child: Image.network(
-                                    item['image'] ?? '',
-                                    width:
-                                        25 *
-                                        MediaQuery.of(context).devicePixelRatio,
-                                    height:
-                                        25 *
-                                        MediaQuery.of(context).devicePixelRatio,
-                                    fit: BoxFit.cover,
+                                  color: Colors.orange,
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    EmpData(context, item);
+                                  },
+                                  icon: Icon(
+                                    FontAwesomeIcons.solidEye,
+                                    size: 15,
+                                    color: Colors.white,
                                   ),
                                 ),
-                                SizedBox(height: 5),
-                                Text(
-                                  item['name']?.length > 10
-                                      ? '${item['name'].substring(0, 10)}...'
-                                      : item['name'] ?? '',
-                                  style: TextStyle(
-                                    fontSize:
-                                        4 *
-                                        MediaQuery.of(context).devicePixelRatio,
-                                    fontWeight: FontWeight.w600,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    4 * MediaQuery.of(context).devicePixelRatio,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
+                                  color: Colors.blue,
                                 ),
-                              ],
-                            ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) =>
+                                                UpdateEmp(item: [item]),
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    FontAwesomeIcons.edit,
+                                    size: 15,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    4 * MediaQuery.of(context).devicePixelRatio,
+                                  ),
+                                  color: Colors.pink,
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) =>
+                                                UpdateEmp(item: [item]),
+                                      ),
+                                    );
+                                  },
+                                  icon: Icon(
+                                    FontAwesomeIcons.key,
+                                    size: 15,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                              Transform.scale(
+                                scale: .7, // Increase or decrease the size
+                                child: Switch(
+                                  value: isSwitched,
+                                  onChanged: (bool value) {
+                                    setState(() {
+                                      isSwitched = value;
+                                    });
+                                  },
+                                  activeColor: Colors.white,
+                                  activeTrackColor: Colors.green,
+                                  inactiveThumbColor: Colors.white,
+                                  inactiveTrackColor: Colors.red,
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            width: 6 * MediaQuery.of(context).devicePixelRatio,
-                          ),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Salary:-",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  (item['salary'] ?? 0).toString(),
-                                  style: TextStyle(
-                                    fontSize:
-                                        4 *
-                                        MediaQuery.of(context).devicePixelRatio,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Designation:-",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  item['designation'] ?? '',
-                                  style: TextStyle(
-                                    fontSize:
-                                        4 *
-                                        MediaQuery.of(context).devicePixelRatio,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            width: 4 * MediaQuery.of(context).devicePixelRatio,
-                          ),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                Text(
-                                  "Mobile No.:-",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  (item['mobile_no'] ?? '').toString(),
-                                  style: TextStyle(
-                                    fontSize:
-                                        4 *
-                                        MediaQuery.of(context).devicePixelRatio,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Working Hour:-",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  (item['hours'] ?? '').toString(),
-                                  style: TextStyle(
-                                    fontSize:
-                                        4 *
-                                        MediaQuery.of(context).devicePixelRatio,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          SizedBox(height: 3,)
                         ],
                       ),
-                    ),
-                  );
+                    );
                 },
               ),
     );

@@ -165,7 +165,7 @@ class AdminhomeState extends State<AdminHome> {
       ),
       items: [
         PopupMenuItem(
-          value: 'profile',
+          value: 'Profile',
           child: Row(
             children: [
               Icon(
@@ -194,10 +194,10 @@ class AdminhomeState extends State<AdminHome> {
       ],
     );
 
-    if (selectedItem == 'profile') {
+    if (selectedItem == 'Profile') {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => AdminHome()),
+        MaterialPageRoute(builder: (context) => Adminprofile()),
       );
     } else if (selectedItem == 'Logout') {
       clearStorage(context);

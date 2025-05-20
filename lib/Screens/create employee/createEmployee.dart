@@ -773,7 +773,11 @@ class CreateEmpState extends State<CreateEmployee> {
                   onPressed: () => createEmp(context),
                   child: Text(
                     "Create Employee",
-                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF03a9f4),

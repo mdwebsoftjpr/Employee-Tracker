@@ -431,9 +431,9 @@ class CreateComState extends State<CreateCom> {
                 child: Text(
                   'Create Company',
                   style: TextStyle(
-                    fontSize: 17,
                     color: Colors.white,
-                    fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                   ),
                 ),
               ),

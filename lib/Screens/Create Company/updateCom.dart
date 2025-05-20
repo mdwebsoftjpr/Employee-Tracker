@@ -469,9 +469,9 @@ class UpdatecomState extends State<Updatecom> {
                         child: Text(
                           'Update Company',
                           style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
+                             color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),

@@ -202,7 +202,7 @@ class VisitOutState extends State<VisitOut> {
     });
   }
 
-   Future<File?> compressImage(XFile xFile) async {
+  Future<File?> compressImage(XFile xFile) async {
     final File file = File(xFile.path);
     final dir = await getTemporaryDirectory();
     final targetPath = p.join(dir.path, 'compressed_${p.basename(file.path)}');
@@ -419,7 +419,17 @@ class VisitOutState extends State<VisitOut> {
                     children: [
                       ElevatedButton(
                         onPressed: _pickImageFromCamera,
-                        child: Text("Take Photo"),
+                        child: Text(
+                          "Take Photo",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF03a9f4),
+                        ),
                       ),
                       SizedBox(width: 10),
                       _imageFile != null
@@ -442,7 +452,17 @@ class VisitOutState extends State<VisitOut> {
                   SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () => VisitOut(context),
-                    child: Text("Visit Out"),
+                    child: Text(
+                      "Visit Out",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF03a9f4),
+                    ),
                   ),
                   SizedBox(height: 20),
                 ],
