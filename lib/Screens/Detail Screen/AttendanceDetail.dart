@@ -84,9 +84,15 @@ class AttendanceDetailState extends State<AttendanceDetail> {
             attendanceData = tempList.reversed.toList();
           });
         } else {
+          setState(() {
+            attendanceData = [];
+          });
           Alert.alert(context, message);
         }
       } else {
+        setState(() {
+            attendanceData = [];
+          });
         Alert.alert(context, message);
       }
     } catch (e) {
@@ -156,8 +162,8 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                         borderRadius: BorderRadius.circular(deviceWidth * 0.02),
                         child: Image.network(
                           imageUrl,
-                          width: deviceWidth * 0.25,
-                          height: deviceHeight * 0.17,
+                          width: deviceWidth * 0.22,
+                          height: deviceHeight * 0.15,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -196,8 +202,8 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                         progressColor: Colors.blue,
                       ),
                       Text(
-                        "This Month Attendance % $attendancePercentage",
-                        style: TextStyle(fontSize: deviceWidth * 0.04),
+                        "This Month Attendance % ${attendancePercentage.toStringAsFixed(2)}",
+                        style: TextStyle(fontSize: deviceWidth * 0.03),
                       ),
                     ],
                   ),
@@ -208,7 +214,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
           Text(
             "Details:-",
             style: TextStyle(
-              fontSize: devicePixelRatio * 7,
+              fontSize: devicePixelRatio * 6,
               fontWeight: FontWeight.bold,
             ),
           ),

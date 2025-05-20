@@ -226,7 +226,7 @@ class AdminhomeState extends State<AdminHome> {
           children: [
             Expanded(
               child: Text(
-                comName,
+                "comName",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,

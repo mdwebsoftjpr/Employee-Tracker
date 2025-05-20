@@ -428,7 +428,11 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                             Icon(Icons.error),
                                   ),
                                 ),
-                                Text(data['name'] ?? ''),
+                                Text(
+                                  (data['name'] ?? '').toString().length > 10
+                                      ? '${data['name'].toString().substring(0, 10)}...'
+                                      : data['name'].toString(),
+                                ),
                               ],
                             ),
                           ),

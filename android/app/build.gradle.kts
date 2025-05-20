@@ -8,17 +8,17 @@ plugins {
 android {
     namespace = "com.example.employee_tracker"
 
-    // ✅ Set compile SDK to a fixed value or via flutter object
+    // ✅ Use Flutter-defined compile SDK version
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973" // ✅ Good for native image plugins, etc.
+    ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.example.employee_tracker"
         minSdk = flutter.minSdkVersion
-        targetSdk = 30 // ✅ Explicitly set targetSdk to 30 for legacy storage support
+        targetSdk = 34 // ✅ Updated to meet Google Play's latest requirements
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        multiDexEnabled = true // ✅ Good if your app has many methods/plugins
+        multiDexEnabled = true
     }
 
     compileOptions {
@@ -32,19 +32,32 @@ android {
 
     buildTypes {
         release {
-            // ✅ Customize signing if needed
+            // 🔐 Replace with your real signing config for Play Store
             signingConfig = signingConfigs.getByName("debug")
             isShrinkResources = false
             isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
 
-    // ✅ Optional: if you have Jetifier or legacy dependencies
     packagingOptions {
         resources {
-            excludes += setOf("META-INF/DEPENDENCIES", "META-INF/LICENSE", "META-INF/LICENSE.txt", "META-INF/NOTICE", "META-INF/NOTICE.txt")
+            excludes += setOf(
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt"
+            )
         }
+    }
+
+    lint {
+        checkReleaseBuilds = true
+        // Optional: baseline = file("lint-baseline.xml")
     }
 }
 
