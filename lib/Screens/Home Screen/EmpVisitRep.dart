@@ -33,6 +33,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
   List<Map<String, dynamic>> attendanceData = [];
   List<String> StartLoc = [];
   List<String> EndLoc = [];
+  bool isLoading=true;
 
   @override
   void initState() {
@@ -111,18 +112,23 @@ class EmpvisitrepState extends State<Empvisitrep> {
 
       if (responseData['success'] == true) {
         setState(() {
+          isLoading=false;
           attendanceData = List<Map<String, dynamic>>.from(
             responseData['data'],
           );
         });
       } else {
         setState(() {
+          isLoading=false;
           attendanceData.clear(); // clears the list in place
         });
-        Alert.alert(context, responseData['message']);
+        await Alert.alert(context, responseData['message']);
       }
     } catch (e) {
-      Alert.alert(context, "Error fetching data: $e");
+      setState(() {
+        isLoading=false;
+      });
+      await Alert.alert(context, "Error fetching data: $e");
     }
   }
 
@@ -333,7 +339,11 @@ class EmpvisitrepState extends State<Empvisitrep> {
           ),
         ],
       ),
-      body:
+      body:isLoading
+              ? Center(
+                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+              ) // ✅ Show loader first
+              :
           attendanceData.isEmpty
               ? Center(
                 child: Text(

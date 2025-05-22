@@ -77,10 +77,10 @@ class AdminVisitreportState extends State<AdminVisitreport> {
 
       if (responseData['success'] == true) {
         setState(() {
+          isLoading=false;
           attendanceData = List<Map<String, dynamic>>.from(
             responseData['data'],
           );
-          isLoading=false;
         });
       } else {
         setState(() {
@@ -91,6 +91,9 @@ class AdminVisitreportState extends State<AdminVisitreport> {
         Alert.alert(context, responseData['message']);
       }
     } catch (e) {
+      setState(() {
+        isLoading=false;
+      });
       print("Error fetching data: $e");
     }
   }

@@ -81,6 +81,9 @@ class MasterState extends State<Master> {
   }
 
   void UpdateMaster(String designation, int id) async {
+    setState(() {
+          isLoading=true;
+          });
     print("$designation,$id");
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/updatedesignation.php',
@@ -121,6 +124,9 @@ class MasterState extends State<Master> {
 
 
   void DeleteMaster(int id) async {
+    setState(() {
+          isLoading=true;
+          });
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/deletedesignation.php',
     );
@@ -154,6 +160,9 @@ class MasterState extends State<Master> {
   }
 
   void AddMaster() async {
+    setState(() {
+          isLoading=true;
+          });
     if (_formKey.currentState?.validate() ?? false) {
       final url = Uri.parse(
         'https://testapi.rabadtechnology.com/designationmaster.php',

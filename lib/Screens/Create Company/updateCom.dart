@@ -38,6 +38,7 @@ class UpdatecomState extends State<Updatecom> {
   bool privacyPolicy = false;
   bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   late TextEditingController cname;
   late TextEditingController email;
@@ -148,6 +149,9 @@ class UpdatecomState extends State<Updatecom> {
   }
 
   void company_update(context) async {
+    setState(() {
+      isLoading = true;
+    });
     if (_formKey.currentState?.validate() ?? false) {
       if (!TermCondition || !privacyPolicy) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -194,15 +198,24 @@ class UpdatecomState extends State<Updatecom> {
         final responseBody = await http.Response.fromStream(response);
         final Map<String, dynamic> data = jsonDecode(responseBody.body);
         if (data['success'] == true) {
+          setState(() {
+            isLoading = false;
+          });
           await Alert.alert(context, 'Thank You ${data['message']}');
           Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AdminHome()),
-                    );
+            context,
+            MaterialPageRoute(builder: (context) => AdminHome()),
+          );
         } else {
+          setState(() {
+            isLoading = false;
+          });
           Alert.alert(context, data['message']);
         }
       } catch (e) {
+        setState(() {
+            isLoading = false;
+          });
         Alert.alert(context, e.toString());
       }
     }
@@ -261,7 +274,11 @@ class UpdatecomState extends State<Updatecom> {
         ),
       ),
       body:
-          userdata == null
+          isLoading
+              ? Center(
+                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+              )
+              : userdata == null
               ? Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
                 padding: EdgeInsets.all(16),
@@ -469,9 +486,9 @@ class UpdatecomState extends State<Updatecom> {
                         child: Text(
                           'Update Company',
                           style: TextStyle(
-                             color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),

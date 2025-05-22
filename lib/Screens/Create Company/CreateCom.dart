@@ -39,6 +39,7 @@ class CreateComState extends State<CreateCom> {
   bool privacyPolicy = false;
   bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
+  bool isLoading = false;
 
   final TextEditingController cname = TextEditingController();
   final TextEditingController email = TextEditingController();
@@ -91,6 +92,9 @@ class CreateComState extends State<CreateCom> {
   }
 
   void compLogin(context) async {
+    setState(() {
+      isLoading = true;
+    });
     if (_formKey.currentState?.validate() ?? false) {
       if (!TermCondition) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -154,11 +158,20 @@ class CreateComState extends State<CreateCom> {
         final Map<String, dynamic> data = jsonDecode(responseBody.body);
 
         if (data['success'] == true) {
+          setState(() {
+            isLoading = false;
+          });
           Alert.alert(context, 'Thank You ${data['message']}');
         } else {
+          setState(() {
+            isLoading = false;
+          });
           Alert.alert(context, data['message']);
         }
       } catch (e) {
+        setState(() {
+            isLoading = false;
+          });
         Alert.alert(context, e.toString());
       }
     }
@@ -216,252 +229,282 @@ class CreateComState extends State<CreateCom> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              SizedBox(height: 20),
-              _imageFile != null
-                  ? CircleAvatar(
-                    radius: size.width * 0.18,
-                    backgroundImage: FileImage(_imageFile!),
-                  )
-                  : Container(
-                    width: size.width * 0.32,
-                    height: size.width * 0.32,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(50),
-                    ),
+      body:
+          isLoading
+              ? Center(
+                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+              )
+              : SingleChildScrollView(
+                padding: EdgeInsets.all(16),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      SizedBox(height: 20),
+                      _imageFile != null
+                          ? CircleAvatar(
+                            radius: size.width * 0.18,
+                            backgroundImage: FileImage(_imageFile!),
+                          )
+                          : Container(
+                            width: size.width * 0.32,
+                            height: size.width * 0.32,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                          ),
+                      ElevatedButton(
+                        onPressed: _pickImageFromGallery,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Upload Company Logo",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            Icon(Icons.edit, color: Colors.black),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+
+                      buildTextField(
+                        controller: cname,
+                        label: 'Enter Your Company Name',
+                        icon: Icons.business,
+                        validator:
+                            (v) =>
+                                v!.isEmpty ? 'Company name is required' : null,
+                      ),
+                      SizedBox(height: 10),
+                      buildTextField(
+                        controller: Tradename,
+                        label: 'Enter your 10 Digit Id',
+                        icon: Icons.apartment,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
+                        validator:
+                            (v) =>
+                                (v == null || v.length < 6 || v.length > 15)
+                                    ? 'ID must be 6-15 characters'
+                                    : null,
+                      ),
+                      SizedBox(height: 10),
+                      buildTextField(
+                        controller: keyPerson,
+                        label: 'Enter Your Key Person',
+                        icon: Icons.person,
+                        validator:
+                            (v) => v!.isEmpty ? 'Key person is required' : null,
+                      ),
+                      SizedBox(height: 10),
+                      buildTextField(
+                        controller: Gst,
+                        label: 'Enter Your GSTIN No.',
+                        icon: Icons.account_balance,
+                        inputFormatters: [UpperCaseTextFormatter()],
+                        validator:
+                            (v) =>
+                                v!.length != 15
+                                    ? 'GSTIN must be exactly 15 characters'
+                                    : null,
+                      ),
+                      SizedBox(height: 10),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: buildTextField(
+                              controller: PanNo,
+                              label: 'Enter Your Pan Card No.',
+                              icon: Icons.credit_card,
+                              inputFormatters: [UpperCaseTextFormatter()],
+                              validator:
+                                  (v) =>
+                                      v!.length != 10
+                                          ? 'PAN must be 10 characters'
+                                          : null,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          TextButton(onPressed: () {}, child: Text("Verify")),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: buildTextField(
+                              controller: mobile,
+                              label: 'Enter Your Mobile No.',
+                              icon: Icons.mobile_friendly,
+                              keyboardType: TextInputType.phone,
+                              validator:
+                                  (v) =>
+                                      v!.length != 10
+                                          ? 'Mobile number must be 10 digits'
+                                          : null,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          TextButton(onPressed: () {}, child: Text("Verify")),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: buildTextField(
+                              controller: email,
+                              label: 'Enter Your Email',
+                              icon: Icons.email,
+                              validator:
+                                  (v) =>
+                                      !v!.contains('@')
+                                          ? 'Invalid email'
+                                          : null,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          TextButton(onPressed: () {}, child: Text("Verify")),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+
+                      buildTextField(
+                        controller: address,
+                        label: 'Enter Your Company Address',
+                        icon: Icons.location_on,
+                        validator:
+                            (v) => v!.isEmpty ? 'Address required' : null,
+                      ),
+                      SizedBox(height: 10),
+                      buildTextField(
+                        controller: website,
+                        label: 'Enter Your Website Link',
+                        icon: Icons.web,
+                      ),
+                      SizedBox(height: 10),
+                      buildTextField(
+                        controller: NoOfEmp,
+                        label: 'Enter No. Of Employee',
+                        icon: Icons.group,
+                        keyboardType: TextInputType.number,
+                      ),
+                      SizedBox(height: 10),
+                      buildTextField(
+                        controller: loginUserName,
+                        label: 'Enter Your Login User Name',
+                        icon: Icons.account_circle,
+                        validator:
+                            (v) =>
+                                v!.isEmpty
+                                    ? 'Login username is required'
+                                    : null,
+                      ),
+                      SizedBox(height: 10),
+                      buildTextField(
+                        controller: password,
+                        label: 'Enter Your Password',
+                        icon: Icons.lock,
+                        obscure: _obscureText,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
+                        validator:
+                            (v) => v!.isEmpty ? 'Password is required' : null,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed:
+                              () =>
+                                  setState(() => _obscureText = !_obscureText),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: TermCondition,
+                            onChanged:
+                                (v) => setState(() => TermCondition = v!),
+                          ),
+                          Text("I accept"),
+                          SizedBox(width: 10),
+                          InkWell(
+                            onTap: () async {
+                              const url = 'https://www.mdwebsoft.com/';
+                              if (await canLaunchUrl(Uri.parse(url))) {
+                                await launchUrl(Uri.parse(url));
+                              } else {
+                                throw 'Could not launch $url';
+                              }
+                            },
+                            child: Text(
+                              "Terms & Condition's",
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: privacyPolicy,
+                            onChanged:
+                                (v) => setState(() => privacyPolicy = v!),
+                          ),
+                          Text("I accept"),
+                          SizedBox(width: 10),
+                          InkWell(
+                            onTap: () async {
+                              const url = 'https://www.mdwebsoft.com/';
+                              if (await canLaunchUrl(Uri.parse(url))) {
+                                await launchUrl(Uri.parse(url));
+                              } else {
+                                throw 'Could not launch $url';
+                              }
+                            },
+                            child: Text(
+                              "Privacy Policy",
+                              style: TextStyle(color: Colors.blue),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () => compLogin(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF03a9f4),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 40,
+                            vertical: 10,
+                          ),
+                        ),
+                        child: Text(
+                          'Create Company',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                    ],
                   ),
-              ElevatedButton(
-                onPressed: _pickImageFromGallery,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "Upload Company Logo",
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    Icon(Icons.edit, color: Colors.black),
-                  ],
                 ),
               ),
-              SizedBox(height: 10),
-
-              buildTextField(
-                controller: cname,
-                label: 'Enter Your Company Name',
-                icon: Icons.business,
-                validator:
-                    (v) => v!.isEmpty ? 'Company name is required' : null,
-              ),
-              SizedBox(height: 10),
-              buildTextField(
-                controller: Tradename,
-                label: 'Enter your 10 Digit Id',
-                icon: Icons.apartment,
-                inputFormatters: [
-                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                ],
-                validator:
-                    (v) =>
-                        (v == null || v.length < 6 || v.length > 15)
-                            ? 'ID must be 6-15 characters'
-                            : null,
-              ),
-              SizedBox(height: 10),
-              buildTextField(
-                controller: keyPerson,
-                label: 'Enter Your Key Person',
-                icon: Icons.person,
-                validator: (v) => v!.isEmpty ? 'Key person is required' : null,
-              ),
-              SizedBox(height: 10),
-              buildTextField(
-                controller: Gst,
-                label: 'Enter Your GSTIN No.',
-                icon: Icons.account_balance,
-                inputFormatters: [UpperCaseTextFormatter()],
-                validator:
-                    (v) =>
-                        v!.length != 15
-                            ? 'GSTIN must be exactly 15 characters'
-                            : null,
-              ),
-              SizedBox(height: 10),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: buildTextField(
-                      controller: PanNo,
-                      label: 'Enter Your Pan Card No.',
-                      icon: Icons.credit_card,
-                      inputFormatters: [UpperCaseTextFormatter()],
-                      validator:
-                          (v) =>
-                              v!.length != 10
-                                  ? 'PAN must be 10 characters'
-                                  : null,
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  TextButton(onPressed: () {}, child: Text("Verify")),
-                ],
-              ),
-              SizedBox(height: 10),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: buildTextField(
-                      controller: mobile,
-                      label: 'Enter Your Mobile No.',
-                      icon: Icons.mobile_friendly,
-                      keyboardType: TextInputType.phone,
-                      validator:
-                          (v) =>
-                              v!.length != 10
-                                  ? 'Mobile number must be 10 digits'
-                                  : null,
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  TextButton(onPressed: () {}, child: Text("Verify")),
-                ],
-              ),
-              SizedBox(height: 10),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: buildTextField(
-                      controller: email,
-                      label: 'Enter Your Email',
-                      icon: Icons.email,
-                      validator:
-                          (v) => !v!.contains('@') ? 'Invalid email' : null,
-                    ),
-                  ),
-                  SizedBox(width: 8),
-                  TextButton(onPressed: () {}, child: Text("Verify")),
-                ],
-              ),
-              SizedBox(height: 10),
-
-              buildTextField(
-                controller: address,
-                label: 'Enter Your Company Address',
-                icon: Icons.location_on,
-                validator: (v) => v!.isEmpty ? 'Address required' : null,
-              ),
-              SizedBox(height: 10),
-              buildTextField(
-                controller: website,
-                label: 'Enter Your Website Link',
-                icon: Icons.web,
-              ),
-              SizedBox(height: 10),
-              buildTextField(
-                controller: NoOfEmp,
-                label: 'Enter No. Of Employee',
-                icon: Icons.group,
-                keyboardType: TextInputType.number,
-              ),
-              SizedBox(height: 10),
-              buildTextField(
-                controller: loginUserName,
-                label: 'Enter Your Login User Name',
-                icon: Icons.account_circle,
-                validator:
-                    (v) => v!.isEmpty ? 'Login username is required' : null,
-              ),
-              SizedBox(height: 10),
-              buildTextField(
-                controller: password,
-                label: 'Enter Your Password',
-                icon: Icons.lock,
-                obscure: _obscureText,
-                inputFormatters: [
-                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                ],
-                validator: (v) => v!.isEmpty ? 'Password is required' : null,
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscureText ? Icons.visibility_off : Icons.visibility,
-                  ),
-                  onPressed: () => setState(() => _obscureText = !_obscureText),
-                ),
-              ),
-              Row(
-                children: [
-                  Checkbox(
-                    value: TermCondition,
-                    onChanged: (v) => setState(() => TermCondition = v!),
-                  ),
-                  Text("I accept"),
-                  SizedBox(width: 10),
-                  InkWell(
-                    onTap: () async {
-                      const url = 'https://www.mdwebsoft.com/';
-                      if (await canLaunchUrl(Uri.parse(url))) {
-                        await launchUrl(Uri.parse(url));
-                      } else {
-                        throw 'Could not launch $url';
-                      }
-                    },
-                    child: Text("Terms & Condition's",style: TextStyle(color: Colors.blue),),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Checkbox(
-                    value: privacyPolicy,
-                    onChanged: (v) => setState(() => privacyPolicy = v!),
-                  ),
-                  Text("I accept"),
-                  SizedBox(width: 10),
-                  InkWell(
-                    onTap: () async {
-                      const url = 'https://www.mdwebsoft.com/';
-                      if (await canLaunchUrl(Uri.parse(url))) {
-                        await launchUrl(Uri.parse(url));
-                      } else {
-                        throw 'Could not launch $url';
-                      }
-                    },
-                    child: Text("Privacy Policy",style: TextStyle(color: Colors.blue),),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () => compLogin(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF03a9f4),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40),
-                  ),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                ),
-                child: Text(
-                  'Create Company',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

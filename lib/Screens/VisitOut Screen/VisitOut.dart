@@ -36,6 +36,7 @@ class VisitOutState extends State<VisitOut> {
   int? comid;
   int? VisitId;
   String? trade_name;
+  bool isLoading = false;
 
   void initState() {
     super.initState();
@@ -119,7 +120,6 @@ class VisitOutState extends State<VisitOut> {
 
     if (Platform.isAndroid) {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      ;
       var DeviceId = androidInfo.id;
       setState(() {
         deviceId = DeviceId ?? 'unknown';
@@ -244,6 +244,9 @@ class VisitOutState extends State<VisitOut> {
   }
 
   void VisitOut(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
     if (_formKey.currentState?.validate() ?? false) {
       String Corganization = organization.text;
       String CconcernedPerson = concernedPerson.text;
@@ -309,18 +312,30 @@ class VisitOutState extends State<VisitOut> {
         if (response.statusCode == 200) {
           if (data['success'] == true) {
             localStorage.deleteItem('visitId');
+            setState(() {
+              isLoading = false;
+            });
             await Alert.alert(context, data['message']);
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => EmpHome()),
             );
           } else {
+            setState(() {
+              isLoading = false;
+            });
             Alert.alert(context, data['message'] ?? "Submission failed");
           }
         } else {
+          setState(() {
+            isLoading = false;
+          });
           Alert.alert(context, "Server error: ${response.statusCode}");
         }
       } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
         Alert.alert(context, "Upload error: $e");
       }
     }
@@ -341,136 +356,150 @@ class VisitOutState extends State<VisitOut> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Container(
-            padding: EdgeInsets.all(16),
-            width: MediaQuery.of(context).size.width,
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  buildTextField(
-                    controller: organization,
-                    label: 'Enter Organization',
-                  ),
-                  buildTextField(
-                    controller: concernedPerson,
-                    label: 'Enter Concerned Person',
-                  ),
-                  buildTextField(
-                    controller: phone,
-                    label: 'Enter Phone No.',
-                    keyboardType: TextInputType.phone,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Enter Your Mobile No.';
-                      } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                        return 'Mobile number must be exactly 10 digits';
-                      }
-                      return null;
-                    },
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: buildTextField(
-                          controller: item,
-                          label: 'Enter Items',
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: buildTextField(
-                          controller: value,
-                          label: 'Enter Value',
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  Text("Mode Of Transport", style: TextStyle(fontSize: 20)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      buildCheckbox("Air", 0),
-                      buildCheckbox("Surface", 1),
-                      buildCheckbox("Extrain", 2),
-                    ],
-                  ),
-                  buildTextField(
-                    controller: probability,
-                    label: 'Enter Probability %',
-                  ),
-                  SizedBox(height: 10),
-                  Text("Propetion", style: TextStyle(fontSize: 20)),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      buildRadio("Hot", 1),
-                      buildRadio("Rain", 2),
-                      buildRadio("Cold", 3),
-                    ],
-                  ),
-                  buildTextField(controller: address, label: 'Enter Address'),
-                  buildTextField(controller: remark, label: 'Enter Remark'),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton(
-                        onPressed: _pickImageFromCamera,
-                        child: Text(
-                          "Take Photo",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+      body:
+          isLoading
+              ? Center(
+                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+              ) // ✅ Show loader first
+              : SingleChildScrollView(
+                child: Center(
+                  child: Container(
+                    padding: EdgeInsets.all(16),
+                    width: MediaQuery.of(context).size.width,
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          buildTextField(
+                            controller: organization,
+                            label: 'Enter Organization',
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF03a9f4),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      _imageFile != null
-                          ? ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(
-                              File(_imageFile!.path),
-                              width: 80,
-                              height: 80,
-                              fit: BoxFit.cover,
+                          buildTextField(
+                            controller: concernedPerson,
+                            label: 'Enter Concerned Person',
+                          ),
+                          buildTextField(
+                            controller: phone,
+                            label: 'Enter Phone No.',
+                            keyboardType: TextInputType.phone,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Enter Your Mobile No.';
+                              } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                                return 'Mobile number must be exactly 10 digits';
+                              }
+                              return null;
+                            },
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: buildTextField(
+                                  controller: item,
+                                  label: 'Enter Items',
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: buildTextField(
+                                  controller: value,
+                                  label: 'Enter Value',
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Text(
+                            "Mode Of Transport",
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              buildCheckbox("Air", 0),
+                              buildCheckbox("Surface", 1),
+                              buildCheckbox("Extrain", 2),
+                            ],
+                          ),
+                          buildTextField(
+                            controller: probability,
+                            label: 'Enter Probability %',
+                          ),
+                          SizedBox(height: 10),
+                          Text("Propetion", style: TextStyle(fontSize: 20)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              buildRadio("Hot", 1),
+                              buildRadio("Rain", 2),
+                              buildRadio("Cold", 3),
+                            ],
+                          ),
+                          buildTextField(
+                            controller: address,
+                            label: 'Enter Address',
+                          ),
+                          buildTextField(
+                            controller: remark,
+                            label: 'Enter Remark',
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                onPressed: _pickImageFromCamera,
+                                child: Text(
+                                  "Take Photo",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color(0xFF03a9f4),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              _imageFile != null
+                                  ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.file(
+                                      File(_imageFile!.path),
+                                      width: 80,
+                                      height: 80,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                  : Container(
+                                    width: 80,
+                                    height: 80,
+                                    color: Colors.grey[300],
+                                  ),
+                            ],
+                          ),
+                          SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () => VisitOut(context),
+                            child: Text(
+                              "Visit Out",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          )
-                          : Container(
-                            width: 80,
-                            height: 80,
-                            color: Colors.grey[300],
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Color(0xFF03a9f4),
+                            ),
                           ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () => VisitOut(context),
-                    child: Text(
-                      "Visit Out",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                          SizedBox(height: 20),
+                        ],
                       ),
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF03a9f4),
-                    ),
                   ),
-                  SizedBox(height: 20),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 

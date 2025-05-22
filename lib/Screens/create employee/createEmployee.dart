@@ -71,7 +71,7 @@ class CreateEmpState extends State<CreateEmployee> {
   String? selectedValue;
 
   final ImagePicker _picker = ImagePicker();
-
+  bool isLoading=false;
   @override
   void initState() {
     super.initState();
@@ -196,6 +196,9 @@ class CreateEmpState extends State<CreateEmployee> {
   }
 
   Future<void> createEmp(BuildContext context) async {
+    setState(() {
+            isLoading = true;
+          });
     if (_formKey.currentState?.validate() ?? false) {
       if (_imageFile == null) {
         ScaffoldMessenger.of(
@@ -244,11 +247,20 @@ class CreateEmpState extends State<CreateEmployee> {
         final responseData = jsonDecode(response.body);
 
         if (responseData['success']) {
+          setState(() {
+            isLoading = false;
+          });
           Alert.alert(context, 'Successfully ${responseData['message']}');
         } else {
+          setState(() {
+            isLoading = false;
+          });
           Alert.alert(context, responseData['message']);
         }
       } catch (e) {
+        setState(() {
+            isLoading = false;
+          });
         Alert.alert(context, e);
       }
     }

@@ -27,7 +27,7 @@ class AttendanceState extends State<Attendance> {
   String comName = 'Company';
   int? comId;
   List<Map<String, dynamic>> attendanceData = [];
-  bool isLoading=true;
+  bool isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -62,17 +62,21 @@ class AttendanceState extends State<Attendance> {
       final responseData = jsonDecode(response.body);
       if (responseData['success']) {
         setState(() {
-          isLoading=false;
+          isLoading = false;
           attendanceData = List<Map<String, dynamic>>.from(
             responseData['data'],
           );
         });
       } else {
-        isLoading=false;
+        setState(() {
+          isLoading = false;
+        });
         Alert.alert(context, responseData['message']);
       }
     } catch (e) {
-      isLoading=false;
+      setState(() {
+        isLoading = false;
+      });
       Alert.alert(context, 'Something went wrong: ${e.toString()}');
     }
   }
@@ -96,12 +100,12 @@ class AttendanceState extends State<Attendance> {
           ),
         ),
       ),
-      body:isLoading
+      body:
+          isLoading
               ? Center(
                 child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
               ) // ✅ Show loader first
-              :
-          attendanceData.isEmpty
+              : attendanceData.isEmpty
               ? Center(
                 child: Text(
                   "Attendance Not Found",

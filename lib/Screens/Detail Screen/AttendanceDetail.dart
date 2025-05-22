@@ -100,7 +100,9 @@ class AttendanceDetailState extends State<AttendanceDetail> {
         Alert.alert(context, message);
       }
     } catch (e) {
-      isLoading = false;
+      setState(() {
+        isLoading = false;
+      });
       Alert.alert(context, e);
     }
   }
@@ -154,7 +156,12 @@ class AttendanceDetailState extends State<AttendanceDetail> {
           ),
         ],
       ),
-      body: Column(
+      body:
+          isLoading
+              ? Center(
+                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+              )
+              : Column(
         children: [
           Padding(
             padding: EdgeInsets.all(deviceWidth * 0.04),

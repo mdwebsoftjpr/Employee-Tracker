@@ -74,14 +74,18 @@ class EmployeelistState extends State<Employeelist> {
           isSwitchedList = List<bool>.filled(EmpDetail.length, false);
         });
       } else {
-        isLoading = false;
+        setState(() {
+        isLoading=false;
+      });
         Alert.alert(
           context,
           responseData['message'] ?? 'Unknown error occurred',
         );
       }
     } catch (e) {
-      isLoading = false;
+      setState(() {
+        isLoading=false;
+      });
       Alert.alert(context, 'Failed to fetch data: $e');
     }
   }

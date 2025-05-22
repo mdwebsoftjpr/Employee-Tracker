@@ -28,6 +28,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
   int MonthNo = DateTime.now().month;
   int YearNo = DateTime.now().year;
   List<Map<String, dynamic>> attendanceData = [];
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -83,19 +84,27 @@ class EmpattdetailState extends State<EmpAttdetail> {
             }
           });
           setState(() {
+            isLoading = false;
             attendanceData = tempList.reversed.toList();
           });
         } else {
+          setState(() {
+            isLoading = false;
+          });
           Alert.alert(context, message);
         }
       } else {
         setState(() {
+          isLoading = false;
           attendanceData = [];
         });
 
         Alert.alert(context, message);
       }
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       Alert.alert(context, e);
     }
   }
@@ -147,6 +156,11 @@ class EmpattdetailState extends State<EmpAttdetail> {
         ],
       ),
       body:
+          isLoading
+              ? Center(
+                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+              ) // ✅ Show loader first
+              :
           attendanceData.isEmpty
               ? Center(
                 child: Text(

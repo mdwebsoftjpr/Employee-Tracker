@@ -29,6 +29,7 @@ class AttendancerepState extends State<Attendancerep> {
   String username = "";
   String formattedDate = '';
   List<Map<String, dynamic>> attendanceDeta = [];
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -97,16 +98,26 @@ class AttendancerepState extends State<Attendancerep> {
         print(data);
         if (success == true) {
           setState(() {
+            isLoading = false;
             attendanceDeta = List<Map<String, dynamic>>.from(data);
           });
           Alert.alert(context, message);
         } else {
+          setState(() {
+            isLoading = false;
+          });
           Alert.alert(context, message);
         }
       } else {
+        setState(() {
+          isLoading = false;
+        });
         Alert.alert(context, "Invalid or empty response from server");
       }
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       print("Error: $e");
       ScaffoldMessenger.of(
         context,
@@ -140,7 +151,11 @@ class AttendancerepState extends State<Attendancerep> {
         ),
       ),
       body:
-          attendanceDeta.isNotEmpty
+          isLoading
+              ? Center(
+                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+              ) // ✅ Show loader first
+              : attendanceDeta.isNotEmpty
               ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

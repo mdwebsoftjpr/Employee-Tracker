@@ -82,13 +82,13 @@ class _EmpHomeState extends State<EmpHome> {
   String? userImg;
   String? comimage;
   String? trade_name;
+  bool isLoading = false;
 
   Future<String?> getDeviceId() async {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
     if (Platform.isAndroid) {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      ;
       var DeviceId = androidInfo.id;
       setState(() {
         deviceId = DeviceId ?? 'unknown';
@@ -105,6 +105,9 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   Future<void> getApi() async {
+    setState(() {
+      isLoading = true;
+    });
     var userJson = localStorage.getItem('user');
     print(userJson);
     if (userJson != null) {
@@ -145,6 +148,7 @@ class _EmpHomeState extends State<EmpHome> {
 
         if (statusin != '') {
           setState(() {
+            isLoading = false;
             Mainstatus = statusin;
             UserImage = image;
             punchIntime = punchInTime;
@@ -153,6 +157,7 @@ class _EmpHomeState extends State<EmpHome> {
           print(Mainstatus);
         } else {
           setState(() {
+            isLoading = false;
             Mainstatus = '';
             UserImage = image;
             punchIntime = punchInTime;
@@ -161,12 +166,16 @@ class _EmpHomeState extends State<EmpHome> {
         print(message);
       } else {
         setState(() {
+          isLoading = false;
           Mainstatus = '';
         });
 
         print(message);
       }
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       print("ihcauihhuih $e");
     }
   }
@@ -315,6 +324,9 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   void punchIn() async {
+    setState(() {
+      isLoading = true;
+    });
     if (_imageFile == null) return;
 
     final url = Uri.parse('https://testapi.rabadtechnology.com/attendence.php');
@@ -342,13 +354,22 @@ class _EmpHomeState extends State<EmpHome> {
       var message = data['message'];
 
       if (success) {
+        setState(() {
+          isLoading = false;
+        });
         print("Success $success");
         getApi();
         Alert.alert(context, message);
       } else {
+        setState(() {
+          isLoading = false;
+        });
         Alert.alert(context, message);
       }
     } else {
+      setState(() {
+        isLoading = false;
+      });
       Alert.alert(
         context,
         "❌ Upload failed with status: ${response.statusCode}",
@@ -357,6 +378,9 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   void punchOut() async {
+    setState(() {
+      isLoading = true;
+    });
     if (_imageFile == null) return;
 
     final url = Uri.parse(
@@ -388,12 +412,21 @@ class _EmpHomeState extends State<EmpHome> {
       var message = data['message'];
 
       if (success) {
+        setState(() {
+          isLoading = false;
+        });
         getApi();
         Alert.alert(context, message);
       } else {
+        setState(() {
+          isLoading = false;
+        });
         Alert.alert(context, message);
       }
     } else {
+      setState(() {
+        isLoading = false;
+      });
       Alert.alert(
         context,
         "❌ Upload failed with status: ${response.statusCode}",
@@ -402,6 +435,9 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   void visitIn() async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       if (_imageFile == null) return;
       final url = Uri.parse(
@@ -430,21 +466,34 @@ class _EmpHomeState extends State<EmpHome> {
         var id = status[0]['id'] ?? '';
         print(id);
         setState(() {
+          isLoading = false;
           VisitId = id;
         });
         Alert.alert(context, message);
         getVisit();
       } else {
+        setState(() {
+          isLoading = false;
+        });
         Alert.alert(context, message);
       }
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       Alert.alert(context, e);
     }
   }
 
   void clearStorage(BuildContext context) async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       await localStorage.clear();
+      setState(() {
+        isLoading = false;
+      });
       await Alert.alert(
         context,
         'Successfully Logout',
@@ -454,6 +503,9 @@ class _EmpHomeState extends State<EmpHome> {
         MaterialPageRoute(builder: (context) => CreateScreen()),
       );
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       await Alert.alert(context, 'Error: $e'); // also await here
     }
   }
@@ -517,6 +569,9 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   Future<void> fetchAndPrintAddress() async {
+    setState(() {
+      isLoading = true;
+    });
     double? lat = double.tryParse(latitude);
     double? lng = double.tryParse(longitude);
 
@@ -534,6 +589,7 @@ class _EmpHomeState extends State<EmpHome> {
 
         setState(() {
           CurrentAddress = address;
+          isLoading = false;
         });
 
         print('📍 Address: $address');
@@ -932,963 +988,1112 @@ class _EmpHomeState extends State<EmpHome> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(5),
-          child: Column(
-            children: <Widget>[
-              Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(
-                      top: 0,
-                      bottom: 10,
-                      right: 10,
-                      left: 10,
-                    ),
-                    width: double.infinity,
-                    child: Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Color(0xFF03a9f4),
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 6,
-                              offset: Offset(
-                                0,
-                                3,
-                              ), // changes position of shadow
+      body:
+          isLoading
+              ? Center(
+                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+              ) // ✅ Show loader first
+              : SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Column(
+                    children: <Widget>[
+                      Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(
+                              top: 0,
+                              bottom: 10,
+                              right: 10,
+                              left: 10,
                             ),
-                          ],
-                        ),
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        child: Column(
-                          children: [
-                            Column(
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      margin: EdgeInsets.all(10),
-                                      child:
-                                          (UserImage != '' &&
-                                                  UserImage.isNotEmpty)
-                                              ? ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                child: Image.network(
-                                                  'https://testapi.rabadtechnology.com/uploads/$UserImage',
-                                                  width: 80,
-                                                  height: 80,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              )
-                                              : SizedBox(width: 80, height: 80),
+                            width: double.infinity,
+                            child: Center(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF03a9f4),
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 6,
+                                      offset: Offset(
+                                        0,
+                                        3,
+                                      ), // changes position of shadow
                                     ),
+                                  ],
+                                ),
+                                width: MediaQuery.of(context).size.width * 0.9,
+                                child: Column(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              margin: EdgeInsets.all(10),
+                                              child:
+                                                  (UserImage != '' &&
+                                                          UserImage.isNotEmpty)
+                                                      ? ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              10,
+                                                            ),
+                                                        child: Image.network(
+                                                          'https://testapi.rabadtechnology.com/uploads/$UserImage',
+                                                          width: 80,
+                                                          height: 80,
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      )
+                                                      : SizedBox(
+                                                        width: 80,
+                                                        height: 80,
+                                                      ),
+                                            ),
 
-                                    SizedBox(width: 10),
-                                    Expanded(
+                                            SizedBox(width: 10),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment
+                                                        .start, // Align text to the start
+                                                children: [
+                                                  Text(
+                                                    name,
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 4),
+                                                  Text(
+                                                    CurrentAddress,
+                                                    style: TextStyle(
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Colors.white,
+                                                    ),
+                                                    softWrap: true,
+                                                    overflow:
+                                                        TextOverflow
+                                                            .visible, // or TextOverflow.ellipsis
+                                                    maxLines:
+                                                        null, // allow multiple lines
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 10),
+                                    Container(
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment
-                                                .start, // Align text to the start
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
                                         children: [
-                                          Text(
-                                            name,
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.white,
+                                          Container(
+                                            width:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.width *
+                                                0.85,
+                                            margin: EdgeInsets.only(bottom: 5),
+                                            child: Column(
+                                              children: [
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    drop
+                                                        ? TextButton(
+                                                          onPressed:
+                                                              () => dropdown(),
+                                                          child: Row(
+                                                            children: [
+                                                              Text(
+                                                                'Today Report: $currentDate',
+                                                                style: TextStyle(
+                                                                  fontSize: 15,
+                                                                  color:
+                                                                      Colors
+                                                                          .black,
+                                                                ),
+                                                              ),
+                                                              Icon(
+                                                                Icons
+                                                                    .arrow_drop_up,
+                                                                size: 15,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          style:
+                                                              TextButton.styleFrom(
+                                                                iconColor:
+                                                                    Colors
+                                                                        .black,
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .white,
+                                                              ),
+                                                        )
+                                                        : TextButton(
+                                                          onPressed:
+                                                              () => dropUp(),
+                                                          child: Row(
+                                                            children: [
+                                                              Text(
+                                                                'Today Report: $currentDate',
+                                                                style: TextStyle(
+                                                                  fontSize: 15,
+                                                                  color:
+                                                                      Colors
+                                                                          .black,
+                                                                ),
+                                                              ),
+                                                              Icon(
+                                                                Icons
+                                                                    .arrow_drop_down,
+                                                                size: 15,
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          style:
+                                                              TextButton.styleFrom(
+                                                                iconColor:
+                                                                    Colors
+                                                                        .black,
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .white,
+                                                              ),
+                                                        ),
+                                                  ],
+                                                ),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          10,
+                                                        ),
+                                                  ),
+                                                  child:
+                                                      drop
+                                                          ? Column(
+                                                            children: [
+                                                              Container(
+                                                                height: 20,
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceEvenly,
+                                                                  children: [
+                                                                    Text(
+                                                                      "View",
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      "Attendance",
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      "Work Start",
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      "End",
+                                                                      style: TextStyle(
+                                                                        color:
+                                                                            Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                              Container(
+                                                                child: Row(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .spaceBetween,
+                                                                  children: [
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () => Navigator.push(
+                                                                            context,
+                                                                            MaterialPageRoute(
+                                                                              builder:
+                                                                                  (
+                                                                                    context,
+                                                                                  ) =>
+                                                                                      EmpAttdetail(),
+                                                                            ),
+                                                                          ),
+                                                                      child: Icon(
+                                                                        Icons
+                                                                            .remove_red_eye,
+                                                                        size:
+                                                                            30,
+                                                                        color:
+                                                                            Colors.black,
+                                                                      ),
+                                                                    ),
+                                                                    (Mainstatus !=
+                                                                            "")
+                                                                        ? Container(
+                                                                          width:
+                                                                              60,
+                                                                          height:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.green,
+                                                                          child: Center(
+                                                                            child: Text(
+                                                                              PSatatus,
+                                                                              style: TextStyle(
+                                                                                color:
+                                                                                    Colors.white,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                        : Text(
+                                                                          "Not Marked",
+                                                                        ),
+                                                                    (punchIntime !=
+                                                                            '')
+                                                                        ? Container(
+                                                                          width:
+                                                                              60,
+                                                                          height:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.white,
+                                                                          child: Center(
+                                                                            child: Text(
+                                                                              punchIntime,
+                                                                              style: TextStyle(
+                                                                                color:
+                                                                                    Colors.black,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                        : Text(
+                                                                          "      -  ",
+                                                                        ),
+                                                                    (punchOuttime !=
+                                                                            '')
+                                                                        ? Container(
+                                                                          width:
+                                                                              60,
+                                                                          height:
+                                                                              20,
+                                                                          color:
+                                                                              Colors.white,
+                                                                          child: Center(
+                                                                            child: Text(
+                                                                              punchOuttime,
+                                                                              style: TextStyle(
+                                                                                color:
+                                                                                    Colors.black,
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                        )
+                                                                        : Text(
+                                                                          "     -  ",
+                                                                        ),
+                                                                  ],
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          )
+                                                          : Text(""),
+                                                ),
+                                              ],
                                             ),
-                                          ),
-                                          SizedBox(height: 4),
-                                          Text(
-                                            CurrentAddress,
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.white,
-                                            ),
-                                            softWrap: true,
-                                            overflow:
-                                                TextOverflow
-                                                    .visible, // or TextOverflow.ellipsis
-                                            maxLines:
-                                                null, // allow multiple lines
                                           ),
                                         ],
                                       ),
                                     ),
+                                    SizedBox(height: 5),
                                   ],
                                 ),
-                              ],
+                              ),
                             ),
-                            SizedBox(height: 10),
-                            Container(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Container(
-                                    width:
-                                        MediaQuery.of(context).size.width *
-                                        0.85,
-                                    margin: EdgeInsets.only(bottom: 5),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            drop
-                                                ? TextButton(
-                                                  onPressed: () => dropdown(),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        'Today Report: $currentDate',
-                                                        style: TextStyle(
-                                                          fontSize: 15,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                      Icon(
-                                                        Icons.arrow_drop_up,
-                                                        size: 15,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  style: TextButton.styleFrom(
-                                                    iconColor: Colors.black,
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                  ),
-                                                )
-                                                : TextButton(
-                                                  onPressed: () => dropUp(),
-                                                  child: Row(
-                                                    children: [
-                                                      Text(
-                                                        'Today Report: $currentDate',
-                                                        style: TextStyle(
-                                                          fontSize: 15,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                      Icon(
-                                                        Icons.arrow_drop_down,
-                                                        size: 15,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  style: TextButton.styleFrom(
-                                                    iconColor: Colors.black,
-                                                    backgroundColor:
-                                                        Colors.white,
-                                                  ),
-                                                ),
-                                          ],
-                                        ),
-                                        Container(
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
-                                          child:
-                                              drop
-                                                  ? Column(
-                                                    children: [
-                                                      Container(
-                                                        height: 20,
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceEvenly,
-                                                          children: [
-                                                            Text(
-                                                              "View",
-                                                              style: TextStyle(
-                                                                color:
-                                                                    Colors
-                                                                        .black,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              "Attendance",
-                                                              style: TextStyle(
-                                                                color:
-                                                                    Colors
-                                                                        .black,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              "Work Start",
-                                                              style: TextStyle(
-                                                                color:
-                                                                    Colors
-                                                                        .black,
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              "End",
-                                                              style: TextStyle(
-                                                                color:
-                                                                    Colors
-                                                                        .black,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                      Container(
-                                                        child: Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceBetween,
-                                                          children: [
-                                                            TextButton(
-                                                              onPressed:
-                                                                  () => Navigator.push(
-                                                                    context,
-                                                                    MaterialPageRoute(
-                                                                      builder:
-                                                                          (
-                                                                            context,
-                                                                          ) =>
-                                                                              EmpAttdetail(),
-                                                                    ),
-                                                                  ),
-                                                              child: Icon(
-                                                                Icons
-                                                                    .remove_red_eye,
-                                                                size: 30,
-                                                                color:
-                                                                    Colors
-                                                                        .black,
-                                                              ),
-                                                            ),
-                                                            (Mainstatus != "")
-                                                                ? Container(
-                                                                  width: 60,
-                                                                  height: 20,
-                                                                  color:
-                                                                      Colors
-                                                                          .green,
-                                                                  child: Center(
-                                                                    child: Text(
-                                                                      PSatatus,
-                                                                      style: TextStyle(
-                                                                        color:
-                                                                            Colors.white,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                                : Text(
-                                                                  "Not Marked",
-                                                                ),
-                                                            (punchIntime != '')
-                                                                ? Container(
-                                                                  width: 60,
-                                                                  height: 20,
-                                                                  color:
-                                                                      Colors
-                                                                          .white,
-                                                                  child: Center(
-                                                                    child: Text(
-                                                                      punchIntime,
-                                                                      style: TextStyle(
-                                                                        color:
-                                                                            Colors.black,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                                : Text(
-                                                                  "      -  ",
-                                                                ),
-                                                            (punchOuttime != '')
-                                                                ? Container(
-                                                                  width: 60,
-                                                                  height: 20,
-                                                                  color:
-                                                                      Colors
-                                                                          .white,
-                                                                  child: Center(
-                                                                    child: Text(
-                                                                      punchOuttime,
-                                                                      style: TextStyle(
-                                                                        color:
-                                                                            Colors.black,
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                )
-                                                                : Text(
-                                                                  "     -  ",
-                                                                ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  )
-                                                  : Text(""),
-                                        ),
-                                      ],
+                          ),
+                        ],
+                      ),
+                      Container(
+                        //stop
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            10,
+                          ), // Optional: Adds rounded corners
+                        ),
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 6,
+                                      offset: Offset(
+                                        0,
+                                        3,
+                                      ), // changes position of shadow
                                     ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Mark Attendance",
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    Image.asset(
+                                      'assets/images/attendance.png',
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                          0.3,
+                                      height:
+                                          MediaQuery.of(context).size.width *
+                                          0.25,
+                                    ),
+                                    (Mainstatus == "" ||
+                                            Mainstatus == 'punchout')
+                                        ? ElevatedButton(
+                                          onPressed: () async {
+                                            await _pickImageFromCamera();
+                                            punchIn();
+                                          },
+                                          child: Text("Punch in"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF03a9f4),
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                        )
+                                        : ElevatedButton(
+                                          onPressed: () async {
+                                            await _pickImageFromCamera();
+                                            punchOut();
+                                          },
+                                          child: Text("Punch Out"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF03a9f4),
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                        ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 6,
+                                      offset: Offset(
+                                        0,
+                                        3,
+                                      ), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Visit Time",
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    Image.asset(
+                                      'assets/images/visit.png',
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                          0.3,
+                                      height:
+                                          MediaQuery.of(context).size.width *
+                                          0.25,
+                                    ),
+                                    (visitStatus == 'opne')
+                                        ? ElevatedButton(
+                                          onPressed: () {
+                                            print(VisitId);
+                                            if (Mainstatus != '' &&
+                                                Mainstatus == 'punchin') {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) => VisitOut(),
+                                                ),
+                                              );
+                                            } else {
+                                              Alert.alert(
+                                                context,
+                                                'Please Mark Your Attendance Then Do Visit',
+                                              );
+                                            }
+                                          },
+                                          child: Text("Visit Out"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF03a9f4),
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                        )
+                                        : ElevatedButton(
+                                          onPressed: () async {
+                                            if (Mainstatus != '' &&
+                                                Mainstatus == 'punchin') {
+                                              await _pickImageFromCamera();
+                                              visitIn();
+                                            } else {
+                                              Alert.alert(
+                                                context,
+                                                'Please Mark Your Attendance Then Do Visit',
+                                              );
+                                            }
+                                          },
+                                          child: Text("Visit In"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF03a9f4),
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                        ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            10,
+                          ), // Optional: Adds rounded corners
+                        ),
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 6,
+                                    offset: Offset(
+                                      0,
+                                      3,
+                                    ), // changes position of shadow
                                   ),
                                 ],
                               ),
-                            ),
-                            SizedBox(height: 5),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                //stop
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                    10,
-                  ), // Optional: Adds rounded corners
-                ),
-                width: MediaQuery.of(context).size.width * 0.9,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 6,
-                              offset: Offset(
-                                0,
-                                3,
-                              ), // changes position of shadow
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Mark Attendance",
-                              style: TextStyle(fontSize: 15),
-                            ),
-                            Image.asset(
-                              'assets/images/attendance.png',
-                              width: MediaQuery.of(context).size.width * 0.3,
-                              height: MediaQuery.of(context).size.width * 0.25,
-                            ),
-                            (Mainstatus == "" || Mainstatus == 'punchout')
-                                ? ElevatedButton(
-                                  onPressed: () async {
-                                    await _pickImageFromCamera();
-                                    punchIn();
-                                  },
-                                  child: Text("Punch in"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
+                              child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Column(
+                                  children: [
+                                    Text("Break 1"),
+                                    Image.asset(
+                                      'assets/images/Break.png',
+                                      width:
                                           MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
-                                  ),
-                                )
-                                : ElevatedButton(
-                                  onPressed: () async {
-                                    await _pickImageFromCamera();
-                                    punchOut();
-                                  },
-                                  child: Text("Punch Out"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
+                                          0.12,
+                                      height:
                                           MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
+                                          0.12,
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
-                                  ),
-                                ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 6,
-                              offset: Offset(
-                                0,
-                                3,
-                              ), // changes position of shadow
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Visit Time",
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Image.asset(
-                              'assets/images/visit.png',
-                              width: MediaQuery.of(context).size.width * 0.3,
-                              height: MediaQuery.of(context).size.width * 0.25,
-                            ),
-                            (visitStatus == 'opne')
-                                ? ElevatedButton(
-                                  onPressed: () {
-                                    print(VisitId);
-                                    if (Mainstatus != '' &&
-                                        Mainstatus == 'punchin') {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => VisitOut(),
+                                    (bcount == 0)
+                                        ? ElevatedButton(
+                                          onPressed: () => {BreakIn()},
+                                          child: Text("Start"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF03a9f4),
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                        )
+                                        : (bcount == 1)
+                                        ? ElevatedButton(
+                                          onPressed: () => {BreakOut()},
+                                          child: Text("End"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF03a9f4),
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                        )
+                                        : ElevatedButton(
+                                          onPressed: () => {},
+                                          child: Text("End"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red,
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
                                         ),
-                                      );
-                                    } else {
-                                      Alert.alert(
-                                        context,
-                                        'Please Mark Your Attendance Then Do Visit',
-                                      );
-                                    }
-                                  },
-                                  child: Text("Visit Out"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
-                                          MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
-                                  ),
-                                )
-                                : ElevatedButton(
-                                  onPressed: () async {
-                                    if (Mainstatus != '' &&
-                                        Mainstatus == 'punchin') {
-                                      await _pickImageFromCamera();
-                                      visitIn();
-                                    } else {
-                                      Alert.alert(
-                                        context,
-                                        'Please Mark Your Attendance Then Do Visit',
-                                      );
-                                    }
-                                  },
-                                  child: Text("Visit In"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
-                                          MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
-                                  ),
+                                  ],
                                 ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                    10,
-                  ), // Optional: Adds rounded corners
-                ),
-                width: MediaQuery.of(context).size.width * 0.9,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 6,
-                            offset: Offset(0, 3), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Column(
-                          children: [
-                            Text("Break 1"),
-                            Image.asset(
-                              'assets/images/Break.png',
-                              width: MediaQuery.of(context).size.width * 0.12,
-                              height: MediaQuery.of(context).size.width * 0.12,
+                              ),
                             ),
-                            (bcount == 0)
-                                ? ElevatedButton(
-                                  onPressed: () => {BreakIn()},
-                                  child: Text("Start"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
-                                          MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 6,
+                                    offset: Offset(
+                                      0,
+                                      3,
+                                    ), // changes position of shadow
                                   ),
-                                )
-                                : (bcount == 1)
-                                ? ElevatedButton(
-                                  onPressed: () => {BreakOut()},
-                                  child: Text("End"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
+                                ],
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Column(
+                                  children: [
+                                    Text("Break 2"),
+                                    Image.asset(
+                                      'assets/images/Break.png',
+                                      width:
                                           MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
-                                  ),
-                                )
-                                : ElevatedButton(
-                                  onPressed: () => {},
-                                  child: Text("End"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
+                                          0.12,
+                                      height:
                                           MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
+                                          0.12,
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
-                                  ),
+                                    (bcount == 2)
+                                        ? ElevatedButton(
+                                          onPressed: () => {BreakIn()},
+                                          child: Text("Start"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF03a9f4),
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                        )
+                                        : (bcount == 3)
+                                        ? ElevatedButton(
+                                          onPressed: () => {BreakOut()},
+                                          child: Text("End"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF03a9f4),
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                        )
+                                        : ElevatedButton(
+                                          onPressed: () => {},
+                                          child: Text("End"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red,
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                        ),
+                                  ],
                                 ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 6,
-                            offset: Offset(0, 3), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Column(
-                          children: [
-                            Text("Break 2"),
-                            Image.asset(
-                              'assets/images/Break.png',
-                              width: MediaQuery.of(context).size.width * 0.12,
-                              height: MediaQuery.of(context).size.width * 0.12,
+                              ),
                             ),
-                            (bcount == 2)
-                                ? ElevatedButton(
-                                  onPressed: () => {BreakIn()},
-                                  child: Text("Start"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
-                                          MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    spreadRadius: 2,
+                                    blurRadius: 6,
+                                    offset: Offset(
+                                      0,
+                                      3,
+                                    ), // changes position of shadow
                                   ),
-                                )
-                                : (bcount == 3)
-                                ? ElevatedButton(
-                                  onPressed: () => {BreakOut()},
-                                  child: Text("End"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
+                                ],
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.all(10),
+                                child: Column(
+                                  children: [
+                                    Text("Break 3"),
+                                    Image.asset(
+                                      'assets/images/Break.png',
+                                      width:
                                           MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
-                                  ),
-                                )
-                                : ElevatedButton(
-                                  onPressed: () => {},
-                                  child: Text("End"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
+                                          0.12,
+                                      height:
                                           MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
+                                          0.12,
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
-                                  ),
+                                    (bcount == 4)
+                                        ? ElevatedButton(
+                                          onPressed: () => {BreakIn()},
+                                          child: Text("Start"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF03a9f4),
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                        )
+                                        : (bcount == 5)
+                                        ? ElevatedButton(
+                                          onPressed: () => {BreakOut()},
+                                          child: Text("End"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Color(0xFF03a9f4),
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                        )
+                                        : ElevatedButton(
+                                          onPressed: () => {},
+                                          child: Text("End"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red,
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  MediaQuery.of(
+                                                    context,
+                                                  ).size.width *
+                                                  0.05,
+                                              vertical: 4,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    MediaQuery.of(
+                                                          context,
+                                                        ).size.width *
+                                                        0.07,
+                                                  ),
+                                            ),
+                                            elevation: 4,
+                                          ),
+                                        ),
+                                  ],
                                 ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 6,
-                            offset: Offset(0, 3), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Column(
-                          children: [
-                            Text("Break 3"),
-                            Image.asset(
-                              'assets/images/Break.png',
-                              width: MediaQuery.of(context).size.width * 0.12,
-                              height: MediaQuery.of(context).size.width * 0.12,
+                              ),
                             ),
-                            (bcount == 4)
-                                ? ElevatedButton(
-                                  onPressed: () => {BreakIn()},
-                                  child: Text("Start"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
-                                          MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
-                                  ),
-                                )
-                                : (bcount == 5)
-                                ? ElevatedButton(
-                                  onPressed: () => {BreakOut()},
-                                  child: Text("End"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFF03a9f4),
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
-                                          MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
-                                  ),
-                                )
-                                : ElevatedButton(
-                                  onPressed: () => {},
-                                  child: Text("End"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal:
-                                          MediaQuery.of(context).size.width *
-                                          0.05,
-                                      vertical: 4,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                        MediaQuery.of(context).size.width *
-                                            0.07,
-                                      ),
-                                    ),
-                                    elevation: 4,
-                                  ),
-                                ),
                           ],
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
 
-              SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                    10,
-                  ), // Optional: Adds rounded corners
-                ),
-                width: MediaQuery.of(context).size.width * 0.9,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Container(
+                      SizedBox(height: 10),
+                      Container(
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 6,
-                              offset: Offset(
-                                0,
-                                3,
-                              ), // changes position of shadow
-                            ),
-                          ],
+                          borderRadius: BorderRadius.circular(
+                            10,
+                          ), // Optional: Adds rounded corners
                         ),
-                        child: Column(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
-                              "Att. Report's",
-                              style: TextStyle(fontSize: 15),
-                            ),
-                            Image.asset(
-                              'assets/images/Att  Report.png',
-                              width: MediaQuery.of(context).size.width * 0.25,
-                              height: MediaQuery.of(context).size.width * 0.20,
-                            ),
-                            ElevatedButton(
-                              onPressed:
-                                  () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EmpAttdetail(),
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 6,
+                                      offset: Offset(
+                                        0,
+                                        3,
+                                      ), // changes position of shadow
                                     ),
-                                  ),
-                              child: Text("View"),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
-                                foregroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal:
-                                      MediaQuery.of(context).size.width * 0.05,
-                                  vertical: 4,
+                                  ],
                                 ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    MediaQuery.of(context).size.width * 0.07,
-                                  ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Att. Report's",
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    Image.asset(
+                                      'assets/images/Att  Report.png',
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                          0.25,
+                                      height:
+                                          MediaQuery.of(context).size.width *
+                                          0.20,
+                                    ),
+                                    ElevatedButton(
+                                      onPressed:
+                                          () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) => EmpAttdetail(),
+                                            ),
+                                          ),
+                                      child: Text("View"),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color(0xFF03a9f4),
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.05,
+                                          vertical: 4,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.width *
+                                                0.07,
+                                          ),
+                                        ),
+                                        elevation: 4,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                elevation: 4,
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 6,
+                                      offset: Offset(
+                                        0,
+                                        3,
+                                      ), // changes position of shadow
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Visit Report's",
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    Image.asset(
+                                      'assets/images/visit_report.png',
+                                      width:
+                                          MediaQuery.of(context).size.width *
+                                          0.25,
+                                      height:
+                                          MediaQuery.of(context).size.width *
+                                          0.20,
+                                    ),
+                                    ElevatedButton(
+                                      onPressed:
+                                          () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => Empvisitrep(),
+                                            ),
+                                          ),
+                                      child: Text("View"),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color(0xFF03a9f4),
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.05,
+                                          vertical: 4,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.width *
+                                                0.07,
+                                          ),
+                                        ),
+                                        elevation: 4,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 2,
-                              blurRadius: 6,
-                              offset: Offset(
-                                0,
-                                3,
-                              ), // changes position of shadow
-                            ),
-                          ],
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Visit Report's",
-                              style: TextStyle(fontSize: 15),
-                            ),
-                            Image.asset(
-                              'assets/images/visit_report.png',
-                              width: MediaQuery.of(context).size.width * 0.25,
-                              height: MediaQuery.of(context).size.width * 0.20,
-                            ),
-                            ElevatedButton(
-                              onPressed:
-                                  () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => Empvisitrep(),
-                                    ),
-                                  ),
-                              child: Text("View"),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
-                                foregroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(
-                                  horizontal:
-                                      MediaQuery.of(context).size.width * 0.05,
-                                  vertical: 4,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    MediaQuery.of(context).size.width * 0.07,
-                                  ),
-                                ),
-                                elevation: 4,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              /*  SizedBox(height: 10),
+                      /*  SizedBox(height: 10),
               Container(
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
@@ -1967,11 +2172,11 @@ class _EmpHomeState extends State<EmpHome> {
                   ],
                 ),
               ), */
-              SizedBox(height: 10),
-            ],
-          ),
-        ),
-      ),
+                      SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              ),
     );
   }
 }
