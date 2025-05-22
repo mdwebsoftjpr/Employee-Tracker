@@ -33,7 +33,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
   List<Map<String, dynamic>> attendanceData = [];
   List<String> StartLoc = [];
   List<String> EndLoc = [];
-  bool isLoading=true;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -112,21 +112,21 @@ class EmpvisitrepState extends State<Empvisitrep> {
 
       if (responseData['success'] == true) {
         setState(() {
-          isLoading=false;
+          isLoading = false;
           attendanceData = List<Map<String, dynamic>>.from(
             responseData['data'],
           );
         });
       } else {
         setState(() {
-          isLoading=false;
+          isLoading = false;
           attendanceData.clear(); // clears the list in place
         });
         await Alert.alert(context, responseData['message']);
       }
     } catch (e) {
       setState(() {
-        isLoading=false;
+        isLoading = false;
       });
       await Alert.alert(context, "Error fetching data: $e");
     }
@@ -186,7 +186,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                                 MediaQuery.of(context).devicePixelRatio * 30,
                             decoration: BoxDecoration(color: Colors.grey[200]),
                             child: Image.network(
-                              visit['imagev'] ?? '',
+                              visit['image'] ?? '',
                               fit: BoxFit.cover,
                               errorBuilder:
                                   (context, error, stackTrace) =>
@@ -271,9 +271,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
           'Employee Visit',
@@ -339,12 +337,28 @@ class EmpvisitrepState extends State<Empvisitrep> {
           ),
         ],
       ),
-      body:isLoading
+      body:
+          isLoading
               ? Center(
-                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
-              ) // ✅ Show loader first
-              :
-          attendanceData.isEmpty
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius:
+                          MediaQuery.of(context).size.width *
+                          0.16, // Adjust the radius dynamically based on screen width
+                      backgroundImage: AssetImage(
+                        'assets/splesh_Screen/Emp_Attend.png',
+                      ), // Set the background image here
+                    ),
+
+                    SizedBox(height: 5),
+                    CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                  ],
+                ),
+              )
+              : attendanceData.isEmpty
               ? Center(
                 child: Text(
                   "Visit Not Found",
@@ -465,7 +479,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
-                                visit['image'] ?? '',
+                                visit['imagev'] ?? '',
                                 width: devicePixelRatio * 22,
                                 height: devicePixelRatio * 22,
                                 fit: BoxFit.cover,
@@ -513,9 +527,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                                       ),
                                       elevation: 4,
                                     ),
-                                    child: Text(
-                                      "More"
-                                    ),
+                                    child: Text("More"),
                                   ),
                                 ),
                                 Expanded(

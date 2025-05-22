@@ -34,7 +34,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
   String day = '';
   String month = '';
   List<Map<String, dynamic>> attendanceData = [];
-  bool isLoading=true;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -77,14 +77,14 @@ class AdminVisitreportState extends State<AdminVisitreport> {
 
       if (responseData['success'] == true) {
         setState(() {
-          isLoading=false;
+          isLoading = false;
           attendanceData = List<Map<String, dynamic>>.from(
             responseData['data'],
           );
         });
       } else {
         setState(() {
-          isLoading=false;
+          isLoading = false;
           attendanceData.clear(); // clears the list in place
         });
 
@@ -92,7 +92,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
       }
     } catch (e) {
       setState(() {
-        isLoading=false;
+        isLoading = false;
       });
       print("Error fetching data: $e");
     }
@@ -115,13 +115,14 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     }
   }
 
-Future<void> _pickMonth(BuildContext context) async {
-  DateTime? selected = await showMonthPicker(
-    context: context,
-    initialDate: DateTime.now(),
-    firstDate: DateTime(2000),
-    lastDate: DateTime(2100),
-  /*  builder: (BuildContext context, Widget? child) {
+  Future<void> _pickMonth(BuildContext context) async {
+    DateTime? selected = await showMonthPicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+
+      /*  builder: (BuildContext context, Widget? child) {
   return Theme(
     data: Theme.of(context).copyWith(
       dialogTheme: DialogTheme(
@@ -135,18 +136,16 @@ Future<void> _pickMonth(BuildContext context) async {
     ),
   );
 }, */
+    );
 
-  );
-
-  if (selected != null) {
-    setState(() {
-      month = DateFormat('MM').format(selected);
-      day = '';
-    });
-    VisitDetail();
+    if (selected != null) {
+      setState(() {
+        month = DateFormat('MM').format(selected);
+        day = '';
+      });
+      VisitDetail();
+    }
   }
-}
-
 
   double safeParseDouble(String input) {
     try {
@@ -382,7 +381,7 @@ Future<void> _pickMonth(BuildContext context) async {
                         color: Colors.white,
                         size: deviceWidth * 0.07,
                       ),
-                      onPressed: ()=>_pickMonth(context),
+                      onPressed: () => _pickMonth(context),
                       tooltip: "Pick Month",
                     ),
                   ],
@@ -392,14 +391,29 @@ Future<void> _pickMonth(BuildContext context) async {
           ),
         ],
       ),
-      body:isLoading
+      body:
+          isLoading
               ? Center(
                 child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
-              ):attendanceData.isEmpty
+              )
+              : attendanceData.isEmpty
               ? Center(
-                child: Text(
-                  "Visit Not Found",
-                  style: TextStyle(fontSize: deviceWidth * 0.05),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius:
+                          MediaQuery.of(context).size.width *
+                          0.16, // Adjust the radius dynamically based on screen width
+                      backgroundImage: AssetImage(
+                        'assets/splesh_Screen/Emp_Attend.png',
+                      ), // Set the background image here
+                    ),
+
+                    SizedBox(height: 5),
+                    CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                  ],
                 ),
               )
               : ListView.builder(
@@ -422,207 +436,219 @@ Future<void> _pickMonth(BuildContext context) async {
 
                   return SingleChildScrollView(
                     child: Padding(
-                    padding: EdgeInsets.all(devicePixelRatio * .5),
-                    child: Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: devicePixelRatio * 2,
-                        horizontal: devicePixelRatio * 3.5,
-                      ),
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(deviceWidth * 0.03),
-                        color: const Color.fromARGB(255, 247, 239, 230),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // Image and Name
-                          Expanded(
-                            child: Column(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    data['image'] ?? '',
-                                    width: devicePixelRatio * 25,
-                                    height: devicePixelRatio * 25,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Icon(Icons.error),
-                                  ),
-                                ),
-                                Text(
-                                  (data['name'] ?? '').toString().length > 10
-                                      ? '${data['name'].toString().substring(0, 10)}...'
-                                      : data['name'].toString(),
-                                ),
-                              ],
-                            ),
+                      padding: EdgeInsets.all(devicePixelRatio * .5),
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                          vertical: devicePixelRatio * 2,
+                          horizontal: devicePixelRatio * 3.5,
+                        ),
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            deviceWidth * 0.03,
                           ),
-                          SizedBox(width: devicePixelRatio * 3),
-                          // Visit count
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Text(
-                                  "Total Visit:- ",
-                                  style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: devicePixelRatio * 4,
-                                    vertical: devicePixelRatio * 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFF03a9f4),
-                                    borderRadius: BorderRadius.circular(
-                                      devicePixelRatio * 6,
+                          color: const Color.fromARGB(255, 247, 239, 230),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Image and Name
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.network(
+                                      data['image'] ?? '',
+                                      width: devicePixelRatio * 25,
+                                      height: devicePixelRatio * 25,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Icon(Icons.error),
                                     ),
                                   ),
-                                  child: Text(
-                                    "${data['total_visit'] ?? 0}",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
+                                  Text(
+                                    (data['name'] ?? '').toString().length > 10
+                                        ? '${data['name'].toString().substring(0, 10)}...'
+                                        : data['name'].toString(),
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: devicePixelRatio * 3),
-                          // Buttons
-                          Column(
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  if (visits.isNotEmpty) {
-                                    showDetail(context, EmpVisitDetail);
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          "No detailed data available",
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFF03a9f4),
-                                  foregroundColor: Colors.white,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: deviceWidth * 0.06,
-                                    vertical: 10,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      deviceWidth * 0.07,
-                                    ),
-                                  ),
-                                  elevation: 4,
-                                ),
-                                child: Text("More"),
+                                ],
                               ),
-                              SizedBox(height: devicePixelRatio * 2),
-                              IconButton(
-                                onPressed: () {
-                                  if (startLoc.isNotEmpty &&
-                                      endLoc.isNotEmpty) {
-                                    try {
-                                      List<LatLng> points = [];
-
-                                      for (
-                                        int i = 0;
-                                        i < startLoc.length;
-                                        i++
-                                      ) {
-                                        final coord =
-                                            startLoc[i]
-                                                .split(',')
-                                                .map((e) => e.trim())
-                                                .toList();
-                                        if (coord.length == 2) {
-                                          points.add(
-                                            LatLng(
-                                              safeParseDouble(coord[0]),
-                                              safeParseDouble(coord[1]),
-                                            ),
-                                          );
-                                        }
-                                      }
-
-                                      for (int i = 0; i < endLoc.length; i++) {
-                                        final coord =
-                                            endLoc[i]
-                                                .split(',')
-                                                .map((e) => e.trim())
-                                                .toList();
-                                        if (coord.length == 2) {
-                                          points.add(
-                                            LatLng(
-                                              safeParseDouble(coord[0]),
-                                              safeParseDouble(coord[1]),
-                                            ),
-                                          );
-                                        }
-                                      }
-
-                                      if (points.isNotEmpty) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (context) => SimpleMapScreen(
-                                                  points: points,
-                                                ),
-                                          ),
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                              'No valid coordinates found',
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    } catch (e) {
+                            ),
+                            SizedBox(width: devicePixelRatio * 3),
+                            // Visit count
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Total Visit:- ",
+                                    style: TextStyle(
+                                      fontSize: devicePixelRatio * 4,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: devicePixelRatio * 4,
+                                      vertical: devicePixelRatio * 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF03a9f4),
+                                      borderRadius: BorderRadius.circular(
+                                        devicePixelRatio * 6,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      "${data['total_visit'] ?? 0}",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: devicePixelRatio * 3),
+                            // Buttons
+                            Column(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (visits.isNotEmpty) {
+                                      showDetail(context, EmpVisitDetail);
+                                    } else {
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                            'Error parsing coordinates: $e',
+                                            "No detailed data available",
                                           ),
                                         ),
                                       );
                                     }
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Location data is empty'),
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: deviceWidth * 0.06,
+                                      vertical: 10,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        deviceWidth * 0.07,
                                       ),
-                                    );
-                                  }
-                                },
-                                icon: Icon(
-                                  FontAwesomeIcons.mapLocationDot,
-                                  color: Color(0xFF03a9f4),
-                                  size: devicePixelRatio * 10,
+                                    ),
+                                    elevation: 4,
+                                  ),
+                                  child: Text("More"),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                                SizedBox(height: devicePixelRatio * 2),
+                                IconButton(
+                                  onPressed: () {
+                                    if (startLoc.isNotEmpty &&
+                                        endLoc.isNotEmpty) {
+                                      try {
+                                        List<LatLng> points = [];
+
+                                        for (
+                                          int i = 0;
+                                          i < startLoc.length;
+                                          i++
+                                        ) {
+                                          final coord =
+                                              startLoc[i]
+                                                  .split(',')
+                                                  .map((e) => e.trim())
+                                                  .toList();
+                                          if (coord.length == 2) {
+                                            points.add(
+                                              LatLng(
+                                                safeParseDouble(coord[0]),
+                                                safeParseDouble(coord[1]),
+                                              ),
+                                            );
+                                          }
+                                        }
+
+                                        for (
+                                          int i = 0;
+                                          i < endLoc.length;
+                                          i++
+                                        ) {
+                                          final coord =
+                                              endLoc[i]
+                                                  .split(',')
+                                                  .map((e) => e.trim())
+                                                  .toList();
+                                          if (coord.length == 2) {
+                                            points.add(
+                                              LatLng(
+                                                safeParseDouble(coord[0]),
+                                                safeParseDouble(coord[1]),
+                                              ),
+                                            );
+                                          }
+                                        }
+
+                                        if (points.isNotEmpty) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) => SimpleMapScreen(
+                                                    points: points,
+                                                  ),
+                                            ),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                'No valid coordinates found',
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      } catch (e) {
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          SnackBar(
+                                            content: Text(
+                                              'Error parsing coordinates: $e',
+                                            ),
+                                          ),
+                                        );
+                                      }
+                                    } else {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Location data is empty',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  icon: Icon(
+                                    FontAwesomeIcons.mapLocationDot,
+                                    color: Color(0xFF03a9f4),
+                                    size: devicePixelRatio * 10,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
                   );
                 },
               ),

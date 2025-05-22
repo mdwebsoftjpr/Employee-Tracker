@@ -223,6 +223,9 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   Future<File?> compressImage(XFile xFile) async {
+    setState(() {
+      isLoading = true;
+    });
     final File file = File(xFile.path);
     final dir = await getTemporaryDirectory();
     final targetPath = p.join(dir.path, 'compressed_${p.basename(file.path)}');
@@ -245,6 +248,9 @@ class _EmpHomeState extends State<EmpHome> {
       }
     }
 
+    setState(() {
+      isLoading = false;
+    });
     return compressedFile;
   }
 
@@ -750,7 +756,11 @@ class _EmpHomeState extends State<EmpHome> {
                         SizedBox(height: 12),
                         Text(
                           comName,
-                          style: TextStyle(color: Colors.white, fontSize: 16),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                         Text(
@@ -875,9 +885,8 @@ class _EmpHomeState extends State<EmpHome> {
                   ),
                   SizedBox(height: 10),
                   Divider(),
-
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+                    padding: const EdgeInsets.only(bottom: 5),
                     child: InkWell(
                       onTap: () async {
                         const url = 'https://www.mdwebsoft.com/';
@@ -918,7 +927,25 @@ class _EmpHomeState extends State<EmpHome> {
                               ),
                             ],
                           ),
-
+                        ],
+                      ),
+                    ),
+                  ),
+                  Divider(),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: InkWell(
+                      onTap: () async {
+                        const url = 'https://www.mdwebsoft.com/';
+                        if (await canLaunchUrl(Uri.parse(url))) {
+                          await launchUrl(Uri.parse(url));
+                        } else {
+                          throw 'Could not launch $url';
+                        }
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
                           Text(
                             'Maintain By Md Websoft',
                             style: TextStyle(
@@ -934,7 +961,7 @@ class _EmpHomeState extends State<EmpHome> {
                   Divider(),
 
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+                    padding: const EdgeInsets.only(bottom: 5),
                     child: InkWell(
                       onTap: () async {
                         const url = 'https://www.mdwebsoft.com/';
@@ -991,8 +1018,24 @@ class _EmpHomeState extends State<EmpHome> {
       body:
           isLoading
               ? Center(
-                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
-              ) // ✅ Show loader first
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius:
+                          MediaQuery.of(context).size.width *
+                          0.16, // Adjust the radius dynamically based on screen width
+                      backgroundImage: AssetImage(
+                        'assets/splesh_Screen/Emp_Attend.png',
+                      ), // Set the background image here
+                    ),
+
+                    SizedBox(height: 5),
+                    CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                  ],
+                ),
+              )
               : SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(5),

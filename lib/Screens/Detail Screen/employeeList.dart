@@ -75,8 +75,8 @@ class EmployeelistState extends State<Employeelist> {
         });
       } else {
         setState(() {
-        isLoading=false;
-      });
+          isLoading = false;
+        });
         Alert.alert(
           context,
           responseData['message'] ?? 'Unknown error occurred',
@@ -84,7 +84,7 @@ class EmployeelistState extends State<Employeelist> {
       }
     } catch (e) {
       setState(() {
-        isLoading=false;
+        isLoading = false;
       });
       Alert.alert(context, 'Failed to fetch data: $e');
     }
@@ -694,9 +694,9 @@ class EmployeelistState extends State<Employeelist> {
                                   });
                                 },
                                 activeColor: Colors.white,
-                                activeTrackColor: Colors.green,
+                                activeTrackColor: Colors.red,
                                 inactiveThumbColor: Colors.white,
-                                inactiveTrackColor: Colors.red,
+                                inactiveTrackColor: Colors.green,
                               ),
                             ),
                           ],

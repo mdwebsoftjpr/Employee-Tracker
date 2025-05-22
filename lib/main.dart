@@ -153,7 +153,7 @@ class _createScreen extends State<CreateScreen> {
                 children: [
                   SizedBox(height: 20),
                   Image.asset(
-                    'assets/images/LogoMain.jpg',
+                    'assets/splesh_Screen/Emp_Attend.png',
                     width: 100,
                     height: 100,
                   ),

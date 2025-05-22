@@ -45,7 +45,7 @@ dev_dependencies:
 flutter_icons:  # 👈 placed outside of `flutter`
   android: true
   ios: true
-  image_path: "assets/splesh_Screen/staff-track.png"
+  image_path: "assets/splesh_Screen/Emp_Attend.png"
 
 flutter:
   uses-material-design: true

@@ -203,6 +203,9 @@ class VisitOutState extends State<VisitOut> {
   }
 
   Future<File?> compressImage(XFile xFile) async {
+    setState(() {
+      isLoading = true;
+    });
     final File file = File(xFile.path);
     final dir = await getTemporaryDirectory();
     final targetPath = p.join(dir.path, 'compressed_${p.basename(file.path)}');
@@ -225,6 +228,9 @@ class VisitOutState extends State<VisitOut> {
       }
     }
 
+    setState(() {
+      isLoading = false;
+    });
     return compressedFile;
   }
 
@@ -359,8 +365,24 @@ class VisitOutState extends State<VisitOut> {
       body:
           isLoading
               ? Center(
-                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
-              ) // ✅ Show loader first
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius:
+                          MediaQuery.of(context).size.width *
+                          0.16, // Adjust the radius dynamically based on screen width
+                      backgroundImage: AssetImage(
+                        'assets/splesh_Screen/Emp_Attend.png',
+                      ), // Set the background image here
+                    ),
+
+                    SizedBox(height: 5),
+                    CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                  ],
+                ),
+              )
               : SingleChildScrollView(
                 child: Center(
                   child: Container(

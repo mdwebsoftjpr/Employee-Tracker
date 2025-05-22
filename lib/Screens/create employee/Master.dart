@@ -28,7 +28,7 @@ class MasterState extends State<Master> {
   List<dynamic> designationList = [];
   final _formKey = GlobalKey<FormState>();
   final TextEditingController designation = TextEditingController();
-  bool isLoading=true;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -63,27 +63,27 @@ class MasterState extends State<Master> {
       final responseData = jsonDecode(response.body);
       if (responseData['success']) {
         setState(() {
-          isLoading=false;
+          isLoading = false;
           designationList = responseData['data'];
         });
       } else {
         setState(() {
-          isLoading=false;
-          });
+          isLoading = false;
+        });
         Alert.alert(context, responseData['message']);
       }
     } catch (e) {
       setState(() {
-          isLoading=false;
-          });
+        isLoading = false;
+      });
       Alert.alert(context, e);
     }
   }
 
   void UpdateMaster(String designation, int id) async {
     setState(() {
-          isLoading=true;
-          });
+      isLoading = true;
+    });
     print("$designation,$id");
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/updatedesignation.php',
@@ -104,29 +104,27 @@ class MasterState extends State<Master> {
       if (responseData['success']) {
         ShowMaster();
         setState(() {
-          isLoading=false;
-          });
+          isLoading = false;
+        });
         Alert.alert(context, responseData['message']);
       } else {
         setState(() {
-          isLoading=false;
-          });
+          isLoading = false;
+        });
         Alert.alert(context, responseData['message']);
       }
     } catch (e) {
       setState(() {
-          isLoading=false;
-          });
+        isLoading = false;
+      });
       Alert.alert(context, e);
     }
   }
 
-
-
   void DeleteMaster(int id) async {
     setState(() {
-          isLoading=true;
-          });
+      isLoading = true;
+    });
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/deletedesignation.php',
     );
@@ -142,27 +140,27 @@ class MasterState extends State<Master> {
       if (responseData['success']) {
         ShowMaster();
         setState(() {
-          isLoading=false;
-          });
+          isLoading = false;
+        });
         Alert.alert(context, responseData['message']);
       } else {
         setState(() {
-          isLoading=false;
-          });
+          isLoading = false;
+        });
         Alert.alert(context, responseData['message']);
       }
     } catch (e) {
       setState(() {
-          isLoading=false;
-          });
+        isLoading = false;
+      });
       Alert.alert(context, e);
     }
   }
 
   void AddMaster() async {
     setState(() {
-          isLoading=true;
-          });
+      isLoading = true;
+    });
     if (_formKey.currentState?.validate() ?? false) {
       final url = Uri.parse(
         'https://testapi.rabadtechnology.com/designationmaster.php',
@@ -182,15 +180,15 @@ class MasterState extends State<Master> {
         Alert.alert(context, responseData['message']);
         if (responseData['success']) {
           setState(() {
-          isLoading=false;
+            isLoading = false;
           });
           designation.clear();
           ShowMaster();
         }
       } catch (e) {
         setState(() {
-          isLoading=false;
-          });
+          isLoading = false;
+        });
         Alert.alert(context, e);
       }
     }
@@ -256,9 +254,7 @@ class MasterState extends State<Master> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
           'Create Designation',
@@ -313,10 +309,26 @@ class MasterState extends State<Master> {
             Expanded(
               child:
                   isLoading
-              ? Center(
-                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
-              ) // ✅ Show loader first
-              :designationList.isEmpty
+                      ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius:
+                                  MediaQuery.of(context).size.width *
+                                  0.16, // Adjust the radius dynamically based on screen width
+                              backgroundImage: AssetImage(
+                                'assets/splesh_Screen/Emp_Attend.png',
+                              ), // Set the background image here
+                            ),
+
+                            SizedBox(height: 5),
+                            CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                          ],
+                        ),
+                      )
+                      : designationList.isEmpty
                       ? Center(
                         child: Text(
                           "Designation Not Found",
@@ -364,7 +376,7 @@ class MasterState extends State<Master> {
                                               MediaQuery.of(
                                                 context,
                                               ).devicePixelRatio,
-                                              fontWeight: FontWeight.bold
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(

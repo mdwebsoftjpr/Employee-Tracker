@@ -295,7 +295,7 @@ class AdminhomeState extends State<AdminHome> {
                         SizedBox(height: 12),
                         Text(
                           comName,
-                          style: TextStyle(color: Colors.white, fontSize: 16),
+                          style: TextStyle(color: Colors.white, fontSize: 16,fontWeight: FontWeight.bold),
                           textAlign: TextAlign.center,
                         ),
                         Text(
@@ -386,7 +386,7 @@ class AdminhomeState extends State<AdminHome> {
                   Divider(),
 
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+                    padding: const EdgeInsets.only(bottom: 5),
                     child: InkWell(
                       onTap: () async {
                         const url = 'https://www.mdwebsoft.com/';
@@ -427,7 +427,25 @@ class AdminhomeState extends State<AdminHome> {
                               ),
                             ],
                           ),
-
+                        ],
+                      ),
+                    ),
+                  ),
+                Divider(),
+                 Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: InkWell(
+                      onTap: () async {
+                        const url = 'https://www.mdwebsoft.com/';
+                        if (await canLaunchUrl(Uri.parse(url))) {
+                          await launchUrl(Uri.parse(url));
+                        } else {
+                          throw 'Could not launch $url';
+                        }
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
                           Text(
                             'Maintain By Md Websoft',
                             style: TextStyle(
@@ -443,7 +461,7 @@ class AdminhomeState extends State<AdminHome> {
                   Divider(),
 
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 20.0, top: 10),
+                    padding: const EdgeInsets.only(bottom: 5),
                     child: InkWell(
                       onTap: () async {
                         const url = 'https://www.mdwebsoft.com/';

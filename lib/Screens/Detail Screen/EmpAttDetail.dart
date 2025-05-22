@@ -109,7 +109,6 @@ class EmpattdetailState extends State<EmpAttdetail> {
     }
   }
 
- 
   void _pickMonth() {
     showMonthPicker(context: context, initialDate: DateTime.now()).then((date) {
       if (date != null) {
@@ -131,9 +130,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
           'Attendance Detail',
@@ -158,10 +155,25 @@ class EmpattdetailState extends State<EmpAttdetail> {
       body:
           isLoading
               ? Center(
-                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
-              ) // ✅ Show loader first
-              :
-          attendanceData.isEmpty
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius:
+                          MediaQuery.of(context).size.width *
+                          0.16, // Adjust the radius dynamically based on screen width
+                      backgroundImage: AssetImage(
+                        'assets/splesh_Screen/Emp_Attend.png',
+                      ), // Set the background image here
+                    ),
+
+                    SizedBox(height: 5),
+                    CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                  ],
+                ),
+              )
+              : attendanceData.isEmpty
               ? Center(
                 child: Text(
                   "Attendance Not Found",

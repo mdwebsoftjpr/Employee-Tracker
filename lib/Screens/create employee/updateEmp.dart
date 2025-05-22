@@ -53,8 +53,9 @@ class UpdateEmpState extends State<UpdateEmp> {
   String? formattedDate;
   bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
-  String? TradeName; 
-  bool isLoading=false;
+  String? TradeName;
+  bool isLoading = false;
+  String userImg = '';
 
   // Declare controllers without initial text
   final TextEditingController name = TextEditingController();
@@ -81,6 +82,9 @@ class UpdateEmpState extends State<UpdateEmp> {
     super.initState();
     if (widget.item.isNotEmpty) {
       var data = widget.item[0];
+      setState(() {
+        userImg = data['image'];
+      });
       name.text = data['name'].toString() ?? '';
       dob.text = data['dob'].toString() ?? '';
       panNo.text = data['pan_card'].toString() ?? '';
@@ -113,6 +117,9 @@ class UpdateEmpState extends State<UpdateEmp> {
   }
 
   Future<File?> compressImage(XFile xFile) async {
+    setState(() {
+      isLoading = true;
+    });
     final File file = File(xFile.path);
     final dir = await getTemporaryDirectory();
     final targetPath = join(dir.path, 'compressed_${basename(file.path)}');
@@ -135,6 +142,9 @@ class UpdateEmpState extends State<UpdateEmp> {
       }
     }
 
+    setState(() {
+      isLoading = false;
+    });
     return compressedFile;
   }
 
@@ -218,8 +228,8 @@ class UpdateEmpState extends State<UpdateEmp> {
 
   Future<void> Update_Emp(BuildContext context) async {
     setState(() {
-            isLoading = true;
-          });
+      isLoading = true;
+    });
     if (_formKey.currentState?.validate() ?? false) {
       if (_imageFile == null) {
         ScaffoldMessenger.of(
@@ -281,8 +291,8 @@ class UpdateEmpState extends State<UpdateEmp> {
         }
       } catch (e) {
         setState(() {
-            isLoading = false;
-          });
+          isLoading = false;
+        });
         print(e);
         /* Alert.alert(context, e.toString()); */
       }
@@ -308,7 +318,23 @@ class UpdateEmpState extends State<UpdateEmp> {
       body:
           isLoading
               ? Center(
-                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius:
+                          MediaQuery.of(context).size.width *
+                          0.16, // Adjust the radius dynamically based on screen width
+                      backgroundImage: AssetImage(
+                        'assets/splesh_Screen/Emp_Attend.png',
+                      ), // Set the background image here
+                    ),
+
+                    SizedBox(height: 5),
+                    CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                  ],
+                ),
               )
               : Container(
                 padding: EdgeInsets.only(
@@ -323,20 +349,15 @@ class UpdateEmpState extends State<UpdateEmp> {
                     child: Column(
                       children: [
                         SizedBox(height: 20),
-                        _imageFile != null
-                            ? CircleAvatar(
-                              radius: MediaQuery.of(context).size.width * 0.18,
-                              backgroundImage: FileImage(_imageFile!),
-                              backgroundColor: Colors.grey,
-                            )
-                            : Container(
-                              width: MediaQuery.of(context).size.width * 0.32,
-                              height: MediaQuery.of(context).size.width * 0.32,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                            ),
+                        CircleAvatar(
+                          radius: MediaQuery.of(context).size.width * 0.18,
+                          backgroundImage:
+                              _imageFile != null
+                                  ? FileImage(_imageFile!) as ImageProvider
+                                  : NetworkImage(
+                                    '$userImg',
+                                  ), // Optional: you can leave this if you want a fallback color
+                        ),
 
                         ElevatedButton(
                           onPressed: () => _pickImageFromCamera(),

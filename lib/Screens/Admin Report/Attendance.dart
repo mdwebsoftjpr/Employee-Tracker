@@ -1,9 +1,12 @@
+import 'package:employee_tracker/Screens/Admin%20Report/VisitRepMap.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Detail%20Screen/AttendanceDetail.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:latlong2/latlong.dart';
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
@@ -81,6 +84,15 @@ class AttendanceState extends State<Attendance> {
     }
   }
 
+  double safeParseDouble(String input) {
+    try {
+      return double.parse(input.replaceAll('"', '').replaceAll("'", '').trim());
+    } catch (e) {
+      Alert.alert(context, "Error parsing double: $e");
+      return 0.0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
@@ -107,9 +119,22 @@ class AttendanceState extends State<Attendance> {
               ) // ✅ Show loader first
               : attendanceData.isEmpty
               ? Center(
-                child: Text(
-                  "Attendance Not Found",
-                  style: TextStyle(fontSize: deviceWidth * 0.05),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius:
+                          MediaQuery.of(context).size.width *
+                          0.16, // Adjust the radius dynamically based on screen width
+                      backgroundImage: AssetImage(
+                        'assets/splesh_Screen/Emp_Attend.png',
+                      ), // Set the background image here
+                    ),
+
+                    SizedBox(height: 5),
+                    CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                  ],
                 ),
               )
               : ListView.builder(
@@ -145,152 +170,171 @@ class AttendanceState extends State<Attendance> {
                           ),
                           color: const Color.fromARGB(255, 247, 239, 230),
                         ),
-                        child: Row(
+                        child: Column(
                           children: [
-                            Column(
+                            Row(
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    imageUrl,
-                                    width: devicePixelRatio * 20,
-                                    height: devicePixelRatio * 20,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Image.network(
+                                Column(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.network(
                                         imageUrl,
-                                        width: deviceWidth * 20,
-                                        height: deviceWidth * 20,
+                                        width: devicePixelRatio * 20,
+                                        height: devicePixelRatio * 20,
                                         fit: BoxFit.cover,
-                                      );
-                                    },
-                                  ),
-                                ),
-                                Text(
-                                  (item['empname'] ?? '').length > 7
-                                      ? '${item['empname'].substring(0, 7)}...'
-                                      : item['empname'] ?? '',
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ],
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  SizedBox(height: 4),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Column(
-                                        children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Column(
-                                                children: [
-                                                  Text(
-                                                    "Punch in:-",
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize:
-                                                          deviceWidth * 0.035,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    "${item['time_in'] ?? ''}",
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          deviceWidth * 0.035,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(width: 12),
-                                              Column(
-                                                children: [
-                                                  Text(
-                                                    "Punch Out:-",
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize:
-                                                          deviceWidth * 0.035,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    "${item['time_out'] ?? ''}",
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          deviceWidth * 0.035,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                "Break:",
-                                                style: TextStyle(
-                                                  fontSize: deviceWidth * 0.035,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              Text(
-                                                ' ${item['break_time'] ?? '0'}',
-                                                style: TextStyle(
-                                                  fontSize: deviceWidth * 0.035,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
+                                        errorBuilder: (
+                                          context,
+                                          error,
+                                          stackTrace,
+                                        ) {
+                                          return Image.network(
+                                            imageUrl,
+                                            width: deviceWidth * 20,
+                                            height: deviceWidth * 20,
+                                            fit: BoxFit.cover,
+                                          );
+                                        },
                                       ),
-                                      Column(
+                                    ),
+                                    Text(
+                                      (item['empname'] ?? '').length > 7
+                                          ? '${item['empname'].substring(0, 7)}...'
+                                          : item['empname'] ?? '',
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      SizedBox(height: 4),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
                                         children: [
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  (item['attendance_status']
-                                                              ?.toLowerCase() ==
-                                                          'p')
-                                                      ? Color(0xFF03a9f4)
-                                                      : Colors.red,
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            child: Text(
-                                              item['attendance_status'] ?? '',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(height: 4),
-                                          Row(
+                                          Column(
                                             children: [
-                                              Text(
-                                                "Working Hours: ",
-                                                style: TextStyle(
-                                                  fontSize: deviceWidth * 0.035,
-                                                  fontWeight: FontWeight.bold,
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Column(
+                                                    children: [
+                                                      Text(
+                                                        "Punch in:-",
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize:
+                                                              deviceWidth *
+                                                              0.035,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        "${item['time_in'] ?? ''}",
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              deviceWidth *
+                                                              0.035,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  SizedBox(width: 12),
+                                                  Column(
+                                                    children: [
+                                                      Text(
+                                                        "Punch Out:-",
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize:
+                                                              deviceWidth *
+                                                              0.035,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        "${item['time_out'] ?? ''}",
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              deviceWidth *
+                                                              0.035,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    "Break:",
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          deviceWidth * 0.035,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    ' ${item['break_time'] ?? '0'}',
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          deviceWidth * 0.035,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 10,
+                                                  vertical: 6,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      (item['attendance_status']
+                                                                  ?.toLowerCase() ==
+                                                              'p')
+                                                          ? Color(0xFF03a9f4)
+                                                          : Colors.red,
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                                child: Text(
+                                                  item['attendance_status'] ??
+                                                      '',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                                 ),
                                               ),
-                                              Text(
-                                                "${item['hours'] ?? '0'}",
-                                                style: TextStyle(
-                                                  fontSize: deviceWidth * 0.035,
-                                                ),
+                                              SizedBox(height: 4),
+                                              Row(
+                                                children: [
+                                                  Text(
+                                                    "Total Hours: ",
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          deviceWidth * 0.035,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "${item['hours'] ?? '0'}",
+                                                    style: TextStyle(
+                                                      fontSize:
+                                                          deviceWidth * 0.035,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
@@ -298,8 +342,115 @@ class AttendanceState extends State<Attendance> {
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text: "Address: ",
+                                              style: TextStyle(
+                                                fontSize: deviceWidth * 0.035,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text: item['address'],
+                                              style: TextStyle(
+                                                fontSize: deviceWidth * 0.035,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        softWrap: true,
+                                        overflow: TextOverflow.visible,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Expanded(
+                                  flex: 1,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(
+                                          FontAwesomeIcons.mapLocationDot,
+                                          color: Color(0xFF03a9f4),
+                                          size: devicePixelRatio * 10,
+                                        ),
+                                        onPressed: () {
+                                          List<LatLng> points = [];
+
+                                          if (item['multipoint'] != null) {
+                                            final startCoord =
+                                                item['multipoint']
+                                                    .split('_')
+                                                    .map((e) => e.trim())
+                                                    .toList();
+
+                                            if (startCoord.length >= 2) {
+                                              points.add(
+                                                LatLng(
+                                                  safeParseDouble(
+                                                    startCoord[0],
+                                                  ),
+                                                  safeParseDouble(
+                                                    startCoord[1],
+                                                  ),
+                                                ),
+                                              );
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) =>
+                                                          SimpleMapScreen(
+                                                            points: points,
+                                                          ),
+                                                ),
+                                              );
+                                            } else {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    'Invalid coordinate format',
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          } else {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  'Location data is missing',
+                                                ),
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

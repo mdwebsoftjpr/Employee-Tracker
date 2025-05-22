@@ -39,6 +39,7 @@ class UpdatecomState extends State<Updatecom> {
   bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
+  String userImg = '';
 
   late TextEditingController cname;
   late TextEditingController email;
@@ -80,6 +81,7 @@ class UpdatecomState extends State<Updatecom> {
         var user = jsonDecode(userJson);
         setState(() {
           userdata = user;
+          userImg = user['image'];
           cname.text = user['company_name'] ?? '';
           email.text = user['db_email'] ?? '';
           mobile.text = user['mobile_no'] ?? '';
@@ -214,8 +216,8 @@ class UpdatecomState extends State<Updatecom> {
         }
       } catch (e) {
         setState(() {
-            isLoading = false;
-          });
+          isLoading = false;
+        });
         Alert.alert(context, e.toString());
       }
     }
@@ -276,7 +278,23 @@ class UpdatecomState extends State<Updatecom> {
       body:
           isLoading
               ? Center(
-                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius:
+                          MediaQuery.of(context).size.width *
+                          0.16, // Adjust the radius dynamically based on screen width
+                      backgroundImage: AssetImage(
+                        'assets/splesh_Screen/Emp_Attend.png',
+                      ), // Set the background image here
+                    ),
+
+                    SizedBox(height: 5),
+                    CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                  ],
+                ),
               )
               : userdata == null
               ? Center(child: CircularProgressIndicator())
@@ -292,14 +310,13 @@ class UpdatecomState extends State<Updatecom> {
                             radius: size.width * 0.18,
                             backgroundImage: FileImage(_imageFile!),
                           )
-                          : Container(
-                            width: size.width * 0.32,
-                            height: size.width * 0.32,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(50),
+                          : CircleAvatar(
+                            radius: size.width * 0.18,
+                            backgroundImage: NetworkImage(
+                              'https://testapi.rabadtechnology.com/$userImg',
                             ),
                           ),
+
                       ElevatedButton(
                         onPressed: _pickImageFromGallery,
                         child: Row(

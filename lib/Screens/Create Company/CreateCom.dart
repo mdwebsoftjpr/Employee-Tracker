@@ -63,7 +63,9 @@ class CreateComState extends State<CreateCom> {
     if (pickedFile != null) {
       File imageFile = File(pickedFile.path);
       img.Image? image = img.decodeImage(await imageFile.readAsBytes());
-
+      setState(() {
+        isLoading = true;
+      });
       if (image != null) {
         int quality = 85;
         Uint8List compressedBytes = Uint8List.fromList(
@@ -78,7 +80,10 @@ class CreateComState extends State<CreateCom> {
         }
 
         File compressedFile = await _saveCompressedImage(compressedBytes);
-        setState(() => _imageFile = compressedFile);
+        setState(() {
+          _imageFile = compressedFile;
+          isLoading = false;
+        });
       }
     }
   }
@@ -170,8 +175,8 @@ class CreateComState extends State<CreateCom> {
         }
       } catch (e) {
         setState(() {
-            isLoading = false;
-          });
+          isLoading = false;
+        });
         Alert.alert(context, e.toString());
       }
     }
@@ -232,7 +237,23 @@ class CreateComState extends State<CreateCom> {
       body:
           isLoading
               ? Center(
-                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius:
+                          MediaQuery.of(context).size.width *
+                          0.16, // Adjust the radius dynamically based on screen width
+                      backgroundImage: AssetImage(
+                        'assets/splesh_Screen/Emp_Attend.png',
+                      ), // Set the background image here
+                    ),
+
+                    SizedBox(height: 5),
+                    CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                  ],
+                ),
               )
               : SingleChildScrollView(
                 padding: EdgeInsets.all(16),
