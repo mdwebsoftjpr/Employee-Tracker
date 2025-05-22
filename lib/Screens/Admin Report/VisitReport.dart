@@ -118,18 +118,21 @@ Future<void> _pickMonth(BuildContext context) async {
     initialDate: DateTime.now(),
     firstDate: DateTime(2000),
     lastDate: DateTime(2100),
-   /*  builder: (BuildContext context, Widget? child) {
-      return Theme(
-        data: Theme.of(context).copyWith(
-          dialogTheme: DialogTheme(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
+  /*  builder: (BuildContext context, Widget? child) {
+  return Theme(
+    data: Theme.of(context).copyWith(
+      dialogTheme: DialogTheme(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
-        child: child!,
-      );
-    }, */
+      ),
+    ),
+    child: SingleChildScrollView( // 👈 add scroll
+      child: child!,
+    ),
+  );
+}, */
+
   );
 
   if (selected != null) {
