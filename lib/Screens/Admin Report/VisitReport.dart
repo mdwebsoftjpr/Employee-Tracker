@@ -394,10 +394,6 @@ class AdminVisitreportState extends State<AdminVisitreport> {
       body:
           isLoading
               ? Center(
-                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
-              )
-              : attendanceData.isEmpty
-              ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -414,6 +410,13 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                     SizedBox(height: 5),
                     CircularProgressIndicator(color: Color(0xFF03a9f4)),
                   ],
+                ),
+              )
+              : attendanceData.isEmpty
+              ? Center(
+                child: Text(
+                  'Visit Not Found',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               )
               : ListView.builder(

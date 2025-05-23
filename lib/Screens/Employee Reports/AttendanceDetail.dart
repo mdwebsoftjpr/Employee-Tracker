@@ -325,7 +325,12 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   ),
                                                 ),
                                                 Text(
-                                                  '${data['date'] ?? ''}',
+                                                  data['date'] != null
+                                                      ? data['date']
+                                                          .split('-')
+                                                          .reversed
+                                                          .join('-')
+                                                      : '',
                                                   style: TextStyle(
                                                     fontSize:
                                                         deviceWidth * 0.035,

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/EmpVisitRep.dart';
-import 'package:employee_tracker/Screens/Detail%20Screen/EmpAttDetail.dart';
+import 'package:employee_tracker/Screens/Employee%20Reports/EmpAttDetail.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/empProfile.dart';
 import 'package:employee_tracker/Screens/VisitOut%20Screen/VisitOut.dart';
 import 'package:employee_tracker/main.dart';

@@ -1,5 +1,5 @@
 import 'package:employee_tracker/Screens/Components/Alert.dart';
-import 'package:employee_tracker/Screens/Detail%20Screen/AttendanceDetail.dart';
+import 'package:employee_tracker/Screens/Employee%20Reports/AttendanceDetail.dart';
 import 'package:employee_tracker/Screens/create%20employee/updateEmp.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
@@ -287,7 +287,11 @@ class EmployeelistState extends State<Employeelist> {
                           ),
                           SizedBox(height: 3),
                           Text(
-                            (item['doinofdate'] ?? 0).toString(),
+                            ((item['doinofdate'] ?? 0)
+                                .toString()
+                                .split('')
+                                .reversed
+                                .join()),
                             style: TextStyle(
                               fontSize:
                                   5 * MediaQuery.of(context).devicePixelRatio,

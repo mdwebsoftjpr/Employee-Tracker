@@ -204,11 +204,20 @@ class EmpattdetailState extends State<EmpAttdetail> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  "Date: ${data['date'] ?? ''}",
+                                    Text(
+                                  "Date:",
                                   style: TextStyle(
                                     fontSize: deviceWidth * 0.04,
                                   ),
+                                ),
+                                    Text(
+                                  data['date'] != null
+                                      ? data['date']
+                                          .split('-')
+                                          .reversed
+                                          .join('-')
+                                      : '',
+                                  style: TextStyle(fontSize: deviceWidth * 0.04),
                                 ),
                                 Text(
                                   "Break Time: ${data['break_time'] ?? ''}",

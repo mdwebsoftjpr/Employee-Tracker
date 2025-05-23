@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
-import 'package:employee_tracker/Screens/Detail%20Screen/AttendanceDetail.dart';
+import 'package:employee_tracker/Screens/Employee%20Reports/AttendanceDetail.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -31,26 +31,30 @@ class AttendanceState extends State<Attendance> {
   int? comId;
   List<Map<String, dynamic>> attendanceData = [];
   bool isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    _loadUser();
-    ShowMaster();
+    _loadUser().then((_) => ShowMaster());
   }
 
-  void _loadUser() {
+  Future<void> _loadUser() async {
     var userJson = localStorage.getItem('user');
     if (userJson != null) {
       var user = jsonDecode(userJson);
-      setState(() {
-        comName = user['company_name'] ?? 'Default Company';
-        name = user['name'] ?? 'Default User';
-        comId = user['id'];
-      });
+      if (mounted) {
+        setState(() {
+          comName = user['company_name'] ?? 'Default Company';
+          name = user['name'] ?? 'Default User';
+          comId = user['id'];
+        });
+      }
     }
   }
 
   void ShowMaster() async {
+    if (comId == null) return;
+
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/allemployeeattendence.php',
     );
@@ -63,24 +67,25 @@ class AttendanceState extends State<Attendance> {
         body: jsonEncode(requestBody),
       );
       final responseData = jsonDecode(response.body);
-      if (responseData['success']) {
-        setState(() {
-          isLoading = false;
-          attendanceData = List<Map<String, dynamic>>.from(
-            responseData['data'],
-          );
-        });
+      if (responseData['success'] && responseData['data'] != null) {
+        if (mounted) {
+          setState(() {
+            attendanceData = List<Map<String, dynamic>>.from(
+              responseData['data'],
+            );
+            isLoading = false;
+          });
+        }
       } else {
-        setState(() {
-          isLoading = false;
-        });
-        Alert.alert(context, responseData['message']);
+        if (mounted) setState(() => isLoading = false);
+        Alert.alert(
+          context,
+          'sa${responseData['message']}' ?? 'Failed to load data',
+        );
       }
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      Alert.alert(context, 'Something went wrong: ${e.toString()}');
+      if (mounted) setState(() => isLoading = false);
+      Alert.alert(context, 'Error: ${e.toString()}');
     }
   }
 
@@ -115,10 +120,6 @@ class AttendanceState extends State<Attendance> {
       body:
           isLoading
               ? Center(
-                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
-              ) // ✅ Show loader first
-              : attendanceData.isEmpty
-              ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -135,6 +136,13 @@ class AttendanceState extends State<Attendance> {
                     SizedBox(height: 5),
                     CircularProgressIndicator(color: Color(0xFF03a9f4)),
                   ],
+                ),
+              )
+              : attendanceData.isEmpty
+              ? Center(
+                child: Text(
+                  'Attendance Not found',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               )
               : ListView.builder(

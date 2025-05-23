@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:image/image.dart' as img;
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:employee_tracker/Screens/Components/Alert.dart';
+import 'package:path/path.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -33,7 +33,7 @@ class UpperCaseTextFormatter extends TextInputFormatter {
 }
 
 class CreateComState extends State<CreateCom> {
-  final ImagePicker _picker = ImagePicker();
+  final ImagePicker picker = ImagePicker();
   File? _imageFile;
   bool TermCondition = false;
   bool privacyPolicy = false;
@@ -54,77 +54,103 @@ class CreateComState extends State<CreateCom> {
   final TextEditingController PanNo = TextEditingController();
   final TextEditingController NoOfEmp = TextEditingController();
 
-  // Compress image under 75KB
-  Future<void> _pickImageFromGallery() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-    );
-
+  Future<void> pickImage(context) async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      File imageFile = File(pickedFile.path);
-      img.Image? image = img.decodeImage(await imageFile.readAsBytes());
-      setState(() {
-        isLoading = true;
-      });
-      if (image != null) {
-        int quality = 85;
-        Uint8List compressedBytes = Uint8List.fromList(
-          img.encodeJpg(image, quality: quality),
-        );
-
-        while (compressedBytes.lengthInBytes > 75 * 1024 && quality > 10) {
-          quality -= 5;
-          compressedBytes = Uint8List.fromList(
-            img.encodeJpg(image, quality: quality),
-          );
-        }
-
-        File compressedFile = await _saveCompressedImage(compressedBytes);
+      final compressed = await compressImage(pickedFile);
+      if (compressed != null) {
         setState(() {
-          _imageFile = compressedFile;
-          isLoading = false;
+          _imageFile = compressed;
         });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Image compression failed or image too large.'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     }
   }
 
-  Future<File> _saveCompressedImage(Uint8List bytes) async {
-    final dir = await getTemporaryDirectory();
-    final path = '${dir.path}/compressed_image.jpg';
-    final file = File(path);
-    await file.writeAsBytes(bytes);
-    return file;
-  }
+  Future<File?> compressImage(XFile xFile) async {
+    if (!mounted) return null;
 
-  void compLogin(context) async {
     setState(() {
       isLoading = true;
     });
+
+    final file = File(xFile.path);
+    final dir = await getTemporaryDirectory();
+    final String base = basename(file.path);
+    File? compressedFile;
+    const int maxSizeInBytes = 15 * 1024;
+    int minWidth = 400;
+    int minHeight = 400;
+
+    for (int quality = 70; quality >= 10; quality -= 10) {
+      final targetPath = join(dir.path, 'compressed_${quality}_$base');
+
+      final result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        targetPath,
+        quality: quality,
+        minWidth: minWidth,
+        minHeight: minHeight,
+        format: CompressFormat.jpeg,
+      );
+
+      if (result != null) {
+        final length = await result.length();
+        if (length <= maxSizeInBytes) {
+          compressedFile = File(result.path);
+          break;
+        } else {
+          minWidth = (minWidth * 0.85).toInt();
+          minHeight = (minHeight * 0.85).toInt();
+        }
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+
+    return compressedFile;
+  }
+
+  void compLogin(context) async {
+    if (!mounted) return;
+
+    setState(() {
+      isLoading = true;
+    });
+
     if (_formKey.currentState?.validate() ?? false) {
-      if (!TermCondition) {
+      if (!TermCondition || !privacyPolicy) {
+        if (mounted) {
+          setState(() => isLoading = false);
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Please accept the terms and conditions.'),
+            content: Text(!TermCondition
+                ? 'Please accept the terms and conditions.'
+                : 'Please accept the privacy policy.'),
             backgroundColor: Colors.red,
           ),
         );
         return;
       }
 
-      if (!privacyPolicy) {
+      if (_imageFile == null || await _imageFile!.length() > 15 * 1024) {
+        if (mounted) {
+          setState(() => isLoading = false);
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Please accept Privacy And Policy.'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-
-      if (_imageFile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('No image selected.'),
+            content: Text('Please select a logo image under 15KB.'),
             backgroundColor: Colors.red,
           ),
         );
@@ -163,25 +189,29 @@ class CreateComState extends State<CreateCom> {
         final Map<String, dynamic> data = jsonDecode(responseBody.body);
 
         if (data['success'] == true) {
-          setState(() {
-            isLoading = false;
-          });
-          Alert.alert(context, 'Thank You ${data['message']}');
+          if (mounted) {
+            setState(() => isLoading = false);
+          }
+          await Alert.alert(context, data['message']);
+          Navigator.pop(context); // Replace with desired screen
         } else {
-          setState(() {
-            isLoading = false;
-          });
+          if (mounted) {
+            setState(() => isLoading = false);
+          }
           Alert.alert(context, data['message']);
         }
       } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
-        Alert.alert(context, e.toString());
+        if (mounted) {
+          setState(() => isLoading = false);
+        }
+        await Alert.alert(context, 'Error: $e');
+      }
+    } else {
+      if (mounted) {
+        setState(() => isLoading = false);
       }
     }
   }
-
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -276,7 +306,7 @@ class CreateComState extends State<CreateCom> {
                             ),
                           ),
                       ElevatedButton(
-                        onPressed: _pickImageFromGallery,
+                        onPressed:()=> pickImage(context),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -457,19 +487,28 @@ class CreateComState extends State<CreateCom> {
                                 (v) => setState(() => TermCondition = v!),
                           ),
                           Text("I accept"),
-                          SizedBox(width: 10),
+                          SizedBox(width: 5,),
                           InkWell(
                             onTap: () async {
-                              const url = 'https://www.mdwebsoft.com/';
+                              const url = 'https://testapi.rabadtechnology.com/term-and-condition.html';
                               if (await canLaunchUrl(Uri.parse(url))) {
                                 await launchUrl(Uri.parse(url));
                               } else {
                                 throw 'Could not launch $url';
                               }
                             },
-                            child: Text(
-                              "Terms & Condition's",
-                              style: TextStyle(color: Colors.blue),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Terms & Conditions',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -482,19 +521,28 @@ class CreateComState extends State<CreateCom> {
                                 (v) => setState(() => privacyPolicy = v!),
                           ),
                           Text("I accept"),
-                          SizedBox(width: 10),
+                          SizedBox(width: 5,),
                           InkWell(
                             onTap: () async {
-                              const url = 'https://www.mdwebsoft.com/';
+                              const url = 'https://testapi.rabadtechnology.com/privacy.html';
                               if (await canLaunchUrl(Uri.parse(url))) {
                                 await launchUrl(Uri.parse(url));
                               } else {
                                 throw 'Could not launch $url';
                               }
                             },
-                            child: Text(
-                              "Privacy Policy",
-                              style: TextStyle(color: Colors.blue),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Privacy Policy',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],

@@ -8,7 +8,7 @@ class Alert {
         return AlertDialog(
           title: Center(
             child: Text(
-              'Employee Tracker',
+              'EmpAttend',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),

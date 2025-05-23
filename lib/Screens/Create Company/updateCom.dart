@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/AdminHome.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:image/image.dart' as img;
-import 'package:path_provider/path_provider.dart';
-import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart';
+import 'package:flutter/services.dart';
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
@@ -34,8 +34,6 @@ class UpperCaseTextFormatter extends TextInputFormatter {
 class UpdatecomState extends State<Updatecom> {
   Map<String, dynamic>? userdata;
   File? _imageFile;
-  bool TermCondition = false;
-  bool privacyPolicy = false;
   bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
   bool isLoading = false;
@@ -54,7 +52,7 @@ class UpdatecomState extends State<Updatecom> {
   late TextEditingController PanNo;
   late TextEditingController NoOfEmp;
 
-  final ImagePicker _picker = ImagePicker();
+  final picker = ImagePicker();
 
   @override
   void initState() {
@@ -118,110 +116,139 @@ class UpdatecomState extends State<Updatecom> {
     super.dispose();
   }
 
-  Future<void> _pickImageFromGallery() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-    );
-    if (pickedFile != null) {
-      File imageFile = File(pickedFile.path);
-      img.Image? image = img.decodeImage(await imageFile.readAsBytes());
-      if (image != null) {
-        int quality = 85;
-        Uint8List compressedBytes = Uint8List.fromList(
-          img.encodeJpg(image, quality: quality),
-        );
-        while (compressedBytes.lengthInBytes > 75 * 1024 && quality > 10) {
-          quality -= 5;
-          compressedBytes = Uint8List.fromList(
-            img.encodeJpg(image, quality: quality),
-          );
-        }
-        File compressedFile = await _saveCompressedImage(compressedBytes);
-        setState(() => _imageFile = compressedFile);
+ Future<void> pickImage(context) async {
+  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  if (pickedFile != null) {
+    final compressed = await compressImage(pickedFile);
+    if (compressed != null && await compressed.length() <= 15 * 1024) {
+      if (mounted) {
+        setState(() => _imageFile = compressed);
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Failed to compress image under 15KB.'),
+          backgroundColor: Colors.red,
+        ));
       }
     }
   }
+}
 
-  Future<File> _saveCompressedImage(Uint8List bytes) async {
-    final dir = await getTemporaryDirectory();
-    final path = '${dir.path}/compressed_image.jpg';
-    final file = File(path);
-    await file.writeAsBytes(bytes);
-    return file;
+
+
+Future<File?> compressImage(XFile xFile) async {
+  if (!mounted) return null;
+  setState(() => isLoading = true);
+
+  final File file = File(xFile.path);
+  final dir = await getTemporaryDirectory();
+  const int maxSizeInBytes = 15 * 1024;
+  int minWidth = 300;
+  int minHeight = 300;
+  File? compressedFile;
+
+  for (int quality = 60; quality >= 10; quality -= 5) {
+    final String targetPath = join(
+        dir.path, 'compressed_${quality}_${DateTime.now().millisecondsSinceEpoch}_${basename(file.path)}');
+
+    final result = await FlutterImageCompress.compressAndGetFile(
+      file.path,
+      targetPath,
+      quality: quality,
+      minWidth: minWidth,
+      minHeight: minHeight,
+      format: CompressFormat.jpeg,
+    );
+
+    if (result != null) {
+      final length = await result.length();
+      if (length <= maxSizeInBytes) {
+        compressedFile = File(result.path);
+        break;
+      }
+    }
+
+    minWidth = (minWidth * 0.85).toInt();
+    minHeight = (minHeight * 0.85).toInt();
   }
 
-  void company_update(context) async {
-    setState(() {
-      isLoading = true;
+  if (mounted) setState(() => isLoading = false);
+  return compressedFile;
+}
+
+
+
+
+
+ void company_update(context) async {
+  if (!mounted) return;
+  setState(() => isLoading = true);
+
+  if (_formKey.currentState?.validate() ?? false) {
+    if (userdata == null) {
+      if (mounted) setState(() => isLoading = false);
+      Alert.alert(context, 'User data not loaded.');
+      return;
+    }
+
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('https://testapi.rabadtechnology.com/company_update.php'),
+    );
+
+    request.fields.addAll({
+      'company_id': userdata!['id'].toString(),
+      'company_name': cname.text,
+      'key_person': keyPerson.text,
+      'gstin_no': Gst.text,
+      'pan_card': PanNo.text,
+      'mobile_no': mobile.text,
+      'email': email.text,
+      'address': address.text,
+      'website_link': website.text,
+      'username': loginUserName.text,
+      'password': password.text,
+      'noofemp': NoOfEmp.text,
     });
-    if (_formKey.currentState?.validate() ?? false) {
-      if (!TermCondition || !privacyPolicy) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Please accept all terms and policies'),
-            backgroundColor: Colors.red,
-          ),
-        );
+
+    if (_imageFile != null) {
+      final imgSize = await _imageFile!.length();
+      if (imgSize > 15 * 1024) {
+        if (mounted) setState(() => isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Image must be under 15KB.'),
+          backgroundColor: Colors.red,
+        ));
         return;
       }
-
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse(
-          'https://testapi.rabadtechnology.com/company_update.php',
-        ), // change to your update endpoint
-      );
-
-      request.fields.addAll({
-        'company_id': userdata!['id'].toString(),
-        'company_name': cname.text,
-        'key_person': keyPerson.text,
-        'gstin_no': Gst.text,
-        'pan_card': PanNo.text,
-        'mobile_no': mobile.text,
-        'email': email.text,
-        'address': address.text,
-        'website_link': website.text,
-        'username': loginUserName.text,
-        'password': password.text,
-        'noofemp': NoOfEmp.text,
-        'terms': TermCondition.toString(),
-        'conditions': privacyPolicy.toString(),
-      });
-
-      if (_imageFile != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath('image', _imageFile!.path),
-        );
-      }
-
-      try {
-        var response = await request.send();
-        final responseBody = await http.Response.fromStream(response);
-        final Map<String, dynamic> data = jsonDecode(responseBody.body);
-        if (data['success'] == true) {
-          setState(() {
-            isLoading = false;
-          });
-          await Alert.alert(context, 'Thank You ${data['message']}');
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AdminHome()),
-          );
-        } else {
-          setState(() {
-            isLoading = false;
-          });
-          Alert.alert(context, data['message']);
-        }
-      } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
-        Alert.alert(context, e.toString());
-      }
+      request.files.add(await http.MultipartFile.fromPath('image', _imageFile!.path));
     }
+
+    try {
+      final response = await request.send();
+      final responseBody = await http.Response.fromStream(response);
+      final Map<String, dynamic> data = jsonDecode(responseBody.body);
+
+      if (mounted) setState(() => isLoading = false);
+
+      if (data['success'] == true) {
+        await Alert.alert(context, 'Thank You ${data['message']}');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => AdminHome()),
+        );
+      } else {
+        Alert.alert(context, data['message']);
+      }
+    } catch (e) {
+      if (mounted) setState(() => isLoading = false);
+      Alert.alert(context, 'Error: $e');
+    }
+  } else {
+    if (mounted) setState(() => isLoading = false);
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -318,7 +345,7 @@ class UpdatecomState extends State<Updatecom> {
                           ),
 
                       ElevatedButton(
-                        onPressed: _pickImageFromGallery,
+                        onPressed:()=> pickImage(context),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -459,34 +486,7 @@ class UpdatecomState extends State<Updatecom> {
                                   setState(() => _obscureText = !_obscureText),
                         ),
                       ),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: TermCondition,
-                            onChanged:
-                                (v) => setState(() => TermCondition = v!),
-                          ),
-                          Text("I accept"),
-                          TextButton(
-                            onPressed: () {},
-                            child: Text("Terms & Conditions"),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: privacyPolicy,
-                            onChanged:
-                                (v) => setState(() => privacyPolicy = v!),
-                          ),
-                          Text("I accept"),
-                          TextButton(
-                            onPressed: () {},
-                            child: Text("Privacy Policy"),
-                          ),
-                        ],
-                      ),
+                     
                       SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () => company_update(context),

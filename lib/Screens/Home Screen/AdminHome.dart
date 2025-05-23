@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:employee_tracker/Screens/Admin%20Report/Attendance.dart';
 import 'package:employee_tracker/Screens/Admin%20Report/VisitReport.dart';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
-import 'package:employee_tracker/Screens/Detail%20Screen/employeeList.dart';
+import 'package:employee_tracker/Screens/Employee%20Reports/employeeList.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
 import 'package:employee_tracker/Screens/create%20employee/Master.dart';
 import 'package:employee_tracker/Screens/create%20employee/createEmployee.dart';
