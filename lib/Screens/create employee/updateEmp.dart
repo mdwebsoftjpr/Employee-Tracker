@@ -309,7 +309,7 @@ class UpdateEmpState extends State<UpdateEmp> {
         title: Text(
           'Update Employee Details',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),

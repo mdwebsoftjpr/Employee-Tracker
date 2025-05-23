@@ -28,7 +28,7 @@ class SimpleMapScreen extends StatelessWidget {
         title: Text(
           'Visit Map',
           style: TextStyle(
-            fontSize: 18,
+            fontSize:  6* MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),

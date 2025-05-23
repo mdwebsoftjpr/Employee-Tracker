@@ -280,7 +280,7 @@ class CreateEmpState extends State<CreateEmployee> {
         title: Text(
           'Create Employee',
           style: TextStyle(
-            fontSize: 18,
+            fontSize:  6*MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -690,7 +690,7 @@ class CreateEmpState extends State<CreateEmployee> {
                             fillColor: Colors.grey[200],
                             prefixIcon: Icon(
                               FontAwesomeIcons.indianRupeeSign,
-                              size: 18,
+                              size: 6 * MediaQuery.of(context).devicePixelRatio,
                             ),
                           ),
                           keyboardType: TextInputType.phone,

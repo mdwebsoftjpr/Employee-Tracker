@@ -101,7 +101,7 @@ class AdminprofileState extends State<Adminprofile> {
         title: Text(
           'Admin Profile',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),

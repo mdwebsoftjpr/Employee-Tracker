@@ -296,7 +296,7 @@ Future<File?> compressImage(XFile xFile) async {
         title: Text(
           'Update Company Details',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -326,7 +326,7 @@ Future<File?> compressImage(XFile xFile) async {
               : userdata == null
               ? Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.all(size.width * 0.18),
                 child: Form(
                   key: _formKey,
                   child: Column(

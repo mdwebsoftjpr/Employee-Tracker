@@ -330,7 +330,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
         title: Text(
           'Visit Report',
           style: TextStyle(
-            fontSize: 18,
+            fontSize:  6*devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),

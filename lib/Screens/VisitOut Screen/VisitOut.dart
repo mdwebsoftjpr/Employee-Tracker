@@ -356,7 +356,7 @@ class VisitOutState extends State<VisitOut> {
         title: Text(
           'Visit Out',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),

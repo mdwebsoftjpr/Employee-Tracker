@@ -776,31 +776,32 @@ class _EmpHomeState extends State<EmpHome> {
                       "Activity",
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 20,
+                        fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
                       ),
                     ),
                   ),
                   (Mainstatus == "" || Mainstatus == 'punchout')
                       ? ListTile(
-                        leading: Icon(Icons.fingerprint),
-                        title: Text("Punch in"),
+                        leading: Icon(Icons.fingerprint,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                        title: Text("Punch in",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                         onTap: () {
                           _pickImageFromCamera();
                           punchIn();
                         },
                       )
                       : ListTile(
-                        leading: Icon(Icons.power_settings_new),
-                        title: Text("Punch Out"),
+                        leading: Icon(Icons.power_settings_new,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                        title: Text("Punch Out",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                         onTap: () {
                           _pickImageFromCamera();
                           punchOut();
                         },
                       ),
+                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
                   (BreakTime)
                       ? ListTile(
-                        leading: Icon(Icons.coffee),
-                        title: Text("Break Out"),
+                        leading: Icon(Icons.coffee,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                        title: Text("Break Out",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                         onTap: () {
                           BreakOut();
                           Navigator.pop(context); // Close the drawer first
@@ -808,24 +809,25 @@ class _EmpHomeState extends State<EmpHome> {
                       )
                       : (bcount >= 3)
                       ? ListTile(
-                        leading: Icon(Icons.coffee),
-                        title: Text("Break Limit Over"),
+                        leading: Icon(Icons.coffee,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                        title: Text("Break Limit Over",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                         onTap: () {
                           Navigator.pop(context); // Close the drawer first
                         },
                       )
                       : ListTile(
-                        leading: Icon(Icons.coffee),
-                        title: Text("Break In"),
+                        leading: Icon(Icons.coffee,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                        title: Text("Break In",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                         onTap: () {
                           BreakIn();
                           Navigator.pop(context); // Close the drawer first
                         },
                       ),
+                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
                   (visitStatus == 'opne')
                       ? ListTile(
-                        leading: Icon(Icons.run_circle),
-                        title: Text("Visit Out"),
+                        leading: Icon(Icons.run_circle,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                        title: Text("Visit Out",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                         onTap: () {
                           if (Mainstatus != '' && Mainstatus == 'punchin') {
                             Navigator.push(
@@ -841,8 +843,8 @@ class _EmpHomeState extends State<EmpHome> {
                         },
                       )
                       : ListTile(
-                        leading: Icon(Icons.location_on),
-                        title: Text("Visit In"),
+                        leading: Icon(Icons.location_on,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                        title: Text("Visit In",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                         onTap: () async {
                           if (Mainstatus != '' && Mainstatus == 'punchin') {
                             await _pickImageFromCamera();
@@ -855,10 +857,10 @@ class _EmpHomeState extends State<EmpHome> {
                           }
                         },
                       ),
-
+                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.fact_check),
-                    title: Text("Attendance Report"),
+                    leading: Icon(Icons.fact_check,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                    title: Text("Attendance Report",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -866,9 +868,10 @@ class _EmpHomeState extends State<EmpHome> {
                       );
                     },
                   ),
+                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.receipt_long),
-                    title: Text("Visit Report"),
+                    leading: Icon(Icons.receipt_long,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                    title: Text("Visit Report",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -876,14 +879,15 @@ class _EmpHomeState extends State<EmpHome> {
                       );
                     },
                   ),
+                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.logout),
-                    title: Text("Logout"),
+                    leading: Icon(Icons.logout,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                    title: Text("Logout",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                     onTap: () {
                       clearStorage(context);
                     },
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height:.04 * MediaQuery.of(context).size.height),
                   Divider(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),
@@ -902,7 +906,7 @@ class _EmpHomeState extends State<EmpHome> {
                           Text(
                             'Copy Rights',
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
                               color: Colors.grey[600],
                               fontWeight: FontWeight.w500,
                             ),
@@ -916,11 +920,11 @@ class _EmpHomeState extends State<EmpHome> {
                                 size: 16,
                                 color: Colors.grey,
                               ),
-                              SizedBox(width: 4),
+                              SizedBox(width: 1 * MediaQuery.of(context).devicePixelRatio),
                               Text(
                                 '2025 $comName',
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
                                   color: Colors.grey[600],
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -946,8 +950,8 @@ class _EmpHomeState extends State<EmpHome> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'Maintain By Md Websoft',
+                           Text(
+                            'Maintain And Dev. By Md Websoft',
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.grey[600],

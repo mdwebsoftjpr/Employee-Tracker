@@ -274,7 +274,7 @@ class AdminhomeState extends State<AdminHome> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: 55 * MediaQuery.of(context).devicePixelRatio,
+                    height: 62 * MediaQuery.of(context).devicePixelRatio,
                     decoration: BoxDecoration(color: Color(0xFF03a9f4)),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -311,13 +311,14 @@ class AdminhomeState extends State<AdminHome> {
                       "Activity",
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 20,
+                        fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
                       ),
                     ),
                   ),
+                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.fact_check),
-                    title: Text("Attendance Report"),
+                    leading: Icon(Icons.fact_check,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                    title: Text("Attendance Report",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
@@ -326,9 +327,10 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
+                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.receipt_long),
-                    title: Text("Visit Report"),
+                    leading: Icon(Icons.receipt_long,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                    title: Text("Visit Report",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
@@ -339,9 +341,10 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
+                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.people_alt),
-                    title: Text("Create Employee"),
+                    leading: Icon(Icons.people_alt,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                    title: Text("Create Employee",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
@@ -352,10 +355,10 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
-
+                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.person_add_alt_1),
-                    title: Text("Create Designation"),
+                    leading: Icon(Icons.person_add_alt_1,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                    title: Text("Create Designation",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
@@ -364,9 +367,10 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
+                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.person),
-                    title: Text("Profile"),
+                    leading: Icon(Icons.person,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                    title: Text("Profile",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
@@ -375,16 +379,16 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
+                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.logout),
-                    title: Text("Logout"),
+                    leading: Icon(Icons.logout,size: 8 * MediaQuery.of(context).devicePixelRatio,),
+                    title: Text("Logout",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                     onTap: () {
                       clearStorage(context);
                     },
                   ),
-                  SizedBox(height: 10),
+                 SizedBox(height:.020* MediaQuery.of(context).size.height),
                   Divider(),
-
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),
                     child: InkWell(
@@ -402,7 +406,7 @@ class AdminhomeState extends State<AdminHome> {
                           Text(
                             'Copy Rights',
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
                               color: Colors.grey[600],
                               fontWeight: FontWeight.w500,
                             ),
@@ -416,11 +420,11 @@ class AdminhomeState extends State<AdminHome> {
                                 size: 16,
                                 color: Colors.grey,
                               ),
-                              SizedBox(width: 4),
+                              SizedBox(width: 1 * MediaQuery.of(context).devicePixelRatio),
                               Text(
                                 '2025 $comName',
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
                                   color: Colors.grey[600],
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -431,8 +435,8 @@ class AdminhomeState extends State<AdminHome> {
                       ),
                     ),
                   ),
-                Divider(),
-                 Padding(
+                  Divider(),
+                  Padding(
                     padding: const EdgeInsets.only(bottom: 5),
                     child: InkWell(
                       onTap: () async {
@@ -446,8 +450,8 @@ class AdminhomeState extends State<AdminHome> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            'Maintain By Md Websoft',
+                           Text(
+                            'Maintain And Dev. By Md Websoft',
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.grey[600],

@@ -259,7 +259,7 @@ class MasterState extends State<Master> {
         title: Text(
           'Create Designation',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -347,9 +347,9 @@ class MasterState extends State<Master> {
                               vertical:
                                   1 * MediaQuery.of(context).devicePixelRatio,
                               horizontal:
-                                  3 * MediaQuery.of(context).devicePixelRatio,
+                                  1  * MediaQuery.of(context).devicePixelRatio,
                             ),
-                            padding: EdgeInsets.all(12),
+                            padding: EdgeInsets.all(3  * MediaQuery.of(context).devicePixelRatio),
                             decoration: BoxDecoration(
                               color: Color.fromARGB(255, 215, 229, 241),
                               borderRadius: BorderRadius.circular(
@@ -410,7 +410,7 @@ class MasterState extends State<Master> {
                                             Icon(
                                               FontAwesomeIcons.arrowsRotate,
                                               size:
-                                                  6 *
+                                                  7 *
                                                   MediaQuery.of(
                                                     context,
                                                   ).devicePixelRatio,
@@ -437,7 +437,7 @@ class MasterState extends State<Master> {
                                             Icon(
                                               FontAwesomeIcons.trash,
                                               size:
-                                                  6 *
+                                                  7 *
                                                   MediaQuery.of(
                                                     context,
                                                   ).devicePixelRatio,

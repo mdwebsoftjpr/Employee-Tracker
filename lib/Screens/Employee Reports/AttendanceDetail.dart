@@ -154,7 +154,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
         title: Text(
           'Monthly Attendance Detail',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 6*devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -199,7 +199,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                               SizedBox(height: deviceHeight * 0.01),
                               Text(
                                 item['empname'] ?? 'Unknown',
-                                style: TextStyle(fontSize: deviceWidth * 0.045),
+                                style: TextStyle(fontSize: devicePixelRatio * 6),
                               ),
                             ],
                           ),
@@ -216,7 +216,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                   "${attendancePercentage.toStringAsFixed(0)}%",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: deviceWidth * 0.05,
+                                    fontSize: devicePixelRatio * 5,
                                     color: Colors.black,
                                   ),
                                 ),
@@ -224,7 +224,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                   "Total: $totalPresentDays / 31",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: deviceWidth * 0.045,
+                                    fontSize: devicePixelRatio * 6,
                                   ),
                                 ),
                                 circularStrokeCap: CircularStrokeCap.round,
@@ -232,7 +232,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                               ),
                               Text(
                                 "This Month Attendance % ${attendancePercentage.toStringAsFixed(2)}",
-                                style: TextStyle(fontSize: deviceWidth * 0.03),
+                                style: TextStyle(fontSize: devicePixelRatio *3.5),
                               ),
                             ],
                           ),
@@ -320,7 +320,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   "Date:",
                                                   style: TextStyle(
                                                     fontSize:
-                                                        deviceWidth * 0.035,
+                                                        devicePixelRatio *4,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -333,14 +333,14 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       : '',
                                                   style: TextStyle(
                                                     fontSize:
-                                                        deviceWidth * 0.035,
+                                                        devicePixelRatio *4,
                                                   ),
                                                 ),
                                                 Text(
                                                   "Break Time:",
                                                   style: TextStyle(
                                                     fontSize:
-                                                        deviceWidth * 0.035,
+                                                        devicePixelRatio *4,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -348,7 +348,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   '${data['break_time'] ?? ''}',
                                                   style: TextStyle(
                                                     fontSize:
-                                                        deviceWidth * 0.035,
+                                                        devicePixelRatio *4,
                                                   ),
                                                 ),
                                               ],
@@ -363,7 +363,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   "Punch In:",
                                                   style: TextStyle(
                                                     fontSize:
-                                                        deviceWidth * 0.035,
+                                                        devicePixelRatio *4,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -371,14 +371,14 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   '${data['time_in'] ?? ''}',
                                                   style: TextStyle(
                                                     fontSize:
-                                                        deviceWidth * 0.035,
+                                                        devicePixelRatio *4,
                                                   ),
                                                 ),
                                                 Text(
                                                   "Punch Out:",
                                                   style: TextStyle(
                                                     fontSize:
-                                                        deviceWidth * 0.035,
+                                                        devicePixelRatio *4,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -386,7 +386,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   '${data['time_out'] ?? ''}',
                                                   style: TextStyle(
                                                     fontSize:
-                                                        deviceWidth * 0.035,
+                                                        devicePixelRatio *4,
                                                   ),
                                                 ),
                                               ],
@@ -402,7 +402,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                     vertical:
                                                         deviceHeight * 0.005,
                                                     horizontal:
-                                                        deviceWidth * 0.03,
+                                                        deviceWidth * 0.025,
                                                   ),
                                                   decoration: BoxDecoration(
                                                     color:
@@ -424,7 +424,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize:
-                                                          deviceWidth * 0.04,
+                                                         devicePixelRatio *5,
                                                     ),
                                                   ),
                                                 ),
@@ -435,7 +435,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   "Total Hours:",
                                                   style: TextStyle(
                                                     fontSize:
-                                                        deviceWidth * 0.035,
+                                                        devicePixelRatio *4,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -443,7 +443,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   "${data['hours']}",
                                                   style: TextStyle(
                                                     fontSize:
-                                                        deviceWidth * 0.035,
+                                                        devicePixelRatio *4,
                                                   ),
                                                 ),
                                               ],

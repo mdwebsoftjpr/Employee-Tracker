@@ -396,7 +396,7 @@ class EmployeelistState extends State<Employeelist> {
         title: Text(
           'Employee Detail',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -417,7 +417,7 @@ class EmployeelistState extends State<Employeelist> {
                       Text(
                         "Employee Not Found",
                         style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width * 0.075,
+                          fontSize: MediaQuery.of(context).devicePixelRatio *7,
                         ),
                       ),
                     ],
@@ -432,8 +432,8 @@ class EmployeelistState extends State<Employeelist> {
                   return Container(
                     margin: EdgeInsets.only(
                       top: 5,
-                      left: MediaQuery.of(context).size.width * 0.03,
-                      right: MediaQuery.of(context).size.width * 0.03,
+                      left: MediaQuery.of(context).devicePixelRatio *3,
+                      right: MediaQuery.of(context).devicePixelRatio * 3,
                     ),
                     padding: EdgeInsets.all(
                       1 * MediaQuery.of(context).devicePixelRatio,
@@ -593,7 +593,7 @@ class EmployeelistState extends State<Employeelist> {
                                 EmpData(context, item);
                               },
                               child: Container(
-                                padding: EdgeInsets.zero,
+                                padding: EdgeInsets.all(MediaQuery.of(context).devicePixelRatio*3),
                                 margin: EdgeInsets.zero,
                                 decoration: BoxDecoration(
                                   color: Colors.orange,
@@ -601,18 +601,10 @@ class EmployeelistState extends State<Employeelist> {
                                     4 * MediaQuery.of(context).devicePixelRatio,
                                   ),
                                 ),
-                                width:
-                                    10 *
-                                    MediaQuery.of(
-                                      context,
-                                    ).devicePixelRatio, // Set exact size if needed
-                                height:
-                                    10 *
-                                    MediaQuery.of(context).devicePixelRatio,
                                 alignment: Alignment.center,
                                 child: Icon(
                                   FontAwesomeIcons.solidEye,
-                                  size: 15,
+                                  size: 5 * MediaQuery.of(context).devicePixelRatio,
                                   color: Colors.white,
                                 ),
                               ),
@@ -628,7 +620,7 @@ class EmployeelistState extends State<Employeelist> {
                                 );
                               },
                               child: Container(
-                                padding: EdgeInsets.zero,
+                                padding:  EdgeInsets.all(MediaQuery.of(context).devicePixelRatio*3),
                                 margin: EdgeInsets.zero,
                                 decoration: BoxDecoration(
                                   color: Colors.blue,
@@ -636,18 +628,10 @@ class EmployeelistState extends State<Employeelist> {
                                     4 * MediaQuery.of(context).devicePixelRatio,
                                   ),
                                 ),
-                                width:
-                                    10 *
-                                    MediaQuery.of(
-                                      context,
-                                    ).devicePixelRatio, // Set exact size if needed
-                                height:
-                                    10 *
-                                    MediaQuery.of(context).devicePixelRatio,
                                 alignment: Alignment.center,
                                 child: Icon(
                                   FontAwesomeIcons.edit,
-                                  size: 15,
+                                  size: 5 * MediaQuery.of(context).devicePixelRatio,
                                   color: Colors.white,
                                 ),
                               ),
@@ -663,7 +647,7 @@ class EmployeelistState extends State<Employeelist> {
                                 );
                               },
                               child: Container(
-                                padding: EdgeInsets.zero,
+                                padding:EdgeInsets.all(MediaQuery.of(context).devicePixelRatio*3),
                                 margin: EdgeInsets.zero,
                                 decoration: BoxDecoration(
                                   color: Colors.pink,
@@ -671,18 +655,10 @@ class EmployeelistState extends State<Employeelist> {
                                     4 * MediaQuery.of(context).devicePixelRatio,
                                   ),
                                 ),
-                                width:
-                                    10 *
-                                    MediaQuery.of(
-                                      context,
-                                    ).devicePixelRatio, // Set exact size if needed
-                                height:
-                                    10 *
-                                    MediaQuery.of(context).devicePixelRatio,
                                 alignment: Alignment.center,
                                 child: Icon(
                                   FontAwesomeIcons.key,
-                                  size: 15,
+                                  size: 5*MediaQuery.of(context).devicePixelRatio,
                                   color: Colors.white,
                                 ),
                               ),
