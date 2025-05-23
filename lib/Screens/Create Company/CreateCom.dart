@@ -355,7 +355,7 @@ class CreateComState extends State<CreateCom> {
                         controller: Gst,
                         label: 'Enter Your GSTIN No.',
                         icon: Icons.account_balance,
-                        inputFormatters: [UpperCaseTextFormatter()],
+                        inputFormatters: [UpperCaseTextFormatter(),FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                         validator:
                             (v) =>
                                 v!.length != 15
@@ -371,7 +371,7 @@ class CreateComState extends State<CreateCom> {
                               controller: PanNo,
                               label: 'Enter Your Pan Card No.',
                               icon: Icons.credit_card,
-                              inputFormatters: [UpperCaseTextFormatter()],
+                              inputFormatters: [UpperCaseTextFormatter(),FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                               validator:
                                   (v) =>
                                       v!.length != 10
@@ -413,6 +413,9 @@ class CreateComState extends State<CreateCom> {
                               controller: email,
                               label: 'Enter Your Email',
                               icon: Icons.email,
+                              inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
                               validator:
                                   (v) =>
                                       !v!.contains('@')

@@ -80,7 +80,7 @@ class AttendanceState extends State<Attendance> {
         if (mounted) setState(() => isLoading = false);
         Alert.alert(
           context,
-          'sa${responseData['message']}' ?? 'Failed to load data',
+          responseData['message']?? 'Failed to load data',
         );
       }
     } catch (e) {

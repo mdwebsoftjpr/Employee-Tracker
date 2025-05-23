@@ -786,7 +786,7 @@ class _EmpHomeState extends State<EmpHome> {
                         title: Text("Punch in"),
                         onTap: () {
                           _pickImageFromCamera();
-                          punchOut();
+                          punchIn();
                         },
                       )
                       : ListTile(
@@ -794,7 +794,7 @@ class _EmpHomeState extends State<EmpHome> {
                         title: Text("Punch Out"),
                         onTap: () {
                           _pickImageFromCamera();
-                          punchIn();
+                          punchout();
                         },
                       ),
                   (BreakTime)
