@@ -794,7 +794,7 @@ class _EmpHomeState extends State<EmpHome> {
                         title: Text("Punch Out"),
                         onTap: () {
                           _pickImageFromCamera();
-                          punchout();
+                          punchOut();
                         },
                       ),
                   (BreakTime)
