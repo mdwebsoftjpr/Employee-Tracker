@@ -269,7 +269,7 @@ Future<File?> compressImage(XFile xFile) async {
       );
     }
 
-    Widget buildTextField({
+      Widget buildTextField({
       required TextEditingController controller,
       required String label,
       required IconData icon,
@@ -277,6 +277,7 @@ Future<File?> compressImage(XFile xFile) async {
       bool obscure = false,
       List<TextInputFormatter>? inputFormatters,
       TextInputType? keyboardType,
+      TextCapitalization textCapitalization = TextCapitalization.none,
       Widget? suffixIcon,
     }) {
       return TextFormField(
@@ -286,6 +287,7 @@ Future<File?> compressImage(XFile xFile) async {
         validator: validator,
         inputFormatters: inputFormatters,
         keyboardType: keyboardType,
+        textCapitalization: textCapitalization,
       );
     }
 
@@ -326,12 +328,12 @@ Future<File?> compressImage(XFile xFile) async {
               : userdata == null
               ? Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
-                padding: EdgeInsets.all(size.width * 0.18),
+                padding: EdgeInsets.all(size.width * 0.05),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     children: [
-                      SizedBox(height: 20),
+                      SizedBox(height: 5),
                       _imageFile != null
                           ? CircleAvatar(
                             radius: size.width * 0.18,
@@ -362,6 +364,7 @@ Future<File?> compressImage(XFile xFile) async {
                         controller: cname,
                         label: 'Enter Your Company Name',
                         icon: Icons.business,
+                        textCapitalization: TextCapitalization.words,
                         validator:
                             (v) =>
                                 v!.isEmpty ? 'Company name is required' : null,
@@ -385,6 +388,7 @@ Future<File?> compressImage(XFile xFile) async {
                         controller: keyPerson,
                         label: 'Enter Your Key Person',
                         icon: Icons.person,
+                        textCapitalization: TextCapitalization.words,
                         validator:
                             (v) => v!.isEmpty ? 'Key person is required' : null,
                       ),
@@ -393,7 +397,7 @@ Future<File?> compressImage(XFile xFile) async {
                         controller: Gst,
                         label: 'Enter Your GSTIN No.',
                         icon: Icons.account_balance,
-                        inputFormatters: [UpperCaseTextFormatter()],
+                        inputFormatters: [UpperCaseTextFormatter(),FilteringTextInputFormatter.deny(RegExp(r'\s')),],
                         validator:
                             (v) =>
                                 v!.length != 15
@@ -405,7 +409,7 @@ Future<File?> compressImage(XFile xFile) async {
                         controller: PanNo,
                         label: 'Enter Your Pan Card No.',
                         icon: Icons.credit_card,
-                        inputFormatters: [UpperCaseTextFormatter()],
+                        inputFormatters: [UpperCaseTextFormatter(),FilteringTextInputFormatter.deny(RegExp(r'\s')),],
                         validator:
                             (v) =>
                                 v!.length != 10
@@ -429,6 +433,7 @@ Future<File?> compressImage(XFile xFile) async {
                         controller: email,
                         label: 'Enter Your Email',
                         icon: Icons.email,
+                        inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s')),],
                         validator:
                             (v) => !v!.contains('@') ? 'Invalid email' : null,
                       ),
@@ -458,6 +463,7 @@ Future<File?> compressImage(XFile xFile) async {
                         controller: loginUserName,
                         label: 'Enter Your Login User Name',
                         icon: Icons.account_circle,
+                        inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s')),],
                         validator:
                             (v) =>
                                 v!.isEmpty
@@ -504,7 +510,7 @@ Future<File?> compressImage(XFile xFile) async {
                           'Update Company',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18,
+                            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

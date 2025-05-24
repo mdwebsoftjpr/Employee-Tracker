@@ -69,75 +69,81 @@ class _createScreen extends State<CreateScreen> {
   final TextEditingController tradename = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
-  void login(BuildContext context) async {
-    if (_formKey.currentState?.validate() ?? false) {
-      if (!TermCondition) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Please accept the terms and conditions'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
 
-      String Tradename = tradename.text;
-      String Email = email.text;
-      String Cpassword = password.text;
 
-      final url = Uri.parse('https://testapi.rabadtechnology.com/login.php');
-      final Map<String, dynamic> requestBody = {
-        "trade_name": Tradename,
-        "email": Email,
-        "password": Cpassword,
-      };
+ void login(BuildContext context) async {
+  if (!(_formKey.currentState?.validate() ?? false)) return;
 
-      try {
-        final response = await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(requestBody),
-        );
-
-        final responseData = jsonDecode(response.body);
-        final success = responseData['success'];
-        final message = responseData['message'];
-        final role = responseData['role'];
-        final data = responseData['data'];
-
-        if (success == true) {
-          await localStorage.setItem('user', jsonEncode(data));
-          await localStorage.setItem('role', jsonEncode(role));
-
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(message)));
-
-          if (role.toString().toLowerCase() == "admin") {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => AdminHome()),
-              (route) => false,
-            );
-          } else if (role.toString().toLowerCase() == "employee") {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => EmpHome()),
-              (route) => false,
-            );
-          }
-        } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(message)));
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Something went wrong: ${e.toString()}')),
-        );
-      }
-    }
+  if (!TermCondition) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Please accept the terms and conditions'),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return;
   }
+
+  final String tradeNameValue = tradename.text.trim();
+  final String emailValue = email.text.trim();
+  final String passwordValue = password.text.trim();
+
+  final url = Uri.parse('https://testapi.rabadtechnology.com/login.php');
+  final Map<String, dynamic> requestBody = {
+    "trade_name": tradeNameValue,
+    "email": emailValue,
+    "password": passwordValue,
+  };
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(requestBody),
+    );
+
+    final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+    if (responseData['success'] == true) {
+      final role = responseData['role']?.toString()?.toLowerCase();
+      final userData = responseData['data'];
+
+      await localStorage.setItem('user', jsonEncode(userData));
+      await localStorage.setItem('role', jsonEncode(role));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(responseData['message'] ?? 'Login successful')),
+      );
+
+      if (role == "admin") {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => AdminHome()),
+          (route) => false,
+        );
+      } else if (role == "employee") {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => EmpHome()),
+          (route) => false,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unknown user role')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(responseData['message'] ?? 'Login failed')),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Something went wrong: ${e.toString()}')),
+    );
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -203,12 +209,15 @@ class _createScreen extends State<CreateScreen> {
                         TextFormField(
                           autofillHints: [AutofillHints.username],
                           controller: email,
+                          inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
                           decoration: InputDecoration(
                             labelText: 'Your User Id/Email',
                             labelStyle: TextStyle(color: Colors.black),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                30.0,
+                                30,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -228,6 +237,9 @@ class _createScreen extends State<CreateScreen> {
                           autofillHints: [AutofillHints.password],
                           controller: password,
                           obscureText: _obscureText,
+                           inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
                           decoration: InputDecoration(
                             labelText: 'Your Password',
                             labelStyle: TextStyle(color: Colors.black),

@@ -135,9 +135,11 @@ class CreateComState extends State<CreateCom> {
         }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(!TermCondition
-                ? 'Please accept the terms and conditions.'
-                : 'Please accept the privacy policy.'),
+            content: Text(
+              !TermCondition
+                  ? 'Please accept the terms and conditions.'
+                  : 'Please accept the privacy policy.',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -212,6 +214,7 @@ class CreateComState extends State<CreateCom> {
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -239,6 +242,7 @@ class CreateComState extends State<CreateCom> {
       bool obscure = false,
       List<TextInputFormatter>? inputFormatters,
       TextInputType? keyboardType,
+      TextCapitalization textCapitalization = TextCapitalization.none,
       Widget? suffixIcon,
     }) {
       return TextFormField(
@@ -248,6 +252,7 @@ class CreateComState extends State<CreateCom> {
         validator: validator,
         inputFormatters: inputFormatters,
         keyboardType: keyboardType,
+        textCapitalization: textCapitalization,
       );
     }
 
@@ -258,7 +263,7 @@ class CreateComState extends State<CreateCom> {
         title: Text(
           'Create Company',
           style: TextStyle(
-            fontSize:  6*MediaQuery.of(context).devicePixelRatio,
+            fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -306,7 +311,7 @@ class CreateComState extends State<CreateCom> {
                             ),
                           ),
                       ElevatedButton(
-                        onPressed:()=> pickImage(context),
+                        onPressed: () => pickImage(context),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -323,6 +328,7 @@ class CreateComState extends State<CreateCom> {
                       buildTextField(
                         controller: cname,
                         label: 'Enter Your Company Name',
+                        textCapitalization: TextCapitalization.words,
                         icon: Icons.business,
                         validator:
                             (v) =>
@@ -347,6 +353,7 @@ class CreateComState extends State<CreateCom> {
                         controller: keyPerson,
                         label: 'Enter Your Key Person',
                         icon: Icons.person,
+                        textCapitalization: TextCapitalization.words,
                         validator:
                             (v) => v!.isEmpty ? 'Key person is required' : null,
                       ),
@@ -355,7 +362,10 @@ class CreateComState extends State<CreateCom> {
                         controller: Gst,
                         label: 'Enter Your GSTIN No.',
                         icon: Icons.account_balance,
-                        inputFormatters: [UpperCaseTextFormatter(),FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                        inputFormatters: [
+                          UpperCaseTextFormatter(),
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
                         validator:
                             (v) =>
                                 v!.length != 15
@@ -371,7 +381,10 @@ class CreateComState extends State<CreateCom> {
                               controller: PanNo,
                               label: 'Enter Your Pan Card No.',
                               icon: Icons.credit_card,
-                              inputFormatters: [UpperCaseTextFormatter(),FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                              inputFormatters: [
+                                UpperCaseTextFormatter(),
+                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                              ],
                               validator:
                                   (v) =>
                                       v!.length != 10
@@ -414,8 +427,8 @@ class CreateComState extends State<CreateCom> {
                               label: 'Enter Your Email',
                               icon: Icons.email,
                               inputFormatters: [
-                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                        ],
+                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                              ],
                               validator:
                                   (v) =>
                                       !v!.contains('@')
@@ -454,6 +467,9 @@ class CreateComState extends State<CreateCom> {
                         controller: loginUserName,
                         label: 'Enter Your Login User Name',
                         icon: Icons.account_circle,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
                         validator:
                             (v) =>
                                 v!.isEmpty
@@ -490,10 +506,11 @@ class CreateComState extends State<CreateCom> {
                                 (v) => setState(() => TermCondition = v!),
                           ),
                           Text("I accept"),
-                          SizedBox(width: 5,),
+                          SizedBox(width: 5),
                           InkWell(
                             onTap: () async {
-                              const url = 'https://testapi.rabadtechnology.com/term-and-condition.html';
+                              const url =
+                                  'https://testapi.rabadtechnology.com/term-and-condition.html';
                               if (await canLaunchUrl(Uri.parse(url))) {
                                 await launchUrl(Uri.parse(url));
                               } else {
@@ -524,10 +541,11 @@ class CreateComState extends State<CreateCom> {
                                 (v) => setState(() => privacyPolicy = v!),
                           ),
                           Text("I accept"),
-                          SizedBox(width: 5,),
+                          SizedBox(width: 5),
                           InkWell(
                             onTap: () async {
-                              const url = 'https://testapi.rabadtechnology.com/privacy.html';
+                              const url =
+                                  'https://testapi.rabadtechnology.com/privacy.html';
                               if (await canLaunchUrl(Uri.parse(url))) {
                                 await launchUrl(Uri.parse(url));
                               } else {
@@ -567,7 +585,8 @@ class CreateComState extends State<CreateCom> {
                           'Create Company',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18,
+                            fontSize:
+                                6 * MediaQuery.of(context).devicePixelRatio,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -577,6 +596,20 @@ class CreateComState extends State<CreateCom> {
                   ),
                 ),
               ),
+    );
+  }
+}
+
+class RemoveTrailingWhitespaceFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    String newText = newValue.text.trimRight();
+    return newValue.copyWith(
+      text: newText,
+      selection: TextSelection.collapsed(offset: newText.length),
     );
   }
 }

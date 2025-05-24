@@ -201,73 +201,81 @@ class CreateEmpState extends State<CreateEmployee> {
   }
 
   Future<void> createEmp(BuildContext context) async {
-    setState(() {
-      isLoading = true;
-    });
-    if (_formKey.currentState?.validate() ?? false) {
+    if (mounted) setState(() => isLoading = true);
+
+    try {
+      // Validate form
+      if (!(_formKey.currentState?.validate() ?? false)) {
+        if (mounted) setState(() => isLoading = false);
+        return;
+      }
+
+      // Check for image
       if (_imageFile == null) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Select Image")));
+        if (mounted) setState(() => isLoading = false);
         return;
       }
+
+      // Compress image
       File? compressedImage = await compressImage(XFile(_imageFile!.path));
       if (compressedImage == null) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Image compression failed")));
+        if (mounted) setState(() => isLoading = false);
         return;
       }
 
-      try {
-        final request = http.MultipartRequest(
-          'POST',
-          Uri.parse('https://testapi.rabadtechnology.com/create_employees.php'),
+      // Create multipart request
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://testapi.rabadtechnology.com/create_employees.php'),
+      );
+
+      request.fields.addAll({
+        "company_id": comId.toString().trim(),
+        "trade_name": TradeName.toString().trim(),
+        "name": name.text.trim(),
+        "dob": dob.text.trim(),
+        "pan_card": panNo.text.trim(),
+        "mobile_no": mobile.text.trim(),
+        "email": email.text.trim(),
+        "address": address.text.trim(),
+        "username": username.text.trim(),
+        "password": password.text.trim(),
+        "designation": designation.text.trim(),
+        "aadharcard": adharNo.text.trim(),
+        "salary": salary.text.trim(),
+        "hours": hours.text,
+        "joinofdate": joinOfDate.text.trim(),
+      });
+
+      request.files.add(
+        await http.MultipartFile.fromPath('image', compressedImage.path),
+      );
+
+      // Send request
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      final responseData = jsonDecode(response.body);
+
+      // Handle response
+      if (responseData['success']) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => AdminHome()),
         );
-
-        request.fields.addAll({
-          "company_id": comId.toString(),
-          "trade_name": TradeName.toString(),
-          "name": name.text,
-          'dob': dob.text,
-          "pan_card": panNo.text,
-          "mobile_no": mobile.text,
-          "email": email.text,
-          "address": address.text,
-          "username": username.text,
-          "password": password.text,
-          "designation": designation.text,
-          "aadharcard": adharNo.text,
-          "salary": salary.text,
-          "hours": hours.text,
-          "joinofdate": joinOfDate.text,
-        });
-
-        request.files.add(
-          await http.MultipartFile.fromPath('image', compressedImage.path),
-        );
-        print(request.fields);
-        final streamedResponse = await request.send();
-        final response = await http.Response.fromStream(streamedResponse);
-        final responseData = jsonDecode(response.body);
-
-        if (responseData['success']) {
-          setState(() {
-            isLoading = false;
-          });
-          Alert.alert(context, 'Successfully ${responseData['message']}');
-        } else {
-          setState(() {
-            isLoading = false;
-          });
-          Alert.alert(context, responseData['message']);
-        }
-      } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
-        Alert.alert(context, e);
+        Alert.alert(context, 'Successfully ${responseData['message']}');
+      } else {
+        Alert.alert(context, responseData['message']);
       }
+    } catch (e) {
+      Alert.alert(context, 'An error occurred: $e');
+    } finally {
+      if (mounted) setState(() => isLoading = false);
     }
   }
 
@@ -280,7 +288,7 @@ class CreateEmpState extends State<CreateEmployee> {
         title: Text(
           'Create Employee',
           style: TextStyle(
-            fontSize:  6*MediaQuery.of(context).devicePixelRatio,
+            fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -374,7 +382,7 @@ class CreateEmpState extends State<CreateEmployee> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
                                 4 * MediaQuery.of(context).devicePixelRatio,
-                              ), // Set the border radius
+                              ), 
                             ),
                             filled: true,
                             fillColor: Colors.grey[200],
@@ -493,7 +501,7 @@ class CreateEmpState extends State<CreateEmployee> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: panNo,
-                          inputFormatters: [UpperCaseTextFormatter()],
+                          inputFormatters: [UpperCaseTextFormatter(),FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                           decoration: InputDecoration(
                             labelText: 'Enter PAN Card No.',
                             contentPadding: EdgeInsets.symmetric(
@@ -565,6 +573,7 @@ class CreateEmpState extends State<CreateEmployee> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: email,
+                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                           decoration: InputDecoration(
                             labelText: 'Enter Email',
                             contentPadding: EdgeInsets.symmetric(
@@ -775,6 +784,7 @@ class CreateEmpState extends State<CreateEmployee> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: username,
+                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s')),],
                           decoration: InputDecoration(
                             labelText: 'Enter User Name',
                             contentPadding: EdgeInsets.symmetric(
@@ -808,6 +818,7 @@ class CreateEmpState extends State<CreateEmployee> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: password,
+                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s')),],
                           obscureText: _obscureText,
                           decoration: InputDecoration(
                             labelText: 'Enter Password',
@@ -859,7 +870,8 @@ class CreateEmpState extends State<CreateEmployee> {
                             "Create Employee",
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 18,
+                              fontSize:
+                                  6 * MediaQuery.of(context).devicePixelRatio,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

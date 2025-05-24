@@ -229,7 +229,7 @@ class AdminhomeState extends State<AdminHome> {
                 comName,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 6* MediaQuery.of(context).devicePixelRatio,
                   fontWeight: FontWeight.bold,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -387,7 +387,7 @@ class AdminhomeState extends State<AdminHome> {
                       clearStorage(context);
                     },
                   ),
-                 SizedBox(height:.020* MediaQuery.of(context).size.height),
+                 SizedBox(height:.013* MediaQuery.of(context).size.height),
                   Divider(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),

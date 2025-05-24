@@ -227,14 +227,17 @@ class UpdateEmpState extends State<UpdateEmp> {
   }
 
   Future<void> Update_Emp(BuildContext context) async {
-    setState(() {
-      isLoading = true;
-    });
-    if (_formKey.currentState?.validate() ?? false) {
+     if (mounted) setState(() => isLoading = true);
+     try {
+    if (!(_formKey.currentState?.validate() ?? false)) {
+        if (mounted) setState(() => isLoading = false);
+        return;
+      }
       if (_imageFile == null) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Select Image")));
+        if (mounted) setState(() => isLoading = false);
         return;
       }
       File? compressedImage = await compressImage(XFile(_imageFile!.path));
@@ -242,10 +245,11 @@ class UpdateEmpState extends State<UpdateEmp> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text("Image compression failed")));
+        if (mounted) setState(() => isLoading = false);
         return;
       }
 
-      try {
+      
         final request = http.MultipartRequest(
           'POST',
           Uri.parse('https://testapi.rabadtechnology.com/employee_update.php'),
@@ -279,25 +283,20 @@ class UpdateEmpState extends State<UpdateEmp> {
         final responseData = jsonDecode(response.body);
 
         if (responseData['success']) {
-          setState(() {
-            isLoading = false;
-          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AdminHome()),
+          );
           Alert.alert(context, 'Successfully ${responseData['message']}');
         } else {
-          setState(() {
-            isLoading = false;
-          });
           Alert.alert(context, responseData['message']);
         }
       } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
-        print(e);
-        /* Alert.alert(context, e.toString()); */
-      }
+        Alert.alert(context, 'An error occurred: $e');
+      }finally {
+      if (mounted) setState(() => isLoading = false);
     }
-  }
+    }
 
   @override
   Widget build(BuildContext context) {
@@ -309,7 +308,7 @@ class UpdateEmpState extends State<UpdateEmp> {
         title: Text(
           'Update Employee Details',
           style: TextStyle(
-            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
+            fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -517,7 +516,7 @@ class UpdateEmpState extends State<UpdateEmp> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: panNo,
-                          inputFormatters: [UpperCaseTextFormatter()],
+                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s')),UpperCaseTextFormatter()],
                           decoration: InputDecoration(
                             labelText: 'Enter PAN Card No.',
                             contentPadding: EdgeInsets.symmetric(
@@ -589,6 +588,7 @@ class UpdateEmpState extends State<UpdateEmp> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: email,
+                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                           decoration: InputDecoration(
                             labelText: 'Enter Email',
                             contentPadding: EdgeInsets.symmetric(
@@ -799,6 +799,7 @@ class UpdateEmpState extends State<UpdateEmp> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: username,
+                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                           decoration: InputDecoration(
                             labelText: 'Enter User Name',
                             contentPadding: EdgeInsets.symmetric(
@@ -832,6 +833,7 @@ class UpdateEmpState extends State<UpdateEmp> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: password,
+                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                           obscureText: _obscureText,
                           decoration: InputDecoration(
                             labelText: 'Enter Password',
@@ -883,7 +885,8 @@ class UpdateEmpState extends State<UpdateEmp> {
                             "Update Employee",
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 18,
+                              fontSize:
+                                  6 * MediaQuery.of(context).devicePixelRatio,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

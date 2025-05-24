@@ -735,7 +735,7 @@ class _EmpHomeState extends State<EmpHome> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: 55 * MediaQuery.of(context).devicePixelRatio,
+                    height: 62 * MediaQuery.of(context).devicePixelRatio,
                     decoration: BoxDecoration(color: Color(0xFF03a9f4)),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -887,7 +887,7 @@ class _EmpHomeState extends State<EmpHome> {
                       clearStorage(context);
                     },
                   ),
-                  SizedBox(height:.04 * MediaQuery.of(context).size.height),
+                  SizedBox(height:.02 * MediaQuery.of(context).size.height),
                   Divider(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),
