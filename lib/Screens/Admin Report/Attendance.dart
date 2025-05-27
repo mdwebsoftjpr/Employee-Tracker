@@ -431,19 +431,15 @@ class AttendanceState extends State<Attendance> {
                                         onPressed: () {
                                           List<LatLng> points = [];
 
-                                          final point1 = item['multipoint1'];
+                                          final point1 = item['multipoint'];
                                           final point2 = item['multipoint2'];
 
-                                          if (point1 != null &&
-                                              point2 != null &&
-                                              point1.isNotEmpty &&
-                                              point2.isNotEmpty) {
-                                            try {
-                                              final p1Parts = point1.split(',');
-                                              final p2Parts = point2.split(',');
-
-                                              if (p1Parts.length == 2 &&
-                                                  p2Parts.length == 2) {
+                                          try {
+                                            // Add point1 if available and valid
+                                            if (point1 != null &&
+                                                point1.isNotEmpty) {
+                                              final p1Parts = point1.split('_');
+                                              if (p1Parts.length == 2) {
                                                 points.add(
                                                   LatLng(
                                                     safeParseDouble(
@@ -454,6 +450,15 @@ class AttendanceState extends State<Attendance> {
                                                     ),
                                                   ),
                                                 );
+                                              }
+                                            }
+
+                                            // Add point2 only if point1 was added and point2 is valid
+                                            if (points.isNotEmpty &&
+                                                point2 != null &&
+                                                point2.isNotEmpty) {
+                                              final p2Parts = point2.split('_');
+                                              if (p2Parts.length == 2) {
                                                 points.add(
                                                   LatLng(
                                                     safeParseDouble(
@@ -464,37 +469,35 @@ class AttendanceState extends State<Attendance> {
                                                     ),
                                                   ),
                                                 );
-
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder:
-                                                        (context) =>
-                                                            SimpleMapScreen(
-                                                              points: points,
-                                                            ),
-                                                  ),
-                                                );
-                                              } else {
-                                                Alert.alert(
-                                                  context,
-                                                  'Invalid coordinate format.',
-                                                );
                                               }
-                                            } catch (e) {
+                                            }
+
+                                            if (points.isNotEmpty) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder:
+                                                      (context) =>
+                                                          SimpleMapScreen(
+                                                            points: points,
+                                                          ),
+                                                ),
+                                              );
+                                            } else {
                                               Alert.alert(
                                                 context,
-                                                'Error parsing coordinates.',
+                                                "No valid location data available.",
                                               );
                                             }
-                                          } else {
+                                          } catch (e) {
                                             Alert.alert(
                                               context,
-                                              "Location Data Not Available",
+                                              "Error parsing coordinates.",
                                             );
                                           }
                                         },
                                       ),
+
                                       Text(
                                         "Location..",
                                         style: TextStyle(

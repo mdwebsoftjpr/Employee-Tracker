@@ -425,6 +425,7 @@ void company_update(context) async {
                       SizedBox(height: 10),
                       buildTextField(
                         controller: address,
+                        textCapitalization: TextCapitalization.words,
                         label: 'Enter Your Company Address',
                         icon: Icons.location_on,
                         validator:

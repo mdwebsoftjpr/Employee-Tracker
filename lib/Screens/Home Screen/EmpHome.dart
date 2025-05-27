@@ -121,7 +121,7 @@ class _EmpHomeState extends State<EmpHome> {
         name = user['name'] ?? 'Default User';
         username = user['username'] ?? 'Default User';
         userid = user['id'] ?? 'Default User';
-        userImg = user['image'];
+        userImg = user['image']??'';
         comimage = user['company_logo'];
       });
     }
@@ -792,7 +792,7 @@ class _EmpHomeState extends State<EmpHome> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child:
-                      (userImg != null && userImg == null)
+                      (userImg != null)
                           ? Image.network(
                             'https://testapi.rabadtechnology.com/$userImg',
                             width: MediaQuery.of(context).size.width * 0.10,

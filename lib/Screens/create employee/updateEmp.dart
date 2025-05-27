@@ -622,6 +622,7 @@ class UpdateEmpState extends State<UpdateEmp> {
 
                         TextFormField(
                           controller: address,
+                          textCapitalization: TextCapitalization.words,
                           decoration: InputDecoration(
                             labelText: 'Enter Address',
                             contentPadding: EdgeInsets.symmetric(

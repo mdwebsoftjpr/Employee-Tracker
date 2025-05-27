@@ -445,6 +445,7 @@ class CreateComState extends State<CreateCom> {
                       buildTextField(
                         controller: address,
                         label: 'Enter Your Company Address',
+                        textCapitalization: TextCapitalization.words,
                         icon: Icons.location_on,
                         validator:
                             (v) => v!.isEmpty ? 'Address required' : null,
