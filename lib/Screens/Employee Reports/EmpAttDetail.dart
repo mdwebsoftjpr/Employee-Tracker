@@ -204,7 +204,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                         left: devicePixelRatio * 3.5,
                         right: devicePixelRatio * 3.5,
                       ),
-                      padding: EdgeInsets.all(devicePixelRatio*1),
+                      padding: EdgeInsets.all(devicePixelRatio * 1),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(deviceWidth * 0.03),
                         color: const Color.fromARGB(255, 247, 239, 230),
@@ -220,7 +220,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 Text(
                                   "Date:",
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 5,
+                                    fontSize: devicePixelRatio * 4,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -238,12 +238,25 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 Text(
                                   "Break:",
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 5,
+                                    fontSize: devicePixelRatio * 4,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   "${data['break'] ?? ''}",
+                                  style: TextStyle(
+                                    fontSize: devicePixelRatio * 4,
+                                  ),
+                                ),
+                                Text(
+                                  "Address in:",
+                                  style: TextStyle(
+                                    fontSize: devicePixelRatio * 4,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  "${data['address'] ?? ''}",
                                   style: TextStyle(
                                     fontSize: devicePixelRatio * 4,
                                   ),
@@ -257,32 +270,45 @@ class EmpattdetailState extends State<EmpAttdetail> {
                               mainAxisAlignment: MainAxisAlignment.center,
 
                               children: [
-                                    Text(
-                                      "Punch In:",
-                                      style: TextStyle(
-                                        fontSize: devicePixelRatio * 5,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      data['time_in'] ?? '',
-                                      style: TextStyle(
-                                        fontSize: devicePixelRatio * 4,
-                                      ),
-                                    ),
-                                    Text(
-                                      "Punch Out:",
-                                      style: TextStyle(
-                                        fontSize: devicePixelRatio * 5,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      data['time_out'] ?? '',
-                                      style: TextStyle(
-                                        fontSize: devicePixelRatio * 4,
-                                      ),
-                                    ),
+                                Text(
+                                  "Punch In:",
+                                  style: TextStyle(
+                                    fontSize: devicePixelRatio * 4,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  data['time_in'] ?? '',
+                                  style: TextStyle(
+                                    fontSize: devicePixelRatio * 4,
+                                  ),
+                                ),
+                                Text(
+                                  "Punch Out:",
+                                  style: TextStyle(
+                                    fontSize: devicePixelRatio * 4,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  data['time_out'] ?? '',
+                                  style: TextStyle(
+                                    fontSize: devicePixelRatio * 4,
+                                  ),
+                                ),
+                                 Text(
+                                  "Address Out:",
+                                  style: TextStyle(
+                                    fontSize: devicePixelRatio * 4,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  data['address'] ?? '',
+                                  style: TextStyle(
+                                    fontSize: devicePixelRatio * 4,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -315,21 +341,23 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                   ),
                                 ),
                                 SizedBox(height: deviceHeight * 0.005),
-                                Row(children: [
-                                  Text(
-                                  "Total Hours:",
-                                  style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
-                                    fontWeight: FontWeight.bold
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Total Hours:",
+                                      style: TextStyle(
+                                        fontSize: devicePixelRatio * 4,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      "${data['hours']}",
+                                      style: TextStyle(
+                                        fontSize: devicePixelRatio * 4,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  "${data['hours']}",
-                                  style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
-                                  ),
-                                ),
-                                ],),
                                 SizedBox(height: deviceHeight * 0.001),
                                 IconButton(
                                   icon: Icon(
@@ -340,37 +368,75 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                   onPressed: () {
                                     List<LatLng> points = [];
 
-                                    if (data['multipoint'] != null &&
-                                        data['multipoint'] != '') {
-                                      final startCoord =
-                                          data['multipoint']
-                                              .split('_')
-                                              .map((e) => e.trim())
-                                              .toList();
+                                    final point1 = data['multipoint1'];
+                                    final point2 = data['multipoint2'];
 
-                                      if (startCoord.length >= 2) {
-                                        points.add(
-                                          LatLng(
-                                            safeParseDouble(startCoord[0]),
-                                            safeParseDouble(startCoord[1]),
-                                          ),
-                                        );
-                                        Navigator.push(
+                                    if (point1 != null &&
+                                        point2 != null &&
+                                        point1.isNotEmpty &&
+                                        point2.isNotEmpty) {
+                                      try {
+                                        final p1Parts = point1.split(',');
+                                        final p2Parts = point2.split(',');
+
+                                        if (p1Parts.length == 2 &&
+                                            p2Parts.length == 2) {
+                                          points.add(
+                                            LatLng(
+                                              safeParseDouble(
+                                                p1Parts[0].trim(),
+                                              ),
+                                              safeParseDouble(
+                                                p1Parts[1].trim(),
+                                              ),
+                                            ),
+                                          );
+                                          points.add(
+                                            LatLng(
+                                              safeParseDouble(
+                                                p2Parts[0].trim(),
+                                              ),
+                                              safeParseDouble(
+                                                p2Parts[1].trim(),
+                                              ),
+                                            ),
+                                          );
+
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) => SimpleMapScreen(
+                                                    points: points,
+                                                  ),
+                                            ),
+                                          );
+                                        } else {
+                                          Alert.alert(
+                                            context,
+                                            'Invalid coordinate format.',
+                                          );
+                                        }
+                                      } catch (e) {
+                                        Alert.alert(
                                           context,
-                                          MaterialPageRoute(
-                                            builder:
-                                                (context) => SimpleMapScreen(
-                                                  points: points,
-                                                ),
-                                          ),
+                                          'Error parsing coordinates.',
                                         );
-                                      } else {
-                                       Alert.alert(context,'Invalid coordinate format');
                                       }
                                     } else {
-                                      Alert.alert(context, "Location Data Not Available");
+                                      Alert.alert(
+                                        context,
+                                        "Location Data Not Available",
+                                      );
                                     }
                                   },
+                                ),
+                                Text(
+                                  "Location..",
+                                  style: TextStyle(
+                                    fontSize: devicePixelRatio * 4,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ],
                             ),

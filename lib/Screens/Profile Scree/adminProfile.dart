@@ -46,6 +46,7 @@ class AdminprofileState extends State<Adminprofile> {
         setState(() {
           userdata = user;
         });
+        print(user);
       } catch (e) {
         print("Error decoding user data: $e");
       }

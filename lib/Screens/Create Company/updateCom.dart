@@ -84,7 +84,7 @@ class UpdatecomState extends State<Updatecom> {
           cname.text = user['company_name'] ?? '';
           email.text = user['db_email'] ?? '';
           mobile.text = user['mobile_no'] ?? '';
-          password.text = user['password'] ?? '';
+          password.text = user['db_password'] ?? '';
           address.text = user['address'] ?? '';
           Gst.text = user['gstin_no'] ?? '';
           Tradename.text = user['trade_name'] ?? '';
@@ -92,7 +92,7 @@ class UpdatecomState extends State<Updatecom> {
           loginUserName.text = user['username'] ?? '';
           website.text = user['website_link'] ?? '';
           PanNo.text = user['pan_card'] ?? '';
-          NoOfEmp.text = user['noofemp'] ?? '';
+          NoOfEmp.text = (user['noofemp'] ?? '').toString();
         });
       } catch (e) {
         print("Error decoding user data: $e");
@@ -209,8 +209,6 @@ void company_update(context) async {
   try {
     if (_imageFile != null) {
   request.files.add(await http.MultipartFile.fromPath('image', _imageFile!.path));
-} else if (_imageFile == null) {
-  request.files.add(await http.MultipartFile.fromPath('image', 'https://testapi.rabadtechnology.com/$userImg'));
 }
 
     final response = await request.send();

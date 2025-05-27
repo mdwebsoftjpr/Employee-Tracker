@@ -268,17 +268,12 @@ class UpdateEmpState extends State<UpdateEmp> {
         request.files.add(
           await http.MultipartFile.fromPath('image', compressedImage.path),
         );
-      }else if(compressedImage == null){
-         request.files.add(
-          await http.MultipartFile.fromString('image', userImg.toString()),
-        );
       }
-
-      print('Sending data: ${request.fields}');
 
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
       final responseData = jsonDecode(response.body);
+      print('update$responseData');
 
       if (response.statusCode == 200 && responseData['success'] == true) {
         if (!mounted) return;

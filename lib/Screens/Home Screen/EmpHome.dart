@@ -51,7 +51,7 @@ class _EmpHomeState extends State<EmpHome> {
     await getApi();
     await getVisit();
     await getDeviceId();
-    checkAutoPunchOut();
+    /*   checkAutoPunchOut(); */
   }
 
   int _selectedIndex = 0;
@@ -60,7 +60,6 @@ class _EmpHomeState extends State<EmpHome> {
   String comName = 'Compamy';
   String username = "";
   String role = '';
-  int bcount = 0;
   bool BreakTime = false;
   String PSatatus = 'Present';
   String Mainstatus = '';
@@ -82,6 +81,10 @@ class _EmpHomeState extends State<EmpHome> {
   String? comimage;
   String? trade_name;
   bool isLoading = false;
+  String? Break1;
+  String? Break2;
+  String? Break3;
+  String? Status;
 
   Future<String?> getDeviceId() async {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -143,6 +146,9 @@ class _EmpHomeState extends State<EmpHome> {
         var image = data[0]['image_path'] ?? '';
         var punchInTime = data[0]['time'] ?? '';
         var punchOutTime = data[0]['time_out'] ?? '';
+        var break1 = data[0]['break1'] ?? '';
+        var break2 = data[0]['break2'] ?? '';
+        var break3 = data[0]['break3'] ?? '';
 
         if (statusin != '') {
           setState(() {
@@ -151,8 +157,11 @@ class _EmpHomeState extends State<EmpHome> {
             UserImage = image;
             punchIntime = punchInTime;
             punchOuttime = punchOutTime;
+            Break1 = break1;
+            Break2 = break2;
+            Break3 = break3;
           });
-          print(Mainstatus);
+          print('Break1$Break1,Break2$Break2,Break3$Break3');
         } else {
           setState(() {
             isLoading = false;
@@ -206,7 +215,7 @@ class _EmpHomeState extends State<EmpHome> {
     }
   }
 
-  void checkAutoPunchOut() {
+  /*   void checkAutoPunchOut() {
     final now = DateTime.now();
     final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
@@ -218,7 +227,7 @@ class _EmpHomeState extends State<EmpHome> {
         bcount = 0;
       });
     }
-  }
+  } */
 
   Future<File?> compressImage(XFile xFile) async {
     setState(() {
@@ -311,20 +320,46 @@ class _EmpHomeState extends State<EmpHome> {
     });
   }
 
-  void BreakIn() {
-    setState(() {
-      BreakTime = true;
-      bcount++;
-      print(bcount);
-    });
-  }
+  BreakIn(String breakcount) async {
+    print('Break1$Break1,Break2$Break2,Break3$Break3');
+    final url = Uri.parse(
+      'https://testapi.rabadtechnology.com/employeebreakupdate.php',
+    );
 
-  void BreakOut() {
-    setState(() {
-      bcount++;
-      BreakTime = false;
-      print(BreakTime);
-    });
+    try {
+      final Map<String, dynamic> requestBody = {
+        "employee_id": userid,
+        "break": breakcount,
+      };
+
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+
+      // Check if response is successful and not empty
+      if (response.statusCode == 200 && response.body.isNotEmpty) {
+        final responseData = jsonDecode(response.body);
+
+        final success = responseData['success'];
+        final message = responseData['message'];
+
+        if (success == true) {
+          setState(() {
+            Status = responseData['status'];
+          });
+          Alert.alert(context,message);
+          getApi();
+        } else {
+          Alert.alert(context,message);
+        }
+      } else {
+        print('HTTP error: ${response.statusCode}, response: ${response.body}');
+      }
+    } catch (e) {
+      print('Exception occurred: $e');
+    }
   }
 
   void punchIn() async {
@@ -664,54 +699,56 @@ class _EmpHomeState extends State<EmpHome> {
     }
   }
 
- Future<void> punchOutAlert(BuildContext context) async {
-  return showDialog<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Center(
-          child: Text(
-            'EmpAttend',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+  Future<void> punchOutAlert(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(
+            child: Text(
+              'EmpAttend',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
           ),
-        ),
-        content: Text(
-          "Are you sure you want to punch out?",
-          textAlign: TextAlign.center,
-        ),
-        actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                onPressed: () async {
-                  await _pickImageFromCamera();
-                  punchOut();
-                  Navigator.of(context).pop();  // <-- You should close the dialog after punchOut
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF03A9F4),
-                  foregroundColor: Colors.white,
+          content: Text(
+            "Are you sure you want to punch out?",
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  onPressed: () async { 
+                    Navigator.of(
+                      context,
+                    ).pop();
+                    await _pickImageFromCamera();
+                    punchOut();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF03A9F4),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text('Punch Out'),
                 ),
-                child: Text('Punch Out'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF03A9F4),
-                  foregroundColor: Colors.white,
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF03A9F4),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text('Cancel'),
                 ),
-                child: Text('Cancel'),
-              ),
-            ],
-          )
-        ],
-      );
-    },
-  );
-}
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -744,39 +781,40 @@ class _EmpHomeState extends State<EmpHome> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-           GestureDetector(
-  onTapDown: _openDropdown,
-  child: Container(
-    margin: EdgeInsets.only(left: 10),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(10),
-      border: Border.all(color: Colors.white70, width: 1),
-    ),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: (userImg != null && userImg==null)
-          ? Image.network(
-              'https://testapi.rabadtechnology.com/$userImg',
-              width: MediaQuery.of(context).size.width * 0.10,
-              height: MediaQuery.of(context).size.width * 0.10,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                // If image fails to load (e.g. 404), show default icon
-                return Icon(
-                  Icons.account_circle,
-                  size: 36,
-                  color: Colors.white,
-                );
-              },
-            )
-          : Icon(
-              Icons.account_circle,
-              size: 36,
-              color: Colors.white,
+            GestureDetector(
+              onTapDown: _openDropdown,
+              child: Container(
+                margin: EdgeInsets.only(left: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.white70, width: 1),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child:
+                      (userImg != null && userImg == null)
+                          ? Image.network(
+                            'https://testapi.rabadtechnology.com/$userImg',
+                            width: MediaQuery.of(context).size.width * 0.10,
+                            height: MediaQuery.of(context).size.width * 0.10,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              // If image fails to load (e.g. 404), show default icon
+                              return Icon(
+                                Icons.account_circle,
+                                size: 36,
+                                color: Colors.white,
+                              );
+                            },
+                          )
+                          : Icon(
+                            Icons.account_circle,
+                            size: 36,
+                            color: Colors.white,
+                          ),
+                ),
+              ),
             ),
-    ),
-  ),
-)
           ],
         ),
       ),
@@ -867,59 +905,6 @@ class _EmpHomeState extends State<EmpHome> {
                         onTap: () {
                           _pickImageFromCamera();
                           punchOut();
-                        },
-                      ),
-                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
-                  (BreakTime)
-                      ? ListTile(
-                        leading: Icon(
-                          Icons.coffee,
-                          size: 8 * MediaQuery.of(context).devicePixelRatio,
-                        ),
-                        title: Text(
-                          "Break Out",
-                          style: TextStyle(
-                            fontSize:
-                                5 * MediaQuery.of(context).devicePixelRatio,
-                          ),
-                        ),
-                        onTap: () {
-                          BreakOut();
-                          Navigator.pop(context); // Close the drawer first
-                        },
-                      )
-                      : (bcount >= 3)
-                      ? ListTile(
-                        leading: Icon(
-                          Icons.coffee,
-                          size: 8 * MediaQuery.of(context).devicePixelRatio,
-                        ),
-                        title: Text(
-                          "Break Limit Over",
-                          style: TextStyle(
-                            fontSize:
-                                5 * MediaQuery.of(context).devicePixelRatio,
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context); // Close the drawer first
-                        },
-                      )
-                      : ListTile(
-                        leading: Icon(
-                          Icons.coffee,
-                          size: 8 * MediaQuery.of(context).devicePixelRatio,
-                        ),
-                        title: Text(
-                          "Break In",
-                          style: TextStyle(
-                            fontSize:
-                                5 * MediaQuery.of(context).devicePixelRatio,
-                          ),
-                        ),
-                        onTap: () {
-                          BreakIn();
-                          Navigator.pop(context); // Close the drawer first
                         },
                       ),
                   SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
@@ -1819,86 +1804,41 @@ class _EmpHomeState extends State<EmpHome> {
                                           MediaQuery.of(context).size.width *
                                           0.12,
                                     ),
-                                    (bcount == 0)
-                                        ? ElevatedButton(
-                                          onPressed: () => {BreakIn()},
-                                          child: Text("Start"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFF03a9f4),
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
-                                                  0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
-                                                        0.07,
-                                                  ),
-                                            ),
-                                            elevation: 4,
-                                          ),
-                                        )
-                                        : (bcount == 1)
-                                        ? ElevatedButton(
-                                          onPressed: () => {BreakOut()},
-                                          child: Text("End"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFF03a9f4),
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
-                                                  0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
-                                                        0.07,
-                                                  ),
-                                            ),
-                                            elevation: 4,
-                                          ),
-                                        )
-                                        : ElevatedButton(
-                                          onPressed: () => {},
-                                          child: Text("End"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.red,
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
-                                                  0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
-                                                        0.07,
-                                                  ),
-                                            ),
-                                            elevation: 4,
+                                    ElevatedButton(
+                                      onPressed:
+                                          () =>
+                                              (Break1 == '' || Break1 == 'open')
+                                                  ? BreakIn('break1')
+                                                  : {},
+                                      child:
+                                          (Break1 == '')
+                                              ? Text("Start")
+                                              : (Break1 == 'open')
+                                              ? Text("End")
+                                              : Text("End"),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            (Break1 == 'close' || Mainstatus=='')
+                                                ? Colors.red
+                                                : Color(0xFF03a9f4),
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.05,
+                                          vertical: 4,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.width *
+                                                0.07,
                                           ),
                                         ),
+                                        elevation: 4,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -1933,86 +1873,43 @@ class _EmpHomeState extends State<EmpHome> {
                                           MediaQuery.of(context).size.width *
                                           0.12,
                                     ),
-                                    (bcount == 2)
-                                        ? ElevatedButton(
-                                          onPressed: () => {BreakIn()},
-                                          child: Text("Start"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFF03a9f4),
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
-                                                  0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
-                                                        0.07,
-                                                  ),
-                                            ),
-                                            elevation: 4,
-                                          ),
-                                        )
-                                        : (bcount == 3)
-                                        ? ElevatedButton(
-                                          onPressed: () => {BreakOut()},
-                                          child: Text("End"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFF03a9f4),
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
-                                                  0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
-                                                        0.07,
-                                                  ),
-                                            ),
-                                            elevation: 4,
-                                          ),
-                                        )
-                                        : ElevatedButton(
-                                          onPressed: () => {},
-                                          child: Text("End"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.red,
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
-                                                  0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
-                                                        0.07,
-                                                  ),
-                                            ),
-                                            elevation: 4,
+                                    ElevatedButton(
+                                      onPressed:
+                                          () =>
+                                              (Break1 == 'close') &&
+                                                      (Break2 == '' ||
+                                                          Break2 == 'open')
+                                                  ? BreakIn('break2')
+                                                  : {},
+                                      child:
+                                          (Break2 == '')
+                                              ? Text("Start")
+                                              : (Break2 == 'open')
+                                              ? Text("End")
+                                              : Text("End"),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            (Break2 == 'close' || Mainstatus=='')
+                                                ? Colors.red
+                                                : Color(0xFF03a9f4),
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.05,
+                                          vertical: 4,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.width *
+                                                0.07,
                                           ),
                                         ),
+                                        elevation: 4,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -2047,86 +1944,43 @@ class _EmpHomeState extends State<EmpHome> {
                                           MediaQuery.of(context).size.width *
                                           0.12,
                                     ),
-                                    (bcount == 4)
-                                        ? ElevatedButton(
-                                          onPressed: () => {BreakIn()},
-                                          child: Text("Start"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFF03a9f4),
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
-                                                  0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
-                                                        0.07,
-                                                  ),
-                                            ),
-                                            elevation: 4,
-                                          ),
-                                        )
-                                        : (bcount == 5)
-                                        ? ElevatedButton(
-                                          onPressed: () => {BreakOut()},
-                                          child: Text("End"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFF03a9f4),
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
-                                                  0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
-                                                        0.07,
-                                                  ),
-                                            ),
-                                            elevation: 4,
-                                          ),
-                                        )
-                                        : ElevatedButton(
-                                          onPressed: () => {},
-                                          child: Text("End"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.red,
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
-                                                  0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
-                                                        0.07,
-                                                  ),
-                                            ),
-                                            elevation: 4,
+                                    ElevatedButton(
+                                      onPressed:
+                                          () =>
+                                              (Break2 == 'close') &&
+                                                      (Break3 == '' ||
+                                                          Break3 == 'open')
+                                                  ? BreakIn('break3')
+                                                  : {},
+                                      child:
+                                          (Break3 == '')
+                                              ? Text("Start")
+                                              : (Break3 == 'open')
+                                              ? Text("End")
+                                              : Text("End"),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                            (Break3 == 'close' || Mainstatus=='')
+                                                ? Colors.red
+                                                : Color(0xFF03a9f4),
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.05,
+                                          vertical: 4,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            MediaQuery.of(context).size.width *
+                                                0.07,
                                           ),
                                         ),
+                                        elevation: 4,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),

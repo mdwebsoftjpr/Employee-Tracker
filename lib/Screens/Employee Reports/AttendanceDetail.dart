@@ -154,7 +154,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
         title: Text(
           'Monthly Attendance Detail',
           style: TextStyle(
-            fontSize: 6*devicePixelRatio,
+            fontSize: 6 * devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -199,7 +199,9 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                               SizedBox(height: deviceHeight * 0.01),
                               Text(
                                 item['empname'] ?? 'Unknown',
-                                style: TextStyle(fontSize: devicePixelRatio * 6),
+                                style: TextStyle(
+                                  fontSize: devicePixelRatio * 6,
+                                ),
                               ),
                             ],
                           ),
@@ -232,7 +234,9 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                               ),
                               Text(
                                 "This Month Attendance % ${attendancePercentage.toStringAsFixed(2)}",
-                                style: TextStyle(fontSize: devicePixelRatio *3.5),
+                                style: TextStyle(
+                                  fontSize: devicePixelRatio * 3.5,
+                                ),
                               ),
                             ],
                           ),
@@ -275,7 +279,9 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                             ? Center(
                               child: Text(
                                 "Attendance Not Found",
-                                style: TextStyle(fontSize: devicePixelRatio * 6),
+                                style: TextStyle(
+                                  fontSize: devicePixelRatio * 6,
+                                ),
                               ),
                             )
                             : ListView.builder(
@@ -320,7 +326,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   "Date:",
                                                   style: TextStyle(
                                                     fontSize:
-                                                        devicePixelRatio *4,
+                                                        devicePixelRatio * 4,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -333,14 +339,14 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       : '',
                                                   style: TextStyle(
                                                     fontSize:
-                                                        devicePixelRatio *4,
+                                                        devicePixelRatio * 4,
                                                   ),
                                                 ),
                                                 Text(
                                                   "Break Time:",
                                                   style: TextStyle(
                                                     fontSize:
-                                                        devicePixelRatio *4,
+                                                        devicePixelRatio * 4,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -348,7 +354,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   '${data['break_time'] ?? ''}',
                                                   style: TextStyle(
                                                     fontSize:
-                                                        devicePixelRatio *4,
+                                                        devicePixelRatio * 4,
                                                   ),
                                                 ),
                                               ],
@@ -363,7 +369,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   "Punch In:",
                                                   style: TextStyle(
                                                     fontSize:
-                                                        devicePixelRatio *4,
+                                                        devicePixelRatio * 4,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -371,14 +377,14 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   '${data['time_in'] ?? ''}',
                                                   style: TextStyle(
                                                     fontSize:
-                                                        devicePixelRatio *4,
+                                                        devicePixelRatio * 4,
                                                   ),
                                                 ),
                                                 Text(
                                                   "Punch Out:",
                                                   style: TextStyle(
                                                     fontSize:
-                                                        devicePixelRatio *4,
+                                                        devicePixelRatio * 4,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -386,7 +392,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   '${data['time_out'] ?? ''}',
                                                   style: TextStyle(
                                                     fontSize:
-                                                        devicePixelRatio *4,
+                                                        devicePixelRatio * 4,
                                                   ),
                                                 ),
                                               ],
@@ -424,7 +430,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       fontSize:
-                                                         devicePixelRatio *5,
+                                                          devicePixelRatio * 5,
                                                     ),
                                                   ),
                                                 ),
@@ -435,7 +441,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   "Total Hours:",
                                                   style: TextStyle(
                                                     fontSize:
-                                                        devicePixelRatio *4,
+                                                        devicePixelRatio * 4,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -443,76 +449,111 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   "${data['hours']}",
                                                   style: TextStyle(
                                                     fontSize:
-                                                        devicePixelRatio *4,
+                                                        devicePixelRatio * 4,
                                                   ),
                                                 ),
                                               ],
                                             ),
                                           ),
                                           Expanded(
-                                            child: IconButton(
-                                              icon: Icon(
-                                                FontAwesomeIcons.mapLocationDot,
-                                                color: Color(0xFF03a9f4),
-                                                size: devicePixelRatio * 10,
-                                              ),
-                                              onPressed: () {
-                                                List<LatLng> points = [];
+                                            child: Column(
+                                              children: [
+                                                IconButton(
+                                                  icon: Icon(
+                                                    FontAwesomeIcons
+                                                        .mapLocationDot,
+                                                    color: Color(0xFF03a9f4),
+                                                    size: devicePixelRatio * 7,
+                                                  ),
+                                                  onPressed: () {
+                                                    List<LatLng> points = [];
 
-                                                if (data['multipoint'] !=
-                                                        null &&
-                                                    data['multipoint'] != '') {
-                                                  final startCoord =
-                                                      data['multipoint']
-                                                          .split('_')
-                                                          .map((e) => e.trim())
-                                                          .toList();
+                                                    final point1 =
+                                                        data['multipoint1'];
+                                                    final point2 =
+                                                        data['multipoint2'];
 
-                                                  if (startCoord.length >= 2) {
-                                                    points.add(
-                                                      LatLng(
-                                                        safeParseDouble(
-                                                          startCoord[0],
-                                                        ),
-                                                        safeParseDouble(
-                                                          startCoord[1],
-                                                        ),
-                                                      ),
-                                                    );
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder:
-                                                            (context) =>
-                                                                SimpleMapScreen(
-                                                                  points:
-                                                                      points,
-                                                                ),
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    ScaffoldMessenger.of(
-                                                      context,
-                                                    ).showSnackBar(
-                                                      SnackBar(
-                                                        content: Text(
-                                                          'Invalid coordinate format',
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }
-                                                } else {
-                                                  ScaffoldMessenger.of(
-                                                    context,
-                                                  ).showSnackBar(
-                                                    SnackBar(
-                                                      content: Text(
-                                                        'Location data is missing',
-                                                      ),
-                                                    ),
-                                                  );
-                                                }
-                                              },
+                                                    if (point1 != null &&
+                                                        point2 != null &&
+                                                        point1.isNotEmpty &&
+                                                        point2.isNotEmpty) {
+                                                      try {
+                                                        final p1Parts = point1
+                                                            .split(',');
+                                                        final p2Parts = point2
+                                                            .split(',');
+
+                                                        if (p1Parts.length ==
+                                                                2 &&
+                                                            p2Parts.length ==
+                                                                2) {
+                                                          points.add(
+                                                            LatLng(
+                                                              safeParseDouble(
+                                                                p1Parts[0]
+                                                                    .trim(),
+                                                              ),
+                                                              safeParseDouble(
+                                                                p1Parts[1]
+                                                                    .trim(),
+                                                              ),
+                                                            ),
+                                                          );
+                                                          points.add(
+                                                            LatLng(
+                                                              safeParseDouble(
+                                                                p2Parts[0]
+                                                                    .trim(),
+                                                              ),
+                                                              safeParseDouble(
+                                                                p2Parts[1]
+                                                                    .trim(),
+                                                              ),
+                                                            ),
+                                                          );
+
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder:
+                                                                  (
+                                                                    context,
+                                                                  ) => SimpleMapScreen(
+                                                                    points:
+                                                                        points,
+                                                                  ),
+                                                            ),
+                                                          );
+                                                        } else {
+                                                          Alert.alert(
+                                                            context,
+                                                            'Invalid coordinate format.',
+                                                          );
+                                                        }
+                                                      } catch (e) {
+                                                        Alert.alert(
+                                                          context,
+                                                          'Error parsing coordinates.',
+                                                        );
+                                                      }
+                                                    } else {
+                                                      Alert.alert(
+                                                        context,
+                                                        "Location Data Not Available",
+                                                      );
+                                                    }
+                                                  },
+                                                ),
+
+                                                Text(
+                                                  "Location..",
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        devicePixelRatio * 4,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ],
@@ -522,7 +563,6 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Expanded(
-                                            // or use Flexible if needed
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -531,11 +571,11 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   text: TextSpan(
                                                     children: [
                                                       TextSpan(
-                                                        text: "Address: ",
+                                                        text: "Address In: ",
                                                         style: TextStyle(
                                                           fontSize:
-                                                              deviceWidth *
-                                                              0.035,
+                                                              devicePixelRatio *
+                                                              4,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           color: Colors.black,
@@ -547,8 +587,40 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                             'No address available',
                                                         style: TextStyle(
                                                           fontSize:
-                                                              deviceWidth *
-                                                              0.035,
+                                                              devicePixelRatio *
+                                                              4,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.visible,
+                                                  softWrap: true,
+                                                ),
+                                                SizedBox(height: 6),
+                                                RichText(
+                                                  text: TextSpan(
+                                                    children: [
+                                                      TextSpan(
+                                                        text: "Address Out: ",
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              devicePixelRatio *
+                                                              4,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ),
+                                                      TextSpan(
+                                                        text:
+                                                            data['address_out'] ??
+                                                            'No address available',
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              devicePixelRatio *
+                                                              4,
                                                           color: Colors.black,
                                                         ),
                                                       ),
