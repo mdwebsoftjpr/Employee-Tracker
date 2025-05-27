@@ -19,7 +19,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:connectivity_plus/connectivity_plus.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -122,7 +121,6 @@ class _EmpHomeState extends State<EmpHome> {
         userImg = user['image'];
         comimage = user['company_logo'];
       });
-      print(userImg);
     }
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/getEmployeestatus.php',
@@ -666,6 +664,55 @@ class _EmpHomeState extends State<EmpHome> {
     }
   }
 
+ Future<void> punchOutAlert(BuildContext context) async {
+  return showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Center(
+          child: Text(
+            'EmpAttend',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        content: Text(
+          "Are you sure you want to punch out?",
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                onPressed: () async {
+                  await _pickImageFromCamera();
+                  punchOut();
+                  Navigator.of(context).pop();  // <-- You should close the dialog after punchOut
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF03A9F4),
+                  foregroundColor: Colors.white,
+                ),
+                child: Text('Punch Out'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF03A9F4),
+                  foregroundColor: Colors.white,
+                ),
+                child: Text('Cancel'),
+              ),
+            ],
+          )
+        ],
+      );
+    },
+  );
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -697,32 +744,39 @@ class _EmpHomeState extends State<EmpHome> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            GestureDetector(
-              onTapDown: _openDropdown,
-              child: Container(
-                margin: EdgeInsets.only(left: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.white70, width: 1),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child:
-                      (userImg != null)
-                          ? Image.network(
-                            'https://testapi.rabadtechnology.com/$userImg',
-                            width: MediaQuery.of(context).size.width * 0.10,
-                            height: MediaQuery.of(context).size.width * 0.10,
-                            fit: BoxFit.cover,
-                          )
-                          : Icon(
-                            Icons.account_circle,
-                            size: 36,
-                            color: Colors.white,
-                          ),
-                ),
-              ),
+           GestureDetector(
+  onTapDown: _openDropdown,
+  child: Container(
+    margin: EdgeInsets.only(left: 10),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10),
+      border: Border.all(color: Colors.white70, width: 1),
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: (userImg != null && userImg==null)
+          ? Image.network(
+              'https://testapi.rabadtechnology.com/$userImg',
+              width: MediaQuery.of(context).size.width * 0.10,
+              height: MediaQuery.of(context).size.width * 0.10,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                // If image fails to load (e.g. 404), show default icon
+                return Icon(
+                  Icons.account_circle,
+                  size: 36,
+                  color: Colors.white,
+                );
+              },
+            )
+          : Icon(
+              Icons.account_circle,
+              size: 36,
+              color: Colors.white,
             ),
+    ),
+  ),
+)
           ],
         ),
       ),
@@ -782,26 +836,53 @@ class _EmpHomeState extends State<EmpHome> {
                   ),
                   (Mainstatus == "" || Mainstatus == 'punchout')
                       ? ListTile(
-                        leading: Icon(Icons.fingerprint,size: 8 * MediaQuery.of(context).devicePixelRatio,),
-                        title: Text("Punch in",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
+                        leading: Icon(
+                          Icons.fingerprint,
+                          size: 8 * MediaQuery.of(context).devicePixelRatio,
+                        ),
+                        title: Text(
+                          "Punch in",
+                          style: TextStyle(
+                            fontSize:
+                                5 * MediaQuery.of(context).devicePixelRatio,
+                          ),
+                        ),
                         onTap: () {
                           _pickImageFromCamera();
                           punchIn();
                         },
                       )
                       : ListTile(
-                        leading: Icon(Icons.power_settings_new,size: 8 * MediaQuery.of(context).devicePixelRatio,),
-                        title: Text("Punch Out",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
+                        leading: Icon(
+                          Icons.power_settings_new,
+                          size: 8 * MediaQuery.of(context).devicePixelRatio,
+                        ),
+                        title: Text(
+                          "Punch Out",
+                          style: TextStyle(
+                            fontSize:
+                                5 * MediaQuery.of(context).devicePixelRatio,
+                          ),
+                        ),
                         onTap: () {
                           _pickImageFromCamera();
                           punchOut();
                         },
                       ),
-                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
                   (BreakTime)
                       ? ListTile(
-                        leading: Icon(Icons.coffee,size: 8 * MediaQuery.of(context).devicePixelRatio,),
-                        title: Text("Break Out",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
+                        leading: Icon(
+                          Icons.coffee,
+                          size: 8 * MediaQuery.of(context).devicePixelRatio,
+                        ),
+                        title: Text(
+                          "Break Out",
+                          style: TextStyle(
+                            fontSize:
+                                5 * MediaQuery.of(context).devicePixelRatio,
+                          ),
+                        ),
                         onTap: () {
                           BreakOut();
                           Navigator.pop(context); // Close the drawer first
@@ -809,25 +890,52 @@ class _EmpHomeState extends State<EmpHome> {
                       )
                       : (bcount >= 3)
                       ? ListTile(
-                        leading: Icon(Icons.coffee,size: 8 * MediaQuery.of(context).devicePixelRatio,),
-                        title: Text("Break Limit Over",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
+                        leading: Icon(
+                          Icons.coffee,
+                          size: 8 * MediaQuery.of(context).devicePixelRatio,
+                        ),
+                        title: Text(
+                          "Break Limit Over",
+                          style: TextStyle(
+                            fontSize:
+                                5 * MediaQuery.of(context).devicePixelRatio,
+                          ),
+                        ),
                         onTap: () {
                           Navigator.pop(context); // Close the drawer first
                         },
                       )
                       : ListTile(
-                        leading: Icon(Icons.coffee,size: 8 * MediaQuery.of(context).devicePixelRatio,),
-                        title: Text("Break In",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
+                        leading: Icon(
+                          Icons.coffee,
+                          size: 8 * MediaQuery.of(context).devicePixelRatio,
+                        ),
+                        title: Text(
+                          "Break In",
+                          style: TextStyle(
+                            fontSize:
+                                5 * MediaQuery.of(context).devicePixelRatio,
+                          ),
+                        ),
                         onTap: () {
                           BreakIn();
                           Navigator.pop(context); // Close the drawer first
                         },
                       ),
-                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
                   (visitStatus == 'opne')
                       ? ListTile(
-                        leading: Icon(Icons.run_circle,size: 8 * MediaQuery.of(context).devicePixelRatio,),
-                        title: Text("Visit Out",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
+                        leading: Icon(
+                          Icons.run_circle,
+                          size: 8 * MediaQuery.of(context).devicePixelRatio,
+                        ),
+                        title: Text(
+                          "Visit Out",
+                          style: TextStyle(
+                            fontSize:
+                                5 * MediaQuery.of(context).devicePixelRatio,
+                          ),
+                        ),
                         onTap: () {
                           if (Mainstatus != '' && Mainstatus == 'punchin') {
                             Navigator.push(
@@ -843,8 +951,17 @@ class _EmpHomeState extends State<EmpHome> {
                         },
                       )
                       : ListTile(
-                        leading: Icon(Icons.location_on,size: 8 * MediaQuery.of(context).devicePixelRatio,),
-                        title: Text("Visit In",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
+                        leading: Icon(
+                          Icons.location_on,
+                          size: 8 * MediaQuery.of(context).devicePixelRatio,
+                        ),
+                        title: Text(
+                          "Visit In",
+                          style: TextStyle(
+                            fontSize:
+                                5 * MediaQuery.of(context).devicePixelRatio,
+                          ),
+                        ),
                         onTap: () async {
                           if (Mainstatus != '' && Mainstatus == 'punchin') {
                             await _pickImageFromCamera();
@@ -857,10 +974,18 @@ class _EmpHomeState extends State<EmpHome> {
                           }
                         },
                       ),
-                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.fact_check,size: 8 * MediaQuery.of(context).devicePixelRatio,),
-                    title: Text("Attendance Report",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
+                    leading: Icon(
+                      Icons.fact_check,
+                      size: 8 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    title: Text(
+                      "Attendance Report",
+                      style: TextStyle(
+                        fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                      ),
+                    ),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -868,10 +993,18 @@ class _EmpHomeState extends State<EmpHome> {
                       );
                     },
                   ),
-                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.receipt_long,size: 8 * MediaQuery.of(context).devicePixelRatio,),
-                    title: Text("Visit Report",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
+                    leading: Icon(
+                      Icons.receipt_long,
+                      size: 8 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    title: Text(
+                      "Visit Report",
+                      style: TextStyle(
+                        fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                      ),
+                    ),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -879,15 +1012,23 @@ class _EmpHomeState extends State<EmpHome> {
                       );
                     },
                   ),
-                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.logout,size: 8 * MediaQuery.of(context).devicePixelRatio,),
-                    title: Text("Logout",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
+                    leading: Icon(
+                      Icons.logout,
+                      size: 8 * MediaQuery.of(context).devicePixelRatio,
+                    ),
+                    title: Text(
+                      "Logout",
+                      style: TextStyle(
+                        fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                      ),
+                    ),
                     onTap: () {
                       clearStorage(context);
                     },
                   ),
-                  SizedBox(height:.02 * MediaQuery.of(context).size.height),
+                  SizedBox(height: .02 * MediaQuery.of(context).size.height),
                   Divider(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),
@@ -906,7 +1047,8 @@ class _EmpHomeState extends State<EmpHome> {
                           Text(
                             'Copy Rights',
                             style: TextStyle(
-                              fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
+                              fontSize:
+                                  4 * MediaQuery.of(context).devicePixelRatio,
                               color: Colors.grey[600],
                               fontWeight: FontWeight.w500,
                             ),
@@ -920,11 +1062,16 @@ class _EmpHomeState extends State<EmpHome> {
                                 size: 16,
                                 color: Colors.grey,
                               ),
-                              SizedBox(width: 1 * MediaQuery.of(context).devicePixelRatio),
+                              SizedBox(
+                                width:
+                                    1 * MediaQuery.of(context).devicePixelRatio,
+                              ),
                               Text(
                                 '2025 $comName',
                                 style: TextStyle(
-                                  fontSize: 4 * MediaQuery.of(context).devicePixelRatio,
+                                  fontSize:
+                                      4 *
+                                      MediaQuery.of(context).devicePixelRatio,
                                   color: Colors.grey[600],
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -950,7 +1097,7 @@ class _EmpHomeState extends State<EmpHome> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                           Text(
+                          Text(
                             'Maintain And Dev. By Md Websoft',
                             style: TextStyle(
                               fontSize: 13,
@@ -1474,8 +1621,7 @@ class _EmpHomeState extends State<EmpHome> {
                                         )
                                         : ElevatedButton(
                                           onPressed: () async {
-                                            await _pickImageFromCamera();
-                                            punchOut();
+                                            punchOutAlert(context);
                                           },
                                           child: Text("Punch Out"),
                                           style: ElevatedButton.styleFrom(

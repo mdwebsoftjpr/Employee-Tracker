@@ -227,76 +227,75 @@ class UpdateEmpState extends State<UpdateEmp> {
   }
 
   Future<void> Update_Emp(BuildContext context) async {
-     if (mounted) setState(() => isLoading = true);
-     try {
-    if (!(_formKey.currentState?.validate() ?? false)) {
-        if (mounted) setState(() => isLoading = false);
-        return;
-      }
-      if (_imageFile == null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Select Image")));
-        if (mounted) setState(() => isLoading = false);
-        return;
-      }
-      File? compressedImage = await compressImage(XFile(_imageFile!.path));
-      if (compressedImage == null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Image compression failed")));
-        if (mounted) setState(() => isLoading = false);
-        return;
+    if (!mounted) return;
+
+    setState(() => isLoading = true);
+
+    try {
+      File? compressedImage;
+
+      // Compress image only if user selected one
+      if (_imageFile != null) {
+        compressedImage = await compressImage(XFile(_imageFile!.path));
       }
 
-      
-        final request = http.MultipartRequest(
-          'POST',
-          Uri.parse('https://testapi.rabadtechnology.com/employee_update.php'),
-        );
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://testapi.rabadtechnology.com/employee_update.php'),
+      );
 
-        request.fields.addAll({
-          "company_id": comId.toString(),
-          "trade_name": TradeName.toString(),
-          "name": name.text,
-          'dob': dob.text,
-          "pan_card": panNo.text,
-          "mobile_no": mobile.text,
-          "email": email.text,
-          "address": address.text,
-          "username": username.text,
-          "password": password.text,
-          "designation": designation.text,
-          "aadharcard": adharNo.text,
-          "salary": salary.text,
-          "hours": hours.text,
-          'emp_id': widget.item[0]['id'].toString() ?? '',
-          "joinofdate": joinOfDate.text,
-        });
+      request.fields.addAll({
+        "company_id": comId.toString(),
+        "trade_name": TradeName.toString(),
+        "name": name.text,
+        "dob": dob.text,
+        "pan_card": panNo.text,
+        "mobile_no": mobile.text,
+        "email": email.text,
+        "address": address.text,
+        "username": username.text,
+        "password": password.text,
+        "designation": designation.text,
+        "aadharcard": adharNo.text,
+        "salary": salary.text,
+        "hours": hours.text,
+        "emp_id": widget.item[0]['id']?.toString() ?? '',
+        "joinofdate": joinOfDate.text,
+      });
 
+      // Only add image file if available
+      if (compressedImage != null && compressedImage.existsSync()) {
         request.files.add(
           await http.MultipartFile.fromPath('image', compressedImage.path),
         );
-        print(request.fields);
-        final streamedResponse = await request.send();
-        final response = await http.Response.fromStream(streamedResponse);
-        final responseData = jsonDecode(response.body);
+      }else if(compressedImage == null){
+         request.files.add(
+          await http.MultipartFile.fromString('image', userImg.toString()),
+        );
+      }
 
-        if (responseData['success']) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AdminHome()),
-          );
-          Alert.alert(context, 'Successfully ${responseData['message']}');
-        } else {
-          Alert.alert(context, responseData['message']);
-        }
-      } catch (e) {
-        Alert.alert(context, 'An error occurred: $e');
-      }finally {
+      print('Sending data: ${request.fields}');
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      final responseData = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && responseData['success'] == true) {
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => AdminHome()),
+        );
+        Alert.alert(context, 'Successfully ${responseData['message']}');
+      } else {
+        Alert.alert(context, responseData['message'] ?? 'Update failed');
+      }
+    } catch (e) {
+      Alert.alert(context, 'An error occurred: $e');
+    } finally {
       if (mounted) setState(() => isLoading = false);
     }
-    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -516,7 +515,10 @@ class UpdateEmpState extends State<UpdateEmp> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: panNo,
-                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s')),UpperCaseTextFormatter()],
+                          inputFormatters: [
+                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                            UpperCaseTextFormatter(),
+                          ],
                           decoration: InputDecoration(
                             labelText: 'Enter PAN Card No.',
                             contentPadding: EdgeInsets.symmetric(
@@ -588,7 +590,9 @@ class UpdateEmpState extends State<UpdateEmp> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: email,
-                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                          inputFormatters: [
+                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                          ],
                           decoration: InputDecoration(
                             labelText: 'Enter Email',
                             contentPadding: EdgeInsets.symmetric(
@@ -799,7 +803,9 @@ class UpdateEmpState extends State<UpdateEmp> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: username,
-                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                          inputFormatters: [
+                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                          ],
                           decoration: InputDecoration(
                             labelText: 'Enter User Name',
                             contentPadding: EdgeInsets.symmetric(
@@ -833,7 +839,9 @@ class UpdateEmpState extends State<UpdateEmp> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: password,
-                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                          inputFormatters: [
+                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                          ],
                           obscureText: _obscureText,
                           decoration: InputDecoration(
                             labelText: 'Enter Password',

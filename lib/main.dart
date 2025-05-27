@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/AdminHome.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
 import 'Screens/Create Company/CreateCom.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show TextInput;
 import 'SpleshScreen.dart';
 
 void main() async {
@@ -47,13 +49,21 @@ class CreateScreen extends StatefulWidget {
 
 class _createScreen extends State<CreateScreen> {
   bool _obscureText = true;
+  bool TermCondition = false;
+  String msg = 'msg';
+  String user = 'Demo';
+
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController tradename = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+
+  @override
   void initState() {
     super.initState();
     _loadUserData();
   }
 
-
-  // Function to load user data after localStorage is initialized
   Future<void> _loadUserData() async {
     var storedUser = await localStorage.getItem('user');
     if (!mounted) return;
@@ -62,88 +72,73 @@ class _createScreen extends State<CreateScreen> {
     });
   }
 
-  bool TermCondition = false;
-  String msg = 'msg';
-  String user = 'Demo';
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController tradename = TextEditingController();
-  final TextEditingController email = TextEditingController();
-  final TextEditingController password = TextEditingController();
+  void login(BuildContext context) async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
 
-
- void login(BuildContext context) async {
-  if (!(_formKey.currentState?.validate() ?? false)) return;
-
-  if (!TermCondition) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Please accept the terms and conditions'),
-        backgroundColor: Colors.red,
-      ),
-    );
-    return;
-  }
-
-  final String tradeNameValue = tradename.text.trim();
-  final String emailValue = email.text.trim();
-  final String passwordValue = password.text.trim();
-
-  final url = Uri.parse('https://testapi.rabadtechnology.com/login.php');
-  final Map<String, dynamic> requestBody = {
-    "trade_name": tradeNameValue,
-    "email": emailValue,
-    "password": passwordValue,
-  };
-
-  try {
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode(requestBody),
-    );
-
-    final Map<String, dynamic> responseData = jsonDecode(response.body);
-
-    if (responseData['success'] == true) {
-      final role = responseData['role']?.toString()?.toLowerCase();
-      final userData = responseData['data'];
-
-      await localStorage.setItem('user', jsonEncode(userData));
-      await localStorage.setItem('role', jsonEncode(role));
-
+    if (!TermCondition) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(responseData['message'] ?? 'Login successful')),
+        SnackBar(
+          content: Text('Please accept the terms and conditions'),
+          backgroundColor: Colors.red,
+        ),
       );
-
-      if (role == "admin") {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => AdminHome()),
-          (route) => false,
-        );
-      } else if (role == "employee") {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => EmpHome()),
-          (route) => false,
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Unknown user role')),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(responseData['message'] ?? 'Login failed')),
-      );
+      return;
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Something went wrong: ${e.toString()}')),
-    );
-  }
-}
 
+    final String tradeNameValue = tradename.text.trim();
+    final String emailValue = email.text.trim();
+    final String passwordValue = password.text.trim();
+
+    final url = Uri.parse('https://testapi.rabadtechnology.com/login.php');
+    final Map<String, dynamic> requestBody = {
+      "trade_name": tradeNameValue,
+      "email": emailValue,
+      "password": passwordValue,
+    };
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+      if (responseData['success'] == true) {
+        final role = responseData['role']?.toString()?.toLowerCase();
+        final userData = responseData['data'];
+
+        await localStorage.setItem('user', jsonEncode(userData));
+        await localStorage.setItem('role', jsonEncode(role));
+
+        // Finish autofill context
+        TextInput.finishAutofillContext();
+
+        if (role == "admin") {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => AdminHome()),
+            (route) => false,
+          );
+          Alert.alert(context, responseData['message'] ?? 'Login successful');
+        } else if (role == "employee") {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => EmpHome()),
+            (route) => false,
+          );
+          Alert.alert(context, responseData['message'] ?? 'Login successful');
+        } else {
+          Alert.alert(context, 'Unknown user role');
+        }
+      } else {
+        Alert.alert(context, responseData['message'] ?? 'Login failed');
+      }
+    } catch (e) {
+      Alert.alert(context, 'Something went wrong: ${e.toString()}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +168,7 @@ class _createScreen extends State<CreateScreen> {
                     ),
                   ),
                   Text(
-                    "Hello Lets's get Started",
+                    "Hello Let's get Started",
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 30),
@@ -190,9 +185,7 @@ class _createScreen extends State<CreateScreen> {
                             labelText: 'Reg. Company 10 Digit Id',
                             labelStyle: TextStyle(color: Colors.black),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                30.0,
-                              ), // Set the border radius
+                              borderRadius: BorderRadius.circular(30.0),
                             ),
                             filled: true,
                             fillColor: Colors.grey[200],
@@ -200,25 +193,25 @@ class _createScreen extends State<CreateScreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Reg. Company 10 Digit Id';
+                              return 'Enter Company ID';
                             }
                             return null;
                           },
                         ),
                         SizedBox(height: 20),
                         TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
                           autofillHints: [AutofillHints.username],
                           controller: email,
                           inputFormatters: [
-                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                        ],
+                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                          ],
                           decoration: InputDecoration(
                             labelText: 'Your User Id/Email',
                             labelStyle: TextStyle(color: Colors.black),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                30,
-                              ), // Set the border radius
+                              borderRadius: BorderRadius.circular(30),
                             ),
                             filled: true,
                             fillColor: Colors.grey[200],
@@ -226,20 +219,21 @@ class _createScreen extends State<CreateScreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Your User Id';
+                              return 'Enter your email';
                             }
                             return null;
                           },
                         ),
                         SizedBox(height: 20),
-                        // Password field
                         TextFormField(
+                          obscureText: _obscureText,
+                          keyboardType: TextInputType.visiblePassword,
+                          textInputAction: TextInputAction.done,
                           autofillHints: [AutofillHints.password],
                           controller: password,
-                          obscureText: _obscureText,
-                           inputFormatters: [
-                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                        ],
+                          inputFormatters: [
+                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                          ],
                           decoration: InputDecoration(
                             labelText: 'Your Password',
                             labelStyle: TextStyle(color: Colors.black),
@@ -264,15 +258,11 @@ class _createScreen extends State<CreateScreen> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Your Password';
+                              return 'Enter your password';
                             }
                             return null;
                           },
                         ),
-                        /* TextButton(onPressed: ()=>Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ForgetPassword())), child: Text("Forget Password")), */
                         Row(
                           children: [
                             Checkbox(
@@ -284,7 +274,7 @@ class _createScreen extends State<CreateScreen> {
                               },
                             ),
                             TextButton(
-                              onPressed: () => print("term Com"),
+                              onPressed: () => print("Terms clicked"),
                               child: Text(
                                 "I Remember",
                                 style: TextStyle(color: Colors.black),
@@ -292,38 +282,12 @@ class _createScreen extends State<CreateScreen> {
                             ),
                           ],
                         ),
-                        /*  Row(
-                        children: [
-                          Checkbox(
-                            value: privacyPolicy,
-                            onChanged: (bool? newValue) {
-                              setState(() {
-                                privacyPolicy = newValue!;
-                              });
-                            },
-                          ),
-                          Text(
-                            "I accept",
-                            style: TextStyle(color: Colors.black),
-                          ),
-                          TextButton(
-                            onPressed: () => print("privacy"),
-                            child: Text("Privacy Policy"),
-                          ),
-                        ],
-                      ), */
-                        // Submit button
                         ElevatedButton(
                           onPressed: () => login(context),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey[200],
-                            padding: EdgeInsets.only(
-                              top: 5,
-                              bottom: 5,
-                              left: 15,
-                              right: 15,
-                            ),
-                            maximumSize: Size(150, 40),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 20),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(40),
                             ),
@@ -338,96 +302,39 @@ class _createScreen extends State<CreateScreen> {
                           ),
                         ),
                         SizedBox(height: 10),
-                        Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                child: Text(
-                                  "Don't Have Company?",
-                                  style: TextStyle(color: Colors.black),
-                                ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("Don't Have Company?",
+                                style: TextStyle(color: Colors.black)),
+                            TextButton(
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CreateCom()),
                               ),
-                              Container(
-                                child: TextButton(
-                                  onPressed:
-                                      () => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => CreateCom(),
-                                        ),
-                                      ),
-                                  child: Text("Create Company"),
-                                ),
-                              ),
-                            ],
-                          ),
+                              child: Text("Create Company"),
+                            ),
+                          ],
                         ),
-                        Container(
-                          padding: EdgeInsets.all(5),
-                          child: Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.center, // Cthe Row content
-                            children: [
-                              // Left line (Container)
-                              Container(
-                                height: 1,
-                                width:
-                                    MediaQuery.of(context).size.width *
-                                    0.2, // 30% width for the left line
-                                color: Colors.black,
-                              ),
-
-                              SizedBox(
-                                width: 10,
-                              ), // Space between the lines and the text
-                              // Text in the middle
-                              Text(
-                                "Follow on",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ), // Adjust the text size as needed
-                              ),
-
-                              SizedBox(
-                                width: 10,
-                              ), // Space between the text and the right line
-                              // Right line (Container)
-                              Container(
-                                height: 1,
-                                width:
-                                    MediaQuery.of(context).size.width *
-                                    0.2, // 30% width for the right line
-                                color: Colors.black,
-                              ),
-                            ],
-                          ),
+                        Divider(height: 30),
+                        Text("Follow on", style: TextStyle(fontSize: 16)),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset('assets/images/facebook.jpg',
+                                width: 30, height: 30),
+                            SizedBox(width: 20),
+                            Image.asset('assets/images/insta.jpg',
+                                width: 30, height: 30),
+                            SizedBox(width: 20),
+                            Image.asset('assets/images/tweeter.jpg',
+                                width: 30, height: 30),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/facebook.jpg',
-                        width: 30,
-                        height: 30,
-                      ),
-                      SizedBox(width: 20),
-                      Image.asset(
-                        'assets/images/insta.jpg',
-                        width: 30,
-                        height: 30,
-                      ),
-                      SizedBox(width: 20),
-                      Image.asset(
-                        'assets/images/tweeter.jpg',
-                        width: 30,
-                        height: 30,
-                      ),
-                      SizedBox(width: 20),
-                    ],
                   ),
                 ],
               ),

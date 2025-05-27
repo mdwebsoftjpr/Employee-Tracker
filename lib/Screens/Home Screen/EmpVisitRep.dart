@@ -362,7 +362,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
               ? Center(
                 child: Text(
                   "Visit Not Found",
-                  style: TextStyle(fontSize: deviceWidth * 0.06),
+                  style: TextStyle(fontSize: devicePixelRatio * 6),
                 ),
               )
               : ListView.builder(

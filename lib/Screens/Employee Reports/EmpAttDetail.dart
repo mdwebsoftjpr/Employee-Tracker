@@ -1,9 +1,12 @@
+import 'package:employee_tracker/Screens/Admin%20Report/VisitRepMap.dart';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:latlong2/latlong.dart';
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 void main() async {
@@ -122,6 +125,15 @@ class EmpattdetailState extends State<EmpAttdetail> {
     });
   }
 
+  double safeParseDouble(String input) {
+    try {
+      return double.parse(input.replaceAll('"', '').replaceAll("'", '').trim());
+    } catch (e) {
+      Alert.alert(context, "Error parsing double: $e");
+      return 0.0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
@@ -135,7 +147,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
         title: Text(
           'Attendance Detail',
           style: TextStyle(
-            fontSize: 6*devicePixelRatio,
+            fontSize: 6 * devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -177,7 +189,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
               ? Center(
                 child: Text(
                   "Attendance Not Found",
-                  style: TextStyle(fontSize: deviceWidth * 0.05),
+                  style: TextStyle(fontSize: devicePixelRatio * 6),
                 ),
               )
               : ListView.builder(
@@ -192,37 +204,48 @@ class EmpattdetailState extends State<EmpAttdetail> {
                         left: devicePixelRatio * 3.5,
                         right: devicePixelRatio * 3.5,
                       ),
-                      padding: EdgeInsets.all(10),
+                      padding: EdgeInsets.all(devicePixelRatio*1),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(deviceWidth * 0.03),
                         color: const Color.fromARGB(255, 247, 239, 230),
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          /* SizedBox(width: devicePixelRatio*3,), */
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                    Text(
+                                Text(
                                   "Date:",
                                   style: TextStyle(
-                                    fontSize: deviceWidth * 0.04,
+                                    fontSize: devicePixelRatio * 5,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                    Text(
+                                Text(
                                   data['date'] != null
                                       ? data['date']
                                           .split('-')
                                           .reversed
                                           .join('-')
                                       : '',
-                                  style: TextStyle(fontSize: deviceWidth * 0.04),
+                                  style: TextStyle(
+                                    fontSize: devicePixelRatio * 4,
+                                  ),
                                 ),
                                 Text(
-                                  "Break Time: ${data['break_time'] ?? ''}",
+                                  "Break:",
                                   style: TextStyle(
-                                    fontSize: deviceWidth * 0.04,
+                                    fontSize: devicePixelRatio * 5,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  "${data['break'] ?? ''}",
+                                  style: TextStyle(
+                                    fontSize: devicePixelRatio * 4,
                                   ),
                                 ),
                               ],
@@ -231,30 +254,45 @@ class EmpattdetailState extends State<EmpAttdetail> {
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+
                               children: [
-                                Text(
-                                  "Punch In: ${data['time_in'] ?? ''}",
-                                  style: TextStyle(
-                                    fontSize: deviceWidth * 0.04,
-                                  ),
-                                ),
-                                Text(
-                                  "Punch Out: ${data['time_out'] ?? ''}",
-                                  style: TextStyle(
-                                    fontSize: deviceWidth * 0.04,
-                                  ),
-                                ),
+                                    Text(
+                                      "Punch In:",
+                                      style: TextStyle(
+                                        fontSize: devicePixelRatio * 5,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      data['time_in'] ?? '',
+                                      style: TextStyle(
+                                        fontSize: devicePixelRatio * 4,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Punch Out:",
+                                      style: TextStyle(
+                                        fontSize: devicePixelRatio * 5,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      data['time_out'] ?? '',
+                                      style: TextStyle(
+                                        fontSize: devicePixelRatio * 4,
+                                      ),
+                                    ),
                               ],
                             ),
                           ),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Container(
                                   padding: EdgeInsets.symmetric(
-                                    vertical: deviceHeight * 0.005,
-                                    horizontal: deviceWidth * 0.03,
+                                    vertical: deviceHeight * 0.006,
+                                    horizontal: deviceWidth * 0.025,
                                   ),
                                   decoration: BoxDecoration(
                                     color:
@@ -272,16 +310,67 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: deviceWidth * 0.04,
+                                      fontSize: devicePixelRatio * 4,
                                     ),
                                   ),
                                 ),
                                 SizedBox(height: deviceHeight * 0.005),
-                                Text(
-                                  "Total Hours: ${data['hours']}",
+                                Row(children: [
+                                  Text(
+                                  "Total Hours:",
                                   style: TextStyle(
-                                    fontSize: deviceWidth * 0.04,
+                                    fontSize: devicePixelRatio * 4,
+                                    fontWeight: FontWeight.bold
                                   ),
+                                ),
+                                Text(
+                                  "${data['hours']}",
+                                  style: TextStyle(
+                                    fontSize: devicePixelRatio * 4,
+                                  ),
+                                ),
+                                ],),
+                                SizedBox(height: deviceHeight * 0.001),
+                                IconButton(
+                                  icon: Icon(
+                                    FontAwesomeIcons.mapLocationDot,
+                                    color: Color(0xFF03a9f4),
+                                    size: devicePixelRatio * 7,
+                                  ),
+                                  onPressed: () {
+                                    List<LatLng> points = [];
+
+                                    if (data['multipoint'] != null &&
+                                        data['multipoint'] != '') {
+                                      final startCoord =
+                                          data['multipoint']
+                                              .split('_')
+                                              .map((e) => e.trim())
+                                              .toList();
+
+                                      if (startCoord.length >= 2) {
+                                        points.add(
+                                          LatLng(
+                                            safeParseDouble(startCoord[0]),
+                                            safeParseDouble(startCoord[1]),
+                                          ),
+                                        );
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => SimpleMapScreen(
+                                                  points: points,
+                                                ),
+                                          ),
+                                        );
+                                      } else {
+                                       Alert.alert(context,'Invalid coordinate format');
+                                      }
+                                    } else {
+                                      Alert.alert(context, "Location Data Not Available");
+                                    }
+                                  },
                                 ),
                               ],
                             ),

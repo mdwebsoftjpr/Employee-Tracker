@@ -177,13 +177,13 @@ class MasterState extends State<Master> {
           body: jsonEncode(requestBody),
         );
         final responseData = jsonDecode(response.body);
-        Alert.alert(context, responseData['message']);
         if (responseData['success']) {
           setState(() {
             isLoading = false;
           });
           designation.clear();
           ShowMaster();
+          Alert.alert(context, responseData['message']);
         }
       } catch (e) {
         setState(() {

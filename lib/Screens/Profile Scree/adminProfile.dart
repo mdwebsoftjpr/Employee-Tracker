@@ -146,7 +146,7 @@ class AdminprofileState extends State<Adminprofile> {
 
                     /// Admin details
                     buildUserRow("Company Name:", userdata!['company_name']),
-                    buildUserRow("Trade Name:", userdata!['trade_name']),
+                    buildUserRow("Register Id:", userdata!['trade_name']),
                     buildUserRow("Key Person:", userdata!['key_person']),
                     buildUserRow("Email:", userdata!['db_email']),
                     buildUserRow("Mobile No.:", userdata!['mobile_no']),

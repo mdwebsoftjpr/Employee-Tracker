@@ -275,7 +275,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                             ? Center(
                               child: Text(
                                 "Attendance Not Found",
-                                style: TextStyle(fontSize: deviceWidth * 0.05),
+                                style: TextStyle(fontSize: devicePixelRatio * 6),
                               ),
                             )
                             : ListView.builder(

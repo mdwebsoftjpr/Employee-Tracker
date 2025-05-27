@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/AdminHome.dart';
+import 'package:employee_tracker/main.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
@@ -177,78 +178,64 @@ Future<File?> compressImage(XFile xFile) async {
   return compressedFile;
 }
 
+void company_update(context) async {
+  if (mounted) setState(() => isLoading = true);
 
+  if (userdata == null) {
+    Alert.alert(context, 'User data not loaded.');
+    return;
+  }
 
+  final request = http.MultipartRequest(
+    'POST',
+    Uri.parse('https://testapi.rabadtechnology.com/company_update.php'),
+  );
 
+  request.fields.addAll({
+    'company_id': userdata!['id'].toString(),
+    'company_name': cname.text,
+    'key_person': keyPerson.text,
+    'gstin_no': Gst.text,
+    'pan_card': PanNo.text,
+    'mobile_no': mobile.text,
+    'email': email.text,
+    'address': address.text,
+    'website_link': website.text,
+    'username': loginUserName.text,
+    'password': password.text,
+    'noofemp': NoOfEmp.text,
+  });
 
- void company_update(context) async {
-  if (!mounted) return;
-  setState(() => isLoading = true);
-
-  if (_formKey.currentState?.validate() ?? false) {
-    if (userdata == null) {
-      if (mounted) setState(() => isLoading = false);
-      Alert.alert(context, 'User data not loaded.');
-      return;
-    }
-
-    final request = http.MultipartRequest(
-      'POST',
-      Uri.parse('https://testapi.rabadtechnology.com/company_update.php'),
-    );
-
-    request.fields.addAll({
-      'company_id': userdata!['id'].toString(),
-      'company_name': cname.text,
-      'key_person': keyPerson.text,
-      'gstin_no': Gst.text,
-      'pan_card': PanNo.text,
-      'mobile_no': mobile.text,
-      'email': email.text,
-      'address': address.text,
-      'website_link': website.text,
-      'username': loginUserName.text,
-      'password': password.text,
-      'noofemp': NoOfEmp.text,
-    });
-
+  try {
     if (_imageFile != null) {
-      final imgSize = await _imageFile!.length();
-      if (imgSize > 15 * 1024) {
-        if (mounted) setState(() => isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Image must be under 15KB.'),
-          backgroundColor: Colors.red,
-        ));
-        return;
-      }
-      request.files.add(await http.MultipartFile.fromPath('image', _imageFile!.path));
+  request.files.add(await http.MultipartFile.fromPath('image', _imageFile!.path));
+} else if (_imageFile == null) {
+  request.files.add(await http.MultipartFile.fromPath('image', 'https://testapi.rabadtechnology.com/$userImg'));
+}
+
+    final response = await request.send();
+    final responseBody = await http.Response.fromStream(response);
+    final Map<String, dynamic> data = jsonDecode(responseBody.body);
+
+    if (data['success'] == true) {
+      await Alert.alert(context, "Thank you, ${data['message']}. Redirecting to login screen.");
+      await localStorage.clear();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => CreateScreen()),
+      );
+    } else {
+      Alert.alert(context, data['message']);
     }
-
-    try {
-      final response = await request.send();
-      final responseBody = await http.Response.fromStream(response);
-      final Map<String, dynamic> data = jsonDecode(responseBody.body);
-
-      if (mounted) setState(() => isLoading = false);
-
-      if (data['success'] == true) {
-        await Alert.alert(context, 'Thank You ${data['message']}');
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => AdminHome()),
-        );
-      } else {
-        Alert.alert(context, data['message']);
-      }
-    } catch (e) {
-      if (mounted) setState(() => isLoading = false);
-      Alert.alert(context, 'Error: $e');
-    }
-  } else {
+  } catch (e) {
+    /* Alert.alert(context, 'Error: $e'); */
+    print(e);
+  } finally {
     if (mounted) setState(() => isLoading = false);
   }
 }
+
+
 
   @override
   Widget build(BuildContext context) {

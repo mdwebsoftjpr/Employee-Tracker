@@ -177,20 +177,6 @@ class EmployeelistState extends State<Employeelist> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Trade Name:-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 3),
-                          Text(
-                            item['trade_name'] ?? '',
-                            style: TextStyle(
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
-                              color: Colors.black,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
                             "Date Of Birth:-",
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
@@ -417,7 +403,7 @@ class EmployeelistState extends State<Employeelist> {
                       Text(
                         "Employee Not Found",
                         style: TextStyle(
-                          fontSize: MediaQuery.of(context).devicePixelRatio *7,
+                          fontSize: MediaQuery.of(context).devicePixelRatio *6,
                         ),
                       ),
                     ],
