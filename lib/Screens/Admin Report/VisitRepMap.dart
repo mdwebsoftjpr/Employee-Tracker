@@ -43,7 +43,7 @@ class SimpleMapScreen extends StatelessWidget {
                   FlutterMap(
                     options: MapOptions(
                       initialCenter: initialPoint,
-                      initialZoom: 13,
+                      initialZoom: 18,
                     ),
                     children: [
                       TileLayer(
@@ -67,8 +67,8 @@ class SimpleMapScreen extends StatelessWidget {
                               final point = entry.value;
 
                               return Marker(
-                                width: 60,
-                                height: 60,
+                                width: 70,
+                                height: 70,
                                 point: point,
                                 child: Column(
                                   children: [
