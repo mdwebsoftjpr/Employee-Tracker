@@ -210,12 +210,11 @@ class EmpattdetailState extends State<EmpAttdetail> {
                         color: const Color.fromARGB(255, 247, 239, 230),
                       ),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          /* SizedBox(width: devicePixelRatio*3,), */
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
                                   "Date:",
@@ -243,7 +242,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                   ),
                                 ),
                                 Text(
-                                  "${data['break'] ?? ''}",
+                                  "${data['break'] ?? '0'}",
                                   style: TextStyle(
                                     fontSize: devicePixelRatio * 4,
                                   ),
@@ -304,7 +303,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                   ),
                                 ),
                                 Text(
-                                  data['address'] ?? '',
+                                  data['addressout'] ?? '',
                                   style: TextStyle(
                                     fontSize: devicePixelRatio * 4,
                                   ),
@@ -342,6 +341,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 ),
                                 SizedBox(height: deviceHeight * 0.005),
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   children: [
                                     Text(
                                       "Total Hours:",

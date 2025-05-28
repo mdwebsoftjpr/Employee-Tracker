@@ -212,7 +212,7 @@ class AttendanceState extends State<Attendance> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(width: 12),
+                                SizedBox(width: MediaQuery.of(context).devicePixelRatio*7),
                                 Expanded(
                                   child: Column(
                                     children: [
@@ -286,7 +286,7 @@ class AttendanceState extends State<Attendance> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    ' ${item['break_time'] ?? '0'}',
+                                                    ' ${item['break'] ?? '0'}',
                                                     style: TextStyle(
                                                       fontSize:
                                                           devicePixelRatio * 4,
@@ -296,7 +296,10 @@ class AttendanceState extends State<Attendance> {
                                               ),
                                             ],
                                           ),
+                                          SizedBox(width: MediaQuery.of(context).devicePixelRatio*3),
                                           Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+
                                             children: [
                                               Container(
                                                 padding: EdgeInsets.symmetric(
@@ -326,6 +329,7 @@ class AttendanceState extends State<Attendance> {
                                               ),
                                               SizedBox(height: 4),
                                               Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
                                                 children: [
                                                   Text(
                                                     "Total Hours: ",
@@ -399,7 +403,7 @@ class AttendanceState extends State<Attendance> {
                                               ),
                                             ),
                                             TextSpan(
-                                              text: item['address'],
+                                              text: item['addressout'],
                                               style: TextStyle(
                                                 fontSize: devicePixelRatio * 4,
                                                 color: Colors.black,
@@ -419,7 +423,7 @@ class AttendanceState extends State<Attendance> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                        CrossAxisAlignment.center,
 
                                     children: [
                                       IconButton(

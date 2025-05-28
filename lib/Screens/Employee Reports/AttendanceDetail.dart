@@ -360,6 +360,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                               ],
                                             ),
                                           ),
+                                          SizedBox(width: devicePixelRatio*5,),
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:
@@ -398,6 +399,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                               ],
                                             ),
                                           ),
+                                          SizedBox(width: devicePixelRatio*5,),
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:
@@ -455,6 +457,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                               ],
                                             ),
                                           ),
+                                          SizedBox(width: devicePixelRatio*5,),
                                           Expanded(
                                             child: Column(
                                               children: [
@@ -554,11 +557,32 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
+                                                Row(
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                  Text(
+                                                  "Break:",
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        devicePixelRatio * 4,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                SizedBox(width: devicePixelRatio*1,),
+                                                Text(
+                                                  data['break']??'0',
+                                                  style: TextStyle(
+                                                    fontSize:
+                                                        devicePixelRatio * 4,
+                                                  ),
+                                                ),
+                                                ],)
                                               ],
                                             ),
                                           ),
                                         ],
                                       ),
+                                      SizedBox(height: devicePixelRatio*1,),
                                       Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -616,7 +640,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       ),
                                                       TextSpan(
                                                         text:
-                                                            data['address_out'] ??
+                                                            data['addressout'] ??
                                                             'No address available',
                                                         style: TextStyle(
                                                           fontSize:
