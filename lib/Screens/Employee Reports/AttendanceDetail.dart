@@ -360,7 +360,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                               ],
                                             ),
                                           ),
-                                          SizedBox(width: devicePixelRatio*5,),
+                                          SizedBox(width: devicePixelRatio * 5),
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:
@@ -399,7 +399,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                               ],
                                             ),
                                           ),
-                                          SizedBox(width: devicePixelRatio*5,),
+                                          SizedBox(width: devicePixelRatio * 5),
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:
@@ -457,7 +457,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                               ],
                                             ),
                                           ),
-                                          SizedBox(width: devicePixelRatio*5,),
+                                          SizedBox(width: devicePixelRatio * 5),
                                           Expanded(
                                             child: Column(
                                               children: [
@@ -558,31 +558,46 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   ),
                                                 ),
                                                 Row(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
                                                   children: [
-                                                  Text(
-                                                  "Break:",
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        devicePixelRatio * 4,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                                    Text(
+                                                      "Break:",
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            devicePixelRatio *
+                                                            4,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width:
+                                                          devicePixelRatio * 1,
+                                                    ),
+                                                    Text(
+                                                      (() {
+                                                        int count = 0;
+                                                        if (data['break1'] ==
+                                                            'close')
+                                                          count++;
+                                                        if (data['break2'] ==
+                                                            'close')
+                                                          count++;
+                                                        if (data['break3'] ==
+                                                            'close')
+                                                          count++;
+                                                        return '$count';
+                                                      })(),
+                                                    ),
+                                                  ],
                                                 ),
-                                                SizedBox(width: devicePixelRatio*1,),
-                                                Text(
-                                                  data['break']??'0',
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        devicePixelRatio * 4,
-                                                  ),
-                                                ),
-                                                ],)
                                               ],
                                             ),
                                           ),
                                         ],
                                       ),
-                                      SizedBox(height: devicePixelRatio*1,),
+                                      SizedBox(height: devicePixelRatio * 1),
                                       Row(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,

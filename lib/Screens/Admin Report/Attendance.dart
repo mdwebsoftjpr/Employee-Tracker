@@ -212,7 +212,11 @@ class AttendanceState extends State<Attendance> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(width: MediaQuery.of(context).devicePixelRatio*7),
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).devicePixelRatio *
+                                      7,
+                                ),
                                 Expanded(
                                   child: Column(
                                     children: [
@@ -286,19 +290,34 @@ class AttendanceState extends State<Attendance> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    ' ${item['break'] ?? '0'}',
-                                                    style: TextStyle(
-                                                      fontSize:
-                                                          devicePixelRatio * 4,
-                                                    ),
+                                                    (() {
+                                                      int count = 0;
+                                                      if (item['break1'] ==
+                                                          'close')
+                                                        count++;
+                                                      if (item['break2'] ==
+                                                          'close')
+                                                        count++;
+                                                      if (item['break3'] ==
+                                                          'close')
+                                                        count++;
+                                                      return '$count';
+                                                    })(),
                                                   ),
                                                 ],
                                               ),
                                             ],
                                           ),
-                                          SizedBox(width: MediaQuery.of(context).devicePixelRatio*3),
+                                          SizedBox(
+                                            width:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).devicePixelRatio *
+                                                3,
+                                          ),
                                           Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
 
                                             children: [
                                               Container(
@@ -329,7 +348,8 @@ class AttendanceState extends State<Attendance> {
                                               ),
                                               SizedBox(height: 4),
                                               Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
                                                 children: [
                                                   Text(
                                                     "Total Hours: ",

@@ -242,11 +242,15 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                   ),
                                 ),
                                 Text(
-                                  "${data['break'] ?? '0'}",
-                                  style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
-                                  ),
+                                  (() {
+                                    int count = 0;
+                                    if (data['break1'] == 'close') count++;
+                                    if (data['break2'] == 'close') count++;
+                                    if (data['break3'] == 'close') count++;
+                                    return '$count';
+                                  })(),
                                 ),
+
                                 Text(
                                   "Address in:",
                                   style: TextStyle(
@@ -341,7 +345,8 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 ),
                                 SizedBox(height: deviceHeight * 0.005),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: [
                                     Text(
                                       "Total Hours:",
