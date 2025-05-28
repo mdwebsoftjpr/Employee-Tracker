@@ -28,7 +28,7 @@ class SimpleMapScreen extends StatelessWidget {
         title: Text(
           'Visit Map',
           style: TextStyle(
-            fontSize:  6* MediaQuery.of(context).devicePixelRatio,
+            fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -66,6 +66,20 @@ class SimpleMapScreen extends StatelessWidget {
                               final index = entry.key;
                               final point = entry.value;
 
+                              Color markerColor;
+                              String label;
+
+                              if (index == 0) {
+                                markerColor = Colors.green;
+                                label = 'Start';
+                              } else if (index == 1) {
+                                markerColor = Colors.red;
+                                label = 'End';
+                              } else {
+                                markerColor = Colors.orange;
+                                label = 'V${index + 1}';
+                              }
+
                               return Marker(
                                 width: 70,
                                 height: 70,
@@ -74,18 +88,11 @@ class SimpleMapScreen extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.location_on,
-                                      color:
-                                          index == 0
-                                              ? Colors
-                                                  .green // start
-                                              : (index == points.length - 1
-                                                  ? Colors
-                                                      .red // end
-                                                  : Colors.orange), // middle
+                                      color: markerColor,
                                       size: 35,
                                     ),
                                     Text(
-                                      'V${index + 1}',
+                                      label,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 12,

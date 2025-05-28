@@ -1835,7 +1835,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      '${item['break1out'] ?? '0'}',
+                                                      '${item['break1out'] ?? '-'}',
                                                       style: TextStyle(
                                                         fontSize:
                                                             MediaQuery.of(
@@ -1941,7 +1941,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      '${item['break1in'] ?? '0'}',
+                                                      '${item['break2in'] ?? '0'}',
                                                       style: TextStyle(
                                                         fontSize:
                                                             MediaQuery.of(
@@ -1963,7 +1963,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      '${item['break1out'] ?? '0'}',
+                                                      '${item['break2out'] ?? '-'}',
                                                       style: TextStyle(
                                                         fontSize:
                                                             MediaQuery.of(
@@ -2071,7 +2071,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      '${item['break1in'] ?? '0'}',
+                                                      '${item['break3in'] ?? '0'}',
                                                       style: TextStyle(
                                                         fontSize:
                                                             MediaQuery.of(
@@ -2093,7 +2093,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      '${item['break1out'] ?? '0'}',
+                                                      '${item['break3out'] ?? '-'}',
                                                       style: TextStyle(
                                                         fontSize:
                                                             MediaQuery.of(
