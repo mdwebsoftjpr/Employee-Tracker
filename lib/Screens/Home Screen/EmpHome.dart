@@ -1013,7 +1013,7 @@ class _EmpHomeState extends State<EmpHome> {
                       clearStorage(context);
                     },
                   ),
-                  SizedBox(height: .02 * MediaQuery.of(context).size.height),
+                  SizedBox(height: .09 * MediaQuery.of(context).size.height),
                   Divider(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),
