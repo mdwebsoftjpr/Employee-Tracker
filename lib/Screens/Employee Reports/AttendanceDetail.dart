@@ -474,7 +474,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                     final point1 =
                                                         data['multipoint'];
                                                     final point2 =
-                                                        data['multipoint2'];
+                                                        data['multipoint_out'];
 
                                                     try {
                                                       // Add point1 if available and valid
@@ -640,7 +640,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       ),
                                                       TextSpan(
                                                         text:
-                                                            data['addressout'] ??
+                                                            data['address_out'] ??
                                                             'No address available',
                                                         style: TextStyle(
                                                           fontSize:

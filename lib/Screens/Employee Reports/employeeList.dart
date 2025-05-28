@@ -380,7 +380,7 @@ class EmployeelistState extends State<Employeelist> {
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
-          'Employee Detail',
+          'Employee List',
           style: TextStyle(
             fontSize: 6*MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,

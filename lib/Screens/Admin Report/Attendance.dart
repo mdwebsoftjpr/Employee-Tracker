@@ -403,7 +403,7 @@ class AttendanceState extends State<Attendance> {
                                               ),
                                             ),
                                             TextSpan(
-                                              text: item['addressout'],
+                                              text: item['address_out'],
                                               style: TextStyle(
                                                 fontSize: devicePixelRatio * 4,
                                                 color: Colors.black,
@@ -436,7 +436,7 @@ class AttendanceState extends State<Attendance> {
                                           List<LatLng> points = [];
 
                                           final point1 = item['multipoint'];
-                                          final point2 = item['multipoint2'];
+                                          final point2 = item['multipoint_out'];
 
                                           try {
                                             // Add point1 if available and valid

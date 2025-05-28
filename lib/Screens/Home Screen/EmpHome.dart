@@ -6,6 +6,7 @@ import 'package:employee_tracker/Screens/Employee%20Reports/EmpAttDetail.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/empProfile.dart';
 import 'package:employee_tracker/Screens/VisitOut%20Screen/VisitOut.dart';
 import 'package:employee_tracker/main.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
@@ -85,6 +86,7 @@ class _EmpHomeState extends State<EmpHome> {
   String? Break2;
   String? Break3;
   String? Status;
+  List<dynamic> statusData = [];
 
   Future<String?> getDeviceId() async {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -121,7 +123,7 @@ class _EmpHomeState extends State<EmpHome> {
         name = user['name'] ?? 'Default User';
         username = user['username'] ?? 'Default User';
         userid = user['id'] ?? 'Default User';
-        userImg = user['image']??'';
+        userImg = user['image'] ?? '';
         comimage = user['company_logo'];
       });
     }
@@ -139,7 +141,7 @@ class _EmpHomeState extends State<EmpHome> {
 
       var success = responseData['success'];
       var message = responseData['message'];
-      print("GetApi $responseData");
+      /* print("GetApi $responseData"); */
       if (success == true) {
         var data = responseData['data'];
         var statusin = data[0]['status_PunchIn'] ?? '';
@@ -149,9 +151,9 @@ class _EmpHomeState extends State<EmpHome> {
         var break1 = data[0]['break1'] ?? '';
         var break2 = data[0]['break2'] ?? '';
         var break3 = data[0]['break3'] ?? '';
-
         if (statusin != '') {
           setState(() {
+            statusData = data;
             isLoading = false;
             Mainstatus = statusin;
             UserImage = image;
@@ -161,7 +163,7 @@ class _EmpHomeState extends State<EmpHome> {
             Break2 = break2;
             Break3 = break3;
           });
-          print('Break1$Break1,Break2$Break2,Break3$Break3');
+          print('Status$statusData,$Break1,$Break2,$Break3');
         } else {
           setState(() {
             isLoading = false;
@@ -321,7 +323,6 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   BreakIn(String breakcount) async {
-    print('Break1$Break1,Break2$Break2,Break3$Break3');
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/employeebreakupdate.php',
     );
@@ -349,10 +350,10 @@ class _EmpHomeState extends State<EmpHome> {
           setState(() {
             Status = responseData['status'];
           });
-          Alert.alert(context,message);
+          Alert.alert(context, message);
           getApi();
         } else {
-          Alert.alert(context,message);
+          Alert.alert(context, message);
         }
       } else {
         print('HTTP error: ${response.statusCode}, response: ${response.body}');
@@ -719,10 +720,8 @@ class _EmpHomeState extends State<EmpHome> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
-                  onPressed: () async { 
-                    Navigator.of(
-                      context,
-                    ).pop();
+                  onPressed: () async {
+                    Navigator.of(context).pop();
                     await _pickImageFromCamera();
                     punchOut();
                   },
@@ -1795,15 +1794,73 @@ class _EmpHomeState extends State<EmpHome> {
                                 child: Column(
                                   children: [
                                     Text("Break 1"),
-                                    Image.asset(
-                                      'assets/images/Break.png',
-                                      width:
-                                          MediaQuery.of(context).size.width *
-                                          0.12,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                          0.12,
-                                    ),
+                                    (Break1 == 'open' || Break1 == 'close')
+                                        ? Column(
+                                          children:
+                                              statusData.map<Widget>((item) {
+                                                return Column(
+                                                  children: [
+                                                    Text(
+                                                      'Start',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).devicePixelRatio *
+                                                            4,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      '${item['break1in'] ?? '0'}',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).devicePixelRatio *
+                                                            4,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      'End',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).devicePixelRatio *
+                                                            4,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      '${item['break1out'] ?? '0'}',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).devicePixelRatio *
+                                                            4,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              }).toList(),
+                                        )
+                                        : Image.asset(
+                                          'assets/images/Break.png',
+                                          width:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.12,
+                                          height:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.12,
+                                        ),
                                     ElevatedButton(
                                       onPressed:
                                           () =>
@@ -1818,7 +1875,8 @@ class _EmpHomeState extends State<EmpHome> {
                                               : Text("End"),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
-                                            (Break1 == 'close' || Mainstatus=='')
+                                            (Break1 == 'close' ||
+                                                    Mainstatus == '')
                                                 ? Colors.red
                                                 : Color(0xFF03a9f4),
                                         foregroundColor: Colors.white,
@@ -1864,15 +1922,73 @@ class _EmpHomeState extends State<EmpHome> {
                                 child: Column(
                                   children: [
                                     Text("Break 2"),
-                                    Image.asset(
-                                      'assets/images/Break.png',
-                                      width:
-                                          MediaQuery.of(context).size.width *
-                                          0.12,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                          0.12,
-                                    ),
+                                    (Break2 == 'open' || Break2 == 'close')
+                                        ? Column(
+                                          children:
+                                              statusData.map<Widget>((item) {
+                                                return Column(
+                                                  children: [
+                                                    Text(
+                                                      'Start',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).devicePixelRatio *
+                                                            4,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      '${item['break1in'] ?? '0'}',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).devicePixelRatio *
+                                                            4,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      'End',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).devicePixelRatio *
+                                                            4,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      '${item['break1out'] ?? '0'}',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).devicePixelRatio *
+                                                            4,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              }).toList(),
+                                        )
+                                        : Image.asset(
+                                          'assets/images/Break.png',
+                                          width:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.12,
+                                          height:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.12,
+                                        ),
                                     ElevatedButton(
                                       onPressed:
                                           () =>
@@ -1889,7 +2005,8 @@ class _EmpHomeState extends State<EmpHome> {
                                               : Text("End"),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
-                                            (Break2 == 'close' || Mainstatus=='')
+                                            (Break2 == 'close' ||
+                                                    Mainstatus == '')
                                                 ? Colors.red
                                                 : Color(0xFF03a9f4),
                                         foregroundColor: Colors.white,
@@ -1935,15 +2052,73 @@ class _EmpHomeState extends State<EmpHome> {
                                 child: Column(
                                   children: [
                                     Text("Break 3"),
-                                    Image.asset(
-                                      'assets/images/Break.png',
-                                      width:
-                                          MediaQuery.of(context).size.width *
-                                          0.12,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                          0.12,
-                                    ),
+                                    (Break3 == 'open' || Break3 == 'close')
+                                        ? Column(
+                                          children:
+                                              statusData.map<Widget>((item) {
+                                                return Column(
+                                                  children: [
+                                                    Text(
+                                                      'Start',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).devicePixelRatio *
+                                                            4,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      '${item['break1in'] ?? '0'}',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).devicePixelRatio *
+                                                            4,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      'End',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).devicePixelRatio *
+                                                            4,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      '${item['break1out'] ?? '0'}',
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).devicePixelRatio *
+                                                            4,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              }).toList(),
+                                        )
+                                        : Image.asset(
+                                          'assets/images/Break.png',
+                                          width:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.12,
+                                          height:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.12,
+                                        ),
                                     ElevatedButton(
                                       onPressed:
                                           () =>
@@ -1960,7 +2135,8 @@ class _EmpHomeState extends State<EmpHome> {
                                               : Text("End"),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
-                                            (Break3 == 'close' || Mainstatus=='')
+                                            (Break3 == 'close' ||
+                                                    Mainstatus == '')
                                                 ? Colors.red
                                                 : Color(0xFF03a9f4),
                                         foregroundColor: Colors.white,
@@ -2140,85 +2316,6 @@ class _EmpHomeState extends State<EmpHome> {
                           ],
                         ),
                       ),
-                      /*  SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  // Set the background color here
-                  color: Color(0xFF03a9f4),
-                  borderRadius: BorderRadius.circular(
-                    10,
-                  ), // Optional: Adds rounded corners
-                ),
-                width: MediaQuery.of(context).size.width * 0.9,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Break Report",
-                              style: TextStyle(fontSize: 15),
-                            ),
-                            Icon(Icons.breakfast_dining, size: 40),
-                            ElevatedButton(
-                              onPressed: () => BreakOut(),
-                              child: Text(
-                                "Break Report",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text("Report", style: TextStyle(fontSize: 15)),
-                            Icon(Icons.insert_chart_outlined, size: 40),
-                            ElevatedButton(
-                              onPressed: () => print("Report"),
-                              child: Text(
-                                "Report",
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF03a9f4),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ), */
                       SizedBox(height: 10),
                     ],
                   ),

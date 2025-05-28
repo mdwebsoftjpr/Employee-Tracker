@@ -303,7 +303,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                   ),
                                 ),
                                 Text(
-                                  data['addressout'] ?? '',
+                                  data['address_out'] ?? '',
                                   style: TextStyle(
                                     fontSize: devicePixelRatio * 4,
                                   ),
@@ -369,7 +369,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                     List<LatLng> points = [];
 
                                     final point1 = data['multipoint'];
-                                    final point2 = data['multipoint2'];
+                                    final point2 = data['multipoint_out'];
 
                                     try {
                                       // Add point1 if available and valid
