@@ -343,7 +343,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   ),
                                                 ),
                                                 Text(
-                                                  "Break Time:",
+                                                  "Total Hours:",
                                                   style: TextStyle(
                                                     fontSize:
                                                         devicePixelRatio * 4,
@@ -351,7 +351,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   ),
                                                 ),
                                                 Text(
-                                                  '${data['break_time'] ?? ''}',
+                                                  "${data['hours']}",
                                                   style: TextStyle(
                                                     fontSize:
                                                         devicePixelRatio * 4,
@@ -439,20 +439,40 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                 SizedBox(
                                                   height: deviceHeight * 0.005,
                                                 ),
-                                                Text(
-                                                  "Total Hours:",
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        devicePixelRatio * 4,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  "${data['hours']}",
-                                                  style: TextStyle(
-                                                    fontSize:
-                                                        devicePixelRatio * 4,
-                                                  ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      "Break:",
+                                                      style: TextStyle(
+                                                        fontSize:
+                                                            devicePixelRatio *
+                                                            4,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width:
+                                                          devicePixelRatio * 1,
+                                                    ),
+                                                    Text(
+                                                      (() {
+                                                        int count = 0;
+                                                        if (data['break1'] ==
+                                                            'close')
+                                                          count++;
+                                                        if (data['break2'] ==
+                                                            'close')
+                                                          count++;
+                                                        if (data['break3'] ==
+                                                            'close')
+                                                          count++;
+                                                        return '$count';
+                                                      })(),
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
                                             ),
@@ -557,41 +577,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Text(
-                                                      "Break:",
-                                                      style: TextStyle(
-                                                        fontSize:
-                                                            devicePixelRatio *
-                                                            4,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width:
-                                                          devicePixelRatio * 1,
-                                                    ),
-                                                    Text(
-                                                      (() {
-                                                        int count = 0;
-                                                        if (data['break1'] ==
-                                                            'close')
-                                                          count++;
-                                                        if (data['break2'] ==
-                                                            'close')
-                                                          count++;
-                                                        if (data['break3'] ==
-                                                            'close')
-                                                          count++;
-                                                        return '$count';
-                                                      })(),
-                                                    ),
-                                                  ],
-                                                ),
+                                                
                                               ],
                                             ),
                                           ),
