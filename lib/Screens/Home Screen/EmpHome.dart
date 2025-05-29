@@ -1949,7 +1949,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                     (Break1 == '')
                                                         ? 'Are You Shore For Break'
                                                         : (Break1 == 'open')
-                                                        ? "Are You Shore For End Break"
+                                                        ? "Are You Shore For Break End"
                                                         : '',
                                                     (Break1 == '')
                                                         ? 'Break In'
@@ -2097,7 +2097,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                     (Break2 == '')
                                                         ? 'Are You Shore For Break'
                                                         : (Break2 == 'open')
-                                                        ? "Are You Shore For End Break"
+                                                        ? "Are You Shore For Break End"
                                                         : '',
                                                     (Break2 == '')
                                                         ? 'Break In'
@@ -2244,11 +2244,11 @@ class _EmpHomeState extends State<EmpHome> {
                                                     (Break3 == '')
                                                         ? 'Are You Shore For Break'
                                                         : (Break3 == 'open')
-                                                        ? "Are You Shore For End Break"
+                                                        ? "Are You Shore For Break End"
                                                         : '',
                                                     (Break3 == '')
                                                         ? 'Break In'
-                                                        : (Break3== 'open')
+                                                        : (Break3 == 'open')
                                                         ? "Break End"
                                                         : '',
                                                   )
