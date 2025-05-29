@@ -6,6 +6,8 @@ import 'package:localstorage/localstorage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -89,6 +91,17 @@ class EmployeelistState extends State<Employeelist> {
       Alert.alert(context, 'Failed to fetch data: $e');
     }
   }
+
+String formatDob(String? dateString) {
+  if (dateString == null || dateString.isEmpty) return 'Invalid Date';
+  try {
+    DateTime parsedDate = DateTime.parse(dateString);
+    return DateFormat('dd-MM-yyyy').format(parsedDate);
+  } catch (e) {
+    return 'Invalid Date';
+  }
+}
+
 
   void EmpData(BuildContext context, Map<String, dynamic> item) {
     showDialog(
@@ -182,7 +195,7 @@ class EmployeelistState extends State<Employeelist> {
                           ),
                           SizedBox(height: 3),
                           Text(
-                            (item['dob'] ?? 0).toString(),
+                            formatDob(item['dob']),
                             style: TextStyle(
                               fontSize:
                                   5 * MediaQuery.of(context).devicePixelRatio,
@@ -273,11 +286,7 @@ class EmployeelistState extends State<Employeelist> {
                           ),
                           SizedBox(height: 3),
                           Text(
-                            ((item['doinofdate'] ?? 0)
-                                .toString()
-                                .split('')
-                                .reversed
-                                .join()),
+                            formatDob(item['doinofdate']),
                             style: TextStyle(
                               fontSize:
                                   5 * MediaQuery.of(context).devicePixelRatio,
@@ -382,7 +391,7 @@ class EmployeelistState extends State<Employeelist> {
         title: Text(
           'Employee List',
           style: TextStyle(
-            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
+            fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -403,7 +412,7 @@ class EmployeelistState extends State<Employeelist> {
                       Text(
                         "Employee Not Found",
                         style: TextStyle(
-                          fontSize: MediaQuery.of(context).devicePixelRatio *6,
+                          fontSize: MediaQuery.of(context).devicePixelRatio * 6,
                         ),
                       ),
                     ],
@@ -418,7 +427,7 @@ class EmployeelistState extends State<Employeelist> {
                   return Container(
                     margin: EdgeInsets.only(
                       top: 5,
-                      left: MediaQuery.of(context).devicePixelRatio *3,
+                      left: MediaQuery.of(context).devicePixelRatio * 3,
                       right: MediaQuery.of(context).devicePixelRatio * 3,
                     ),
                     padding: EdgeInsets.all(
@@ -579,7 +588,9 @@ class EmployeelistState extends State<Employeelist> {
                                 EmpData(context, item);
                               },
                               child: Container(
-                                padding: EdgeInsets.all(MediaQuery.of(context).devicePixelRatio*3),
+                                padding: EdgeInsets.all(
+                                  MediaQuery.of(context).devicePixelRatio * 3,
+                                ),
                                 margin: EdgeInsets.zero,
                                 decoration: BoxDecoration(
                                   color: Colors.orange,
@@ -590,7 +601,9 @@ class EmployeelistState extends State<Employeelist> {
                                 alignment: Alignment.center,
                                 child: Icon(
                                   FontAwesomeIcons.solidEye,
-                                  size: 5 * MediaQuery.of(context).devicePixelRatio,
+                                  size:
+                                      5 *
+                                      MediaQuery.of(context).devicePixelRatio,
                                   color: Colors.white,
                                 ),
                               ),
@@ -606,7 +619,9 @@ class EmployeelistState extends State<Employeelist> {
                                 );
                               },
                               child: Container(
-                                padding:  EdgeInsets.all(MediaQuery.of(context).devicePixelRatio*3),
+                                padding: EdgeInsets.all(
+                                  MediaQuery.of(context).devicePixelRatio * 3,
+                                ),
                                 margin: EdgeInsets.zero,
                                 decoration: BoxDecoration(
                                   color: Colors.blue,
@@ -617,7 +632,9 @@ class EmployeelistState extends State<Employeelist> {
                                 alignment: Alignment.center,
                                 child: Icon(
                                   FontAwesomeIcons.edit,
-                                  size: 5 * MediaQuery.of(context).devicePixelRatio,
+                                  size:
+                                      5 *
+                                      MediaQuery.of(context).devicePixelRatio,
                                   color: Colors.white,
                                 ),
                               ),
@@ -633,7 +650,9 @@ class EmployeelistState extends State<Employeelist> {
                                 );
                               },
                               child: Container(
-                                padding:EdgeInsets.all(MediaQuery.of(context).devicePixelRatio*3),
+                                padding: EdgeInsets.all(
+                                  MediaQuery.of(context).devicePixelRatio * 3,
+                                ),
                                 margin: EdgeInsets.zero,
                                 decoration: BoxDecoration(
                                   color: Colors.pink,
@@ -644,7 +663,9 @@ class EmployeelistState extends State<Employeelist> {
                                 alignment: Alignment.center,
                                 child: Icon(
                                   FontAwesomeIcons.key,
-                                  size: 5*MediaQuery.of(context).devicePixelRatio,
+                                  size:
+                                      5 *
+                                      MediaQuery.of(context).devicePixelRatio,
                                   color: Colors.white,
                                 ),
                               ),

@@ -178,6 +178,7 @@ class AttendanceState extends State<Attendance> {
                         child: Column(
                           children: [
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Column(
                                   children: [
@@ -211,11 +212,6 @@ class AttendanceState extends State<Attendance> {
                                       ),
                                     ),
                                   ],
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).devicePixelRatio *
-                                      7,
                                 ),
                                 Expanded(
                                   child: Column(
@@ -308,13 +304,6 @@ class AttendanceState extends State<Attendance> {
                                               ),
                                             ],
                                           ),
-                                          SizedBox(
-                                            width:
-                                                MediaQuery.of(
-                                                  context,
-                                                ).devicePixelRatio *
-                                                3,
-                                          ),
                                           Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
@@ -346,7 +335,7 @@ class AttendanceState extends State<Attendance> {
                                                   ),
                                                 ),
                                               ),
-                                              SizedBox(height: 4),
+                                              SizedBox(height: 8),
                                               Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.center,
@@ -361,10 +350,10 @@ class AttendanceState extends State<Attendance> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    "${item['hours'] ?? '0'}",
+                                                    "${item['hours']??0}",
                                                     style: TextStyle(
                                                       fontSize:
-                                                          devicePixelRatio * 4,
+                                                          devicePixelRatio * 3.5,
                                                     ),
                                                   ),
                                                 ],
@@ -510,7 +499,7 @@ class AttendanceState extends State<Attendance> {
                                             } else {
                                               Alert.alert(
                                                 context,
-                                                "No valid location data available.",
+                                                "Attemdance Not Marked",
                                               );
                                             }
                                           } catch (e) {

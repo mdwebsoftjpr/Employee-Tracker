@@ -47,8 +47,12 @@ class CreateEmpState extends State<CreateEmployee> {
   String comName = 'Company';
   int? comId;
   File? _imageFile;
-  DateTime? selectedDate;
-  String? formattedDate;
+  DateTime? selectedDobDate;
+  String? formattedDobDate;
+
+  DateTime? selectedJoinDate;
+  String? formattedJoinDate;
+
   bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
   String? TradeName;
@@ -167,38 +171,37 @@ class CreateEmpState extends State<CreateEmployee> {
   }
 
   Future<void> _pickDateDob(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate ?? DateTime.now(),
-      firstDate: DateTime(1947),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-        formattedDate = DateFormat('yyyy-MM-dd').format(picked);
-
-        dob.text = formattedDate!;
-      });
-    }
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: selectedDobDate ?? DateTime.now(),
+    firstDate: DateTime(1947),
+    lastDate: DateTime(2101),
+  );
+  if (picked != null && picked != selectedDobDate) {
+    setState(() {
+      selectedDobDate = picked;
+      formattedDobDate = DateFormat('yyyy-MM-dd').format(picked);
+      dob.text = formattedDobDate!;
+    });
   }
+}
 
-  Future<void> _pickDateJoin(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate ?? DateTime.now(),
-      firstDate: DateTime(1975),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-        formattedDate = DateFormat('yyyy-MM-dd').format(picked);
-
-        joinOfDate.text = formattedDate!;
-      });
-    }
+Future<void> _pickDateJoin(BuildContext context) async {
+  final DateTime? picked = await showDatePicker(
+    context: context,
+    initialDate: selectedJoinDate ?? DateTime.now(),
+    firstDate: DateTime(1975),
+    lastDate: DateTime(2101),
+  );
+  if (picked != null && picked != selectedJoinDate) {
+    setState(() {
+      selectedJoinDate = picked;
+      formattedJoinDate = DateFormat('yyyy-MM-dd').format(picked);
+      joinOfDate.text = formattedJoinDate!;
+    });
   }
+}
+
 
   Future<void> createEmp(BuildContext context) async {
     if (mounted) setState(() => isLoading = true);
@@ -382,7 +385,7 @@ class CreateEmpState extends State<CreateEmployee> {
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
                                 4 * MediaQuery.of(context).devicePixelRatio,
-                              ), 
+                              ),
                             ),
                             filled: true,
                             fillColor: Colors.grey[200],
@@ -501,7 +504,10 @@ class CreateEmpState extends State<CreateEmployee> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: panNo,
-                          inputFormatters: [UpperCaseTextFormatter(),FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                          inputFormatters: [
+                            UpperCaseTextFormatter(),
+                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                          ],
                           decoration: InputDecoration(
                             labelText: 'Enter PAN Card No.',
                             contentPadding: EdgeInsets.symmetric(
@@ -573,7 +579,9 @@ class CreateEmpState extends State<CreateEmployee> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: email,
-                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
+                          inputFormatters: [
+                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                          ],
                           decoration: InputDecoration(
                             labelText: 'Enter Email',
                             contentPadding: EdgeInsets.symmetric(
@@ -785,7 +793,9 @@ class CreateEmpState extends State<CreateEmployee> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: username,
-                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s')),],
+                          inputFormatters: [
+                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                          ],
                           decoration: InputDecoration(
                             labelText: 'Enter User Name',
                             contentPadding: EdgeInsets.symmetric(
@@ -819,7 +829,9 @@ class CreateEmpState extends State<CreateEmployee> {
                         SizedBox(height: 10),
                         TextFormField(
                           controller: password,
-                          inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s')),],
+                          inputFormatters: [
+                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                          ],
                           obscureText: _obscureText,
                           decoration: InputDecoration(
                             labelText: 'Enter Password',

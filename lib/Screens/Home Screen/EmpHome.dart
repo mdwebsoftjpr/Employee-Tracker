@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
-import 'package:employee_tracker/Screens/Home%20Screen/EmpVisitRep.dart';
+import 'package:employee_tracker/Screens/Employee%20Reports/EmpVisitRep.dart';
 import 'package:employee_tracker/Screens/Employee%20Reports/EmpAttDetail.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/empProfile.dart';
 import 'package:employee_tracker/Screens/VisitOut%20Screen/VisitOut.dart';
 import 'package:employee_tracker/main.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
@@ -367,7 +366,13 @@ class _EmpHomeState extends State<EmpHome> {
     setState(() {
       isLoading = true;
     });
-    if (_imageFile == null) return;
+    await _pickImageFromCamera();
+    if (_imageFile == null) {
+      setState(() {
+        isLoading = false; // Reset loading when no image picked
+      });
+      return;
+    }
 
     final url = Uri.parse('https://testapi.rabadtechnology.com/attendence.php');
     final request = http.MultipartRequest('POST', url);
@@ -479,7 +484,14 @@ class _EmpHomeState extends State<EmpHome> {
       isLoading = true;
     });
     try {
-      if (_imageFile == null) return;
+      await _pickImageFromCamera();
+      if (_imageFile == null) {
+        setState(() {
+          isLoading = false; // Reset loading when no image picked
+        });
+        return;
+      }
+
       final url = Uri.parse(
         'https://testapi.rabadtechnology.com/employee_activity.php',
       );
@@ -494,12 +506,14 @@ class _EmpHomeState extends State<EmpHome> {
       request.fields['company_id'] = Comid.toString();
       request.fields['address'] = CurrentAddress;
       request.fields['empid'] = '$userid';
+
       // Send request
       final response = await request.send();
       final response1 = await http.Response.fromStream(response);
       var data = jsonDecode(response1.body);
       var success = data['success'] ?? '';
       var message = data['message'] ?? '';
+
       if (success) {
         print(data);
         var status = data['status'] ?? '';
@@ -534,10 +548,6 @@ class _EmpHomeState extends State<EmpHome> {
       setState(() {
         isLoading = false;
       });
-      await Alert.alert(
-        context,
-        'Successfully Logout',
-      ); // WAIT before navigating
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => CreateScreen()),
@@ -696,7 +706,7 @@ class _EmpHomeState extends State<EmpHome> {
         MaterialPageRoute(builder: (context) => Empprofile()),
       );
     } else if (selectedItem == 'Logout') {
-      clearStorage(context);
+      LogOutAlert(context);
     }
   }
 
@@ -742,6 +752,75 @@ class _EmpHomeState extends State<EmpHome> {
                   child: Text('Cancel'),
                 ),
               ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> LogOutAlert(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(
+            child: Text(
+              'EmpAttend',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          content: Text(
+            "Are you sure you want to Logout?",
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                clearStorage(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF03A9F4),
+                foregroundColor: Colors.white,
+              ),
+              child: Text('LogOut'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> BreakAlert(
+    BuildContext context,
+    String data,
+    String message,
+    String btn,
+  ) async {
+    print(btn);
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(
+            child: Text(
+              'EmpAttend',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          content: Text(message, textAlign: TextAlign.center),
+          actions: [
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                BreakIn(data);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF03A9F4),
+                foregroundColor: Colors.white,
+              ),
+              child: Text(btn),
             ),
           ],
         );
@@ -885,7 +964,6 @@ class _EmpHomeState extends State<EmpHome> {
                           ),
                         ),
                         onTap: () {
-                          _pickImageFromCamera();
                           punchIn();
                         },
                       )
@@ -902,8 +980,7 @@ class _EmpHomeState extends State<EmpHome> {
                           ),
                         ),
                         onTap: () {
-                          _pickImageFromCamera();
-                          punchOut();
+                          punchOutAlert(context);
                         },
                       ),
                   SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
@@ -948,7 +1025,6 @@ class _EmpHomeState extends State<EmpHome> {
                         ),
                         onTap: () async {
                           if (Mainstatus != '' && Mainstatus == 'punchin') {
-                            await _pickImageFromCamera();
                             visitIn();
                           } else {
                             Alert.alert(
@@ -1576,7 +1652,6 @@ class _EmpHomeState extends State<EmpHome> {
                                             Mainstatus == 'punchout')
                                         ? ElevatedButton(
                                           onPressed: () async {
-                                            await _pickImageFromCamera();
                                             punchIn();
                                           },
                                           child: Text("Punch in"),
@@ -1721,7 +1796,6 @@ class _EmpHomeState extends State<EmpHome> {
                                           onPressed: () async {
                                             if (Mainstatus != '' &&
                                                 Mainstatus == 'punchin') {
-                                              await _pickImageFromCamera();
                                               visitIn();
                                             } else {
                                               Alert.alert(
@@ -1864,9 +1938,27 @@ class _EmpHomeState extends State<EmpHome> {
                                     ElevatedButton(
                                       onPressed:
                                           () =>
-                                              (Break1 == '' || Break1 == 'open')
-                                                  ? BreakIn('break1')
+                                              (Mainstatus == '' ||
+                                                      Mainstatus == 'punchout')
+                                                  ? {}
+                                                  : (Break1 == '' ||
+                                                      Break1 == 'open')
+                                                  ? BreakAlert(
+                                                    context,
+                                                    'break1',
+                                                    (Break1 == '')
+                                                        ? 'Are You Shore For Break'
+                                                        : (Break1 == 'open')
+                                                        ? "Are You Shore For End Break"
+                                                        : '',
+                                                    (Break1 == '')
+                                                        ? 'Break In'
+                                                        : (Break1 == 'open')
+                                                        ? "Break End"
+                                                        : '',
+                                                  )
                                                   : {},
+
                                       child:
                                           (Break1 == '')
                                               ? Text("Start")
@@ -1876,7 +1968,8 @@ class _EmpHomeState extends State<EmpHome> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             (Break1 == 'close' ||
-                                                    Mainstatus == '')
+                                                    Mainstatus == '' ||
+                                                    Mainstatus == 'punchout')
                                                 ? Colors.red
                                                 : Color(0xFF03a9f4),
                                         foregroundColor: Colors.white,
@@ -1992,10 +2085,26 @@ class _EmpHomeState extends State<EmpHome> {
                                     ElevatedButton(
                                       onPressed:
                                           () =>
-                                              (Break1 == 'close') &&
+                                              (Mainstatus == '' ||
+                                                      Mainstatus == 'punchout')
+                                                  ? {}
+                                                  : (Break1 == 'close') &&
                                                       (Break2 == '' ||
                                                           Break2 == 'open')
-                                                  ? BreakIn('break2')
+                                                  ? BreakAlert(
+                                                    context,
+                                                    'break2',
+                                                    (Break2 == '')
+                                                        ? 'Are You Shore For Break'
+                                                        : (Break2 == 'open')
+                                                        ? "Are You Shore For End Break"
+                                                        : '',
+                                                    (Break2 == '')
+                                                        ? 'Break In'
+                                                        : (Break2 == 'open')
+                                                        ? "Break End"
+                                                        : '',
+                                                  )
                                                   : {},
                                       child:
                                           (Break2 == '')
@@ -2006,7 +2115,8 @@ class _EmpHomeState extends State<EmpHome> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             (Break2 == 'close' ||
-                                                    Mainstatus == '')
+                                                    Mainstatus == '' ||
+                                                    Mainstatus == 'punchout')
                                                 ? Colors.red
                                                 : Color(0xFF03a9f4),
                                         foregroundColor: Colors.white,
@@ -2122,10 +2232,26 @@ class _EmpHomeState extends State<EmpHome> {
                                     ElevatedButton(
                                       onPressed:
                                           () =>
-                                              (Break2 == 'close') &&
+                                              (Mainstatus == '' ||
+                                                      Mainstatus == 'punchout')
+                                                  ? {}
+                                                  : (Break2 == 'close') &&
                                                       (Break3 == '' ||
                                                           Break3 == 'open')
-                                                  ? BreakIn('break3')
+                                                  ? BreakAlert(
+                                                    context,
+                                                    'break3',
+                                                    (Break3 == '')
+                                                        ? 'Are You Shore For Break'
+                                                        : (Break3 == 'open')
+                                                        ? "Are You Shore For End Break"
+                                                        : '',
+                                                    (Break3 == '')
+                                                        ? 'Break In'
+                                                        : (Break3== 'open')
+                                                        ? "Break End"
+                                                        : '',
+                                                  )
                                                   : {},
                                       child:
                                           (Break3 == '')
@@ -2136,7 +2262,8 @@ class _EmpHomeState extends State<EmpHome> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor:
                                             (Break3 == 'close' ||
-                                                    Mainstatus == '')
+                                                    Mainstatus == '' ||
+                                                    Mainstatus == 'punchout')
                                                 ? Colors.red
                                                 : Color(0xFF03a9f4),
                                         foregroundColor: Colors.white,

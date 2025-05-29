@@ -537,7 +537,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       } else {
                                                         Alert.alert(
                                                           context,
-                                                          "No valid location data available.",
+                                                           "Attemdance Not Marked",
                                                         );
                                                       }
                                                     } catch (e) {

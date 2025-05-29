@@ -471,6 +471,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                       SizedBox(height: 5),
                       ...visits.map((visit) {
                         return Card(
+                          color: const Color.fromARGB(255, 247, 239, 230),
                           margin: EdgeInsets.symmetric(
                             horizontal: devicePixelRatio * 5,
                             vertical: devicePixelRatio * 2,
@@ -490,12 +491,46 @@ class EmpvisitrepState extends State<Empvisitrep> {
                             ),
                             title: Text(
                               visit['NameOfCustomer'] ?? 'No Customer Name',
+                              style: TextStyle(
+                                fontSize: devicePixelRatio * 5.5,
+                              ),
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Start: ${visit['end'] ?? 'N/A'}"),
-                                Text("End: ${visit['time'] ?? 'N/A'}"),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Start:",
+                                      style: TextStyle(
+                                        fontSize: devicePixelRatio * 4,
+                                      ),
+                                    ),
+                                    Text(
+                                      "${visit['end'] ?? 'N/A'}",
+                                      style: TextStyle(
+                                        fontSize: devicePixelRatio * 4,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Start:",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: devicePixelRatio * 4,
+                                      ),
+                                    ),
+                                    Text(
+                                      "${visit['time'] ?? 'N/A'}",
+                                      style: TextStyle(
+                                        fontSize: devicePixelRatio * 4,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                             trailing: Column(

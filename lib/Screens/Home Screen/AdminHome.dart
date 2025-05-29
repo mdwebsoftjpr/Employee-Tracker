@@ -134,7 +134,6 @@ class AdminhomeState extends State<AdminHome> {
   void clearStorage(context) async {
     try {
       await localStorage.clear();
-      await Alert.alert(context, "Successfully LogOut");
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => CreateScreen()),
@@ -200,8 +199,41 @@ class AdminhomeState extends State<AdminHome> {
         MaterialPageRoute(builder: (context) => Adminprofile()),
       );
     } else if (selectedItem == 'Logout') {
-      clearStorage(context);
+      LogOutAlert(context);
     }
+  }
+
+  Future<void> LogOutAlert(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(
+            child: Text(
+              'EmpAttend',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          content: Text(
+            "Are you sure you want to Logout?",
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                    clearStorage(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF03A9F4),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text('LogOut'),
+                ),
+              ],
+        );
+      },
+    );
   }
 
   @override

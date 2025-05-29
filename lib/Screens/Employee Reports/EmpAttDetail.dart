@@ -234,23 +234,28 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                     fontSize: devicePixelRatio * 4,
                                   ),
                                 ),
-                                Text(
-                                  "Break:",
-                                  style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Break: ",
+                                      style: TextStyle(
+                                        fontSize: devicePixelRatio * 4,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      (() {
+                                        int count = 0;
+                                        if (data['break1'] == 'close') count++;
+                                        if (data['break2'] == 'close') count++;
+                                        if (data['break3'] == 'close') count++;
+                                        return '$count';
+                                      })(),style: TextStyle(
+                                        fontSize: devicePixelRatio * 4,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  (() {
-                                    int count = 0;
-                                    if (data['break1'] == 'close') count++;
-                                    if (data['break2'] == 'close') count++;
-                                    if (data['break3'] == 'close') count++;
-                                    return '$count';
-                                  })(),
-                                ),
-
                                 Text(
                                   "Address in:",
                                   style: TextStyle(
@@ -346,7 +351,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 SizedBox(height: deviceHeight * 0.005),
                                 Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                      MainAxisAlignment.center,
                                   children: [
                                     Text(
                                       "Total Hours:",
@@ -356,7 +361,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                       ),
                                     ),
                                     Text(
-                                      "${data['hours']}",
+                                      "${data['hours']??0}",
                                       style: TextStyle(
                                         fontSize: devicePixelRatio * 4,
                                       ),
@@ -426,7 +431,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                       } else {
                                         Alert.alert(
                                           context,
-                                          "No valid location data available.",
+                                           "Attemdance Not Marked",
                                         );
                                       }
                                     } catch (e) {
