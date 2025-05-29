@@ -416,7 +416,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
               ? Center(
                 child: Text(
                   'Visit Not Found',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: devicePixelRatio*6, fontWeight: FontWeight.bold),
                 ),
               )
               : ListView.builder(
