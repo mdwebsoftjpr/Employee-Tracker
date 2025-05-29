@@ -1085,7 +1085,7 @@ class _EmpHomeState extends State<EmpHome> {
                       ),
                     ),
                     onTap: () {
-                      clearStorage(context);
+                      LogOutAlert(context);
                     },
                   ),
                   SizedBox(height: .09 * MediaQuery.of(context).size.height),

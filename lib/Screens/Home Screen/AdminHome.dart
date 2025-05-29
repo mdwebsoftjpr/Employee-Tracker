@@ -416,7 +416,7 @@ class AdminhomeState extends State<AdminHome> {
                     leading: Icon(Icons.logout,size: 8 * MediaQuery.of(context).devicePixelRatio,),
                     title: Text("Logout",style: TextStyle(fontSize: 5 * MediaQuery.of(context).devicePixelRatio),),
                     onTap: () {
-                      clearStorage(context);
+                      LogOutAlert(context);
                     },
                   ),
                  SizedBox(height:.013* MediaQuery.of(context).size.height),
