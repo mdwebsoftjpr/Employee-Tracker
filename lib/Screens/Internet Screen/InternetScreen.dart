@@ -34,7 +34,7 @@ class InternetNotConnectedScreen extends StatelessWidget {
                     ),
                   ); // ✅ Correctly pops this screen
                 },
-                child: Text('Retry',style: TextStyle(color: Colors.black),),
+                child: Text('Retry',style:  TextStyle(color: Colors.black),),
               ),
             ],
           ),
