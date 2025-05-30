@@ -294,6 +294,14 @@ class UpdateEmpState extends State<UpdateEmp> {
 
   @override
   Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
+    }
     print(widget.item);
     return Scaffold(
       appBar: AppBar(
@@ -302,7 +310,7 @@ class UpdateEmpState extends State<UpdateEmp> {
         title: Text(
           'Update Employee Details',
           style: TextStyle(
-            fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
+            fontSize:ratio*9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -317,7 +325,7 @@ class UpdateEmpState extends State<UpdateEmp> {
                   children: [
                     CircleAvatar(
                       radius:
-                          MediaQuery.of(context).size.width *
+                          deviceWidth*
                           0.16, // Adjust the radius dynamically based on screen width
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
@@ -332,8 +340,8 @@ class UpdateEmpState extends State<UpdateEmp> {
               : Container(
                 padding: EdgeInsets.only(
                   top: 0,
-                  left: MediaQuery.of(context).size.width * 0.07,
-                  right: MediaQuery.of(context).size.width * 0.07,
+                  left:deviceWidth* 0.07,
+                  right: deviceWidth * 0.07,
                   bottom: 0,
                 ),
                 child: SingleChildScrollView(
@@ -343,7 +351,7 @@ class UpdateEmpState extends State<UpdateEmp> {
                       children: [
                         SizedBox(height: 20),
                         CircleAvatar(
-                          radius: MediaQuery.of(context).size.width * 0.18,
+                          radius: deviceWidth * 0.18,
                           backgroundImage:
                               _imageFile != null
                                   ? FileImage(_imageFile!) as ImageProvider
@@ -355,13 +363,13 @@ class UpdateEmpState extends State<UpdateEmp> {
                         ElevatedButton(
                           onPressed: () => _pickImageFromCamera(),
                           child: Container(
-                            width: MediaQuery.of(context).size.width * 0.37,
+                            width:deviceWidth * 0.37,
                             child: Row(
                               children: [
                                 Text(
                                   "Profile Picture",
                                   style: TextStyle(
-                                    fontSize: 15,
+                                    fontSize: ratio*7,
                                     color: Colors.black,
                                   ),
                                 ),
@@ -379,18 +387,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Enter Name',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -412,18 +420,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Enter Date Of Birth',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -450,18 +458,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Choose Designation',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                               ratio*7,
                               ),
                             ),
                             filled: true,
@@ -518,18 +526,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Enter PAN Card No.',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -554,18 +562,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Enter Mobile No.',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                 ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -592,18 +600,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Enter Email',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -627,18 +635,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Enter Address',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -660,18 +668,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Enter Addhar Card No.',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -696,18 +704,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Enter Salary',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                 ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                               ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -733,18 +741,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Enter Working Hours',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -766,18 +774,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Enter Joinning Date',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -806,18 +814,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Enter User Name',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -843,18 +851,18 @@ class UpdateEmpState extends State<UpdateEmp> {
                             labelText: 'Enter Password',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ),
                             ),
                             filled: true,
@@ -890,7 +898,7 @@ class UpdateEmpState extends State<UpdateEmp> {
                             style: TextStyle(
                               color: Colors.white,
                               fontSize:
-                                  6 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

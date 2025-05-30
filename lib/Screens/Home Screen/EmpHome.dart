@@ -830,6 +830,14 @@ class _EmpHomeState extends State<EmpHome> {
 
   @override
   Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF03a9f4), // Custom AppBar background
@@ -873,21 +881,21 @@ class _EmpHomeState extends State<EmpHome> {
                       (userImg != null)
                           ? Image.network(
                             'https://testapi.rabadtechnology.com/$userImg',
-                            width: MediaQuery.of(context).size.width * 0.10,
-                            height: MediaQuery.of(context).size.width * 0.10,
+                            width: deviceWidth * 0.10,
+                            height: deviceWidth * 0.10,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               // If image fails to load (e.g. 404), show default icon
                               return Icon(
                                 Icons.account_circle,
-                                size: 36,
+                                size:deviceWidth * 0.10,
                                 color: Colors.white,
                               );
                             },
                           )
                           : Icon(
                             Icons.account_circle,
-                            size: 36,
+                            size: deviceWidth * 0.10,
                             color: Colors.white,
                           ),
                 ),
@@ -897,7 +905,7 @@ class _EmpHomeState extends State<EmpHome> {
         ),
       ),
       drawer: Drawer(
-        width: MediaQuery.of(context).size.width * 0.6,
+        width: deviceWidth * 0.6,
         child: ListView(
           children: <Widget>[
             Container(
@@ -905,21 +913,18 @@ class _EmpHomeState extends State<EmpHome> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: 62 * MediaQuery.of(context).devicePixelRatio,
+                    height: .23 * deviceHeight,
                     decoration: BoxDecoration(color: Color(0xFF03a9f4)),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                            4 * MediaQuery.of(context).devicePixelRatio,
-                          ),
+                          borderRadius: BorderRadius.circular(ratio * 4),
                           child: Image.network(
                             'https://testapi.rabadtechnology.com/$comimage',
-                            width: 25 * MediaQuery.of(context).devicePixelRatio,
-                            height:
-                                25 * MediaQuery.of(context).devicePixelRatio,
+                            width: ratio * 50,
+                            height: ratio * 40,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -928,14 +933,17 @@ class _EmpHomeState extends State<EmpHome> {
                           comName,
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 16,
+                            fontSize: ratio * 8,
                             fontWeight: FontWeight.bold,
                           ),
                           textAlign: TextAlign.center,
                         ),
                         Text(
                           name,
-                          style: TextStyle(color: Colors.white, fontSize: 14),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: ratio * 6,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -946,22 +954,16 @@ class _EmpHomeState extends State<EmpHome> {
                       "Activity",
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
+                        fontSize: ratio * 9,
                       ),
                     ),
                   ),
                   (Mainstatus == "" || Mainstatus == 'punchout')
                       ? ListTile(
-                        leading: Icon(
-                          Icons.fingerprint,
-                          size: 8 * MediaQuery.of(context).devicePixelRatio,
-                        ),
+                        leading: Icon(Icons.fingerprint, size: ratio * 10),
                         title: Text(
                           "Punch in",
-                          style: TextStyle(
-                            fontSize:
-                                5 * MediaQuery.of(context).devicePixelRatio,
-                          ),
+                          style: TextStyle(fontSize: ratio * 7),
                         ),
                         onTap: () {
                           punchIn();
@@ -970,32 +972,23 @@ class _EmpHomeState extends State<EmpHome> {
                       : ListTile(
                         leading: Icon(
                           Icons.power_settings_new,
-                          size: 8 * MediaQuery.of(context).devicePixelRatio,
+                          size: ratio * 10,
                         ),
                         title: Text(
                           "Punch Out",
-                          style: TextStyle(
-                            fontSize:
-                                5 * MediaQuery.of(context).devicePixelRatio,
-                          ),
+                          style: TextStyle(fontSize: ratio * 7),
                         ),
                         onTap: () {
                           punchOutAlert(context);
                         },
                       ),
-                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: ratio * 1),
                   (visitStatus == 'opne')
                       ? ListTile(
-                        leading: Icon(
-                          Icons.run_circle,
-                          size: 8 * MediaQuery.of(context).devicePixelRatio,
-                        ),
+                        leading: Icon(Icons.run_circle, size: ratio * 10),
                         title: Text(
                           "Visit Out",
-                          style: TextStyle(
-                            fontSize:
-                                5 * MediaQuery.of(context).devicePixelRatio,
-                          ),
+                          style: TextStyle(fontSize: ratio * 7),
                         ),
                         onTap: () {
                           if (Mainstatus != '' && Mainstatus == 'punchin') {
@@ -1012,16 +1005,10 @@ class _EmpHomeState extends State<EmpHome> {
                         },
                       )
                       : ListTile(
-                        leading: Icon(
-                          Icons.location_on,
-                          size: 8 * MediaQuery.of(context).devicePixelRatio,
-                        ),
+                        leading: Icon(Icons.location_on, size: ratio * 10),
                         title: Text(
                           "Visit In",
-                          style: TextStyle(
-                            fontSize:
-                                5 * MediaQuery.of(context).devicePixelRatio,
-                          ),
+                          style: TextStyle(fontSize: ratio * 7),
                         ),
                         onTap: () async {
                           if (Mainstatus != '' && Mainstatus == 'punchin') {
@@ -1034,17 +1021,12 @@ class _EmpHomeState extends State<EmpHome> {
                           }
                         },
                       ),
-                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: ratio * 1),
                   ListTile(
-                    leading: Icon(
-                      Icons.fact_check,
-                      size: 8 * MediaQuery.of(context).devicePixelRatio,
-                    ),
+                    leading: Icon(Icons.fact_check, size: ratio * 10),
                     title: Text(
                       "Attendance Report",
-                      style: TextStyle(
-                        fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                      ),
+                      style: TextStyle(fontSize: ratio * 7),
                     ),
                     onTap: () {
                       Navigator.push(
@@ -1053,17 +1035,12 @@ class _EmpHomeState extends State<EmpHome> {
                       );
                     },
                   ),
-                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: ratio * 1),
                   ListTile(
-                    leading: Icon(
-                      Icons.receipt_long,
-                      size: 8 * MediaQuery.of(context).devicePixelRatio,
-                    ),
+                    leading: Icon(Icons.receipt_long, size: ratio * 10),
                     title: Text(
                       "Visit Report",
-                      style: TextStyle(
-                        fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                      ),
+                      style: TextStyle(fontSize: ratio * 7),
                     ),
                     onTap: () {
                       Navigator.push(
@@ -1072,23 +1049,18 @@ class _EmpHomeState extends State<EmpHome> {
                       );
                     },
                   ),
-                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: ratio * 1),
                   ListTile(
-                    leading: Icon(
-                      Icons.logout,
-                      size: 8 * MediaQuery.of(context).devicePixelRatio,
-                    ),
+                    leading: Icon(Icons.logout, size: ratio * 10),
                     title: Text(
                       "Logout",
-                      style: TextStyle(
-                        fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
-                      ),
+                      style: TextStyle(fontSize: ratio * 7),
                     ),
                     onTap: () {
                       LogOutAlert(context);
                     },
                   ),
-                  SizedBox(height: .09 * MediaQuery.of(context).size.height),
+                  SizedBox(height: .10 * deviceHeight),
                   Divider(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),
@@ -1107,8 +1079,7 @@ class _EmpHomeState extends State<EmpHome> {
                           Text(
                             'Copy Rights',
                             style: TextStyle(
-                              fontSize:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                              fontSize: ratio * 4,
                               color: Colors.grey[600],
                               fontWeight: FontWeight.w500,
                             ),
@@ -1119,19 +1090,14 @@ class _EmpHomeState extends State<EmpHome> {
                             children: [
                               Icon(
                                 Icons.copyright,
-                                size: 16,
+                                size: ratio * 6,
                                 color: Colors.grey,
                               ),
-                              SizedBox(
-                                width:
-                                    1 * MediaQuery.of(context).devicePixelRatio,
-                              ),
+                              SizedBox(width: ratio * 1),
                               Text(
                                 '2025 $comName',
                                 style: TextStyle(
-                                  fontSize:
-                                      4 *
-                                      MediaQuery.of(context).devicePixelRatio,
+                                  fontSize: ratio * 6,
                                   color: Colors.grey[600],
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -1160,7 +1126,7 @@ class _EmpHomeState extends State<EmpHome> {
                           Text(
                             'Maintain And Dev. By Md Websoft',
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize:ratio*6,
                               color: Colors.grey[600],
                               fontWeight: FontWeight.w500,
                             ),
@@ -1188,7 +1154,7 @@ class _EmpHomeState extends State<EmpHome> {
                           Text(
                             'About Us',
                             style: TextStyle(
-                              fontSize: 13,
+                              fontSize: ratio*6,
                               color: Colors.grey[600],
                               fontWeight: FontWeight.w500,
                             ),
@@ -1208,7 +1174,7 @@ class _EmpHomeState extends State<EmpHome> {
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.white,
         type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex,
+        currentIndex: _selectedIndex, 
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -1235,7 +1201,7 @@ class _EmpHomeState extends State<EmpHome> {
                   children: [
                     CircleAvatar(
                       radius:
-                          MediaQuery.of(context).size.width *
+                          deviceWidth *
                           0.16, // Adjust the radius dynamically based on screen width
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
@@ -1257,9 +1223,9 @@ class _EmpHomeState extends State<EmpHome> {
                           Container(
                             margin: EdgeInsets.only(
                               top: 0,
-                              bottom: 10,
-                              right: 10,
-                              left: 10,
+                              bottom: ratio*1,
+                              right: ratio*2,
+                              left: ratio*2,
                             ),
                             width: double.infinity,
                             child: Center(
@@ -1279,7 +1245,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     ),
                                   ],
                                 ),
-                                width: MediaQuery.of(context).size.width * 0.9,
+                                width: deviceWidth * 0.9,
                                 child: Column(
                                   children: [
                                     Column(
@@ -1304,14 +1270,14 @@ class _EmpHomeState extends State<EmpHome> {
                                                             ),
                                                         child: Image.network(
                                                           'https://testapi.rabadtechnology.com/uploads/$UserImage',
-                                                          width: 80,
-                                                          height: 80,
+                                                          width: ratio*38,
+                                                          height:  ratio*38,
                                                           fit: BoxFit.cover,
                                                         ),
                                                       )
-                                                      : SizedBox(
-                                                        width: 80,
-                                                        height: 80,
+                                                      : Icon(
+                                                        Icons.account_circle,
+                                                        size: ratio*38,
                                                       ),
                                             ),
 
@@ -1325,7 +1291,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                   Text(
                                                     name,
                                                     style: TextStyle(
-                                                      fontSize: 18,
+                                                      fontSize: ratio*8,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       color: Colors.white,
@@ -1335,7 +1301,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                   Text(
                                                     CurrentAddress,
                                                     style: TextStyle(
-                                                      fontSize: 13,
+                                                      fontSize: ratio*6,
                                                       fontWeight:
                                                           FontWeight.w600,
                                                       color: Colors.white,
@@ -1362,9 +1328,7 @@ class _EmpHomeState extends State<EmpHome> {
                                         children: [
                                           Container(
                                             width:
-                                                MediaQuery.of(
-                                                  context,
-                                                ).size.width *
+                                                deviceWidth *
                                                 0.85,
                                             margin: EdgeInsets.only(bottom: 5),
                                             child: Column(
@@ -1382,7 +1346,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                               Text(
                                                                 'Today Report: $currentDate',
                                                                 style: TextStyle(
-                                                                  fontSize: 15,
+                                                                  fontSize: ratio*7,
                                                                   color:
                                                                       Colors
                                                                           .black,
@@ -1391,7 +1355,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                               Icon(
                                                                 Icons
                                                                     .arrow_drop_up,
-                                                                size: 15,
+                                                                size: ratio*10,
                                                               ),
                                                             ],
                                                           ),
@@ -1413,7 +1377,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                               Text(
                                                                 'Today Report: $currentDate',
                                                                 style: TextStyle(
-                                                                  fontSize: 15,
+                                                                  fontSize: ratio*7,
                                                                   color:
                                                                       Colors
                                                                           .black,
@@ -1422,7 +1386,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                               Icon(
                                                                 Icons
                                                                     .arrow_drop_down,
-                                                                size: 15,
+                                                                size: ratio*10,
                                                               ),
                                                             ],
                                                           ),
@@ -1443,7 +1407,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                     color: Colors.white,
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                          10,
+                                                          ratio*7,
                                                         ),
                                                   ),
                                                   child:
@@ -1451,7 +1415,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                           ? Column(
                                                             children: [
                                                               Container(
-                                                                height: 20,
+                                                                height: deviceHeight*.03,
                                                                 child: Row(
                                                                   mainAxisAlignment:
                                                                       MainAxisAlignment
@@ -1510,7 +1474,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                         Icons
                                                                             .remove_red_eye,
                                                                         size:
-                                                                            30,
+                                                                            ratio*15,
                                                                         color:
                                                                             Colors.black,
                                                                       ),
@@ -1519,9 +1483,9 @@ class _EmpHomeState extends State<EmpHome> {
                                                                             "")
                                                                         ? Container(
                                                                           width:
-                                                                              60,
+                                                                              ratio*30,
                                                                           height:
-                                                                              20,
+                                                                              ratio*9,
                                                                           color:
                                                                               Colors.green,
                                                                           child: Center(
@@ -1541,9 +1505,9 @@ class _EmpHomeState extends State<EmpHome> {
                                                                             '')
                                                                         ? Container(
                                                                           width:
-                                                                              60,
+                                                                              ratio*30,
                                                                           height:
-                                                                              20,
+                                                                              ratio*9,
                                                                           color:
                                                                               Colors.white,
                                                                           child: Center(
@@ -1563,9 +1527,9 @@ class _EmpHomeState extends State<EmpHome> {
                                                                             '')
                                                                         ? Container(
                                                                           width:
-                                                                              60,
+                                                                              ratio*30,
                                                                           height:
-                                                                              20,
+                                                                              ratio*9,
                                                                           color:
                                                                               Colors.white,
                                                                           child: Center(
@@ -1610,7 +1574,7 @@ class _EmpHomeState extends State<EmpHome> {
                             10,
                           ), // Optional: Adds rounded corners
                         ),
-                        width: MediaQuery.of(context).size.width * 0.9,
+                        width: deviceWidth * 0.9,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -1637,16 +1601,12 @@ class _EmpHomeState extends State<EmpHome> {
                                   children: [
                                     Text(
                                       "Mark Attendance",
-                                      style: TextStyle(fontSize: 15),
+                                      style: TextStyle(fontSize: ratio*7),
                                     ),
                                     Image.asset(
                                       'assets/images/attendance.png',
-                                      width:
-                                          MediaQuery.of(context).size.width *
-                                          0.3,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                          0.25,
+                                      width: deviceWidth * 0.3,
+                                      height: deviceWidth * 0.25,
                                     ),
                                     (Mainstatus == "" ||
                                             Mainstatus == 'punchout')
@@ -1660,9 +1620,7 @@ class _EmpHomeState extends State<EmpHome> {
                                             foregroundColor: Colors.white,
                                             padding: EdgeInsets.symmetric(
                                               horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
+                                                  deviceWidth *
                                                   0.05,
                                               vertical: 4,
                                             ),
@@ -1688,18 +1646,14 @@ class _EmpHomeState extends State<EmpHome> {
                                             foregroundColor: Colors.white,
                                             padding: EdgeInsets.symmetric(
                                               horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
+                                                  deviceWidth *
                                                   0.05,
                                               vertical: 4,
                                             ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
+                                                    deviceWidth *
                                                         0.07,
                                                   ),
                                             ),
@@ -1735,18 +1689,14 @@ class _EmpHomeState extends State<EmpHome> {
                                     Text(
                                       "Visit Time",
                                       style: TextStyle(
-                                        fontSize: 15,
+                                        fontSize: ratio*7,
                                         color: Colors.black,
                                       ),
                                     ),
                                     Image.asset(
                                       'assets/images/visit.png',
-                                      width:
-                                          MediaQuery.of(context).size.width *
-                                          0.3,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                          0.25,
+                                      width: deviceWidth * 0.3,
+                                      height: deviceWidth * 0.25,
                                     ),
                                     (visitStatus == 'opne')
                                         ? ElevatedButton(
@@ -1774,18 +1724,14 @@ class _EmpHomeState extends State<EmpHome> {
                                             foregroundColor: Colors.white,
                                             padding: EdgeInsets.symmetric(
                                               horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
+                                                  deviceWidth *
                                                   0.05,
                                               vertical: 4,
                                             ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
+                                                    deviceWidth*
                                                         0.07,
                                                   ),
                                             ),
@@ -1810,18 +1756,14 @@ class _EmpHomeState extends State<EmpHome> {
                                             foregroundColor: Colors.white,
                                             padding: EdgeInsets.symmetric(
                                               horizontal:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width *
+                                                  deviceWidth *
                                                   0.05,
                                               vertical: 4,
                                             ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
+                                                    deviceWidth *
                                                         0.07,
                                                   ),
                                             ),
@@ -1843,7 +1785,7 @@ class _EmpHomeState extends State<EmpHome> {
                             10,
                           ), // Optional: Adds rounded corners
                         ),
-                        width: MediaQuery.of(context).size.width * 0.9,
+                        width: deviceWidth * 0.9,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -1878,10 +1820,8 @@ class _EmpHomeState extends State<EmpHome> {
                                                       'Start',
                                                       style: TextStyle(
                                                         fontSize:
-                                                            MediaQuery.of(
-                                                              context,
-                                                            ).devicePixelRatio *
-                                                            4,
+                                                            ratio *
+                                                            6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -1890,20 +1830,16 @@ class _EmpHomeState extends State<EmpHome> {
                                                       '${item['break1in'] ?? '0'}',
                                                       style: TextStyle(
                                                         fontSize:
-                                                            MediaQuery.of(
-                                                              context,
-                                                            ).devicePixelRatio *
-                                                            4,
+                                                            ratio *
+                                                            5,
                                                       ),
                                                     ),
                                                     Text(
                                                       'End',
                                                       style: TextStyle(
                                                         fontSize:
-                                                            MediaQuery.of(
-                                                              context,
-                                                            ).devicePixelRatio *
-                                                            4,
+                                                            ratio *
+                                                            6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -1912,10 +1848,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                       '${item['break1out'] ?? '-'}',
                                                       style: TextStyle(
                                                         fontSize:
-                                                            MediaQuery.of(
-                                                              context,
-                                                            ).devicePixelRatio *
-                                                            4,
+                                                            ratio*5
                                                       ),
                                                     ),
                                                   ],
@@ -1925,14 +1858,10 @@ class _EmpHomeState extends State<EmpHome> {
                                         : Image.asset(
                                           'assets/images/Break.png',
                                           width:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.width *
+                                              deviceWidth *
                                               0.12,
                                           height:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.width *
+                                              deviceWidth *
                                               0.12,
                                         ),
                                     ElevatedButton(
@@ -1975,16 +1904,13 @@ class _EmpHomeState extends State<EmpHome> {
                                         foregroundColor: Colors.white,
                                         padding: EdgeInsets.symmetric(
                                           horizontal:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.width *
+                                              deviceWidth *
                                               0.05,
                                           vertical: 4,
                                         ),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
-                                            MediaQuery.of(context).size.width *
-                                                0.07,
+                                            deviceWidth * 0.07,
                                           ),
                                         ),
                                         elevation: 4,
@@ -2025,10 +1951,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                       'Start',
                                                       style: TextStyle(
                                                         fontSize:
-                                                            MediaQuery.of(
-                                                              context,
-                                                            ).devicePixelRatio *
-                                                            4,
+                                                            ratio*6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -2037,20 +1960,14 @@ class _EmpHomeState extends State<EmpHome> {
                                                       '${item['break2in'] ?? '0'}',
                                                       style: TextStyle(
                                                         fontSize:
-                                                            MediaQuery.of(
-                                                              context,
-                                                            ).devicePixelRatio *
-                                                            4,
+                                                            ratio*5,
                                                       ),
                                                     ),
                                                     Text(
                                                       'End',
                                                       style: TextStyle(
                                                         fontSize:
-                                                            MediaQuery.of(
-                                                              context,
-                                                            ).devicePixelRatio *
-                                                            4,
+                                                            ratio*6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -2059,10 +1976,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                       '${item['break2out'] ?? '-'}',
                                                       style: TextStyle(
                                                         fontSize:
-                                                            MediaQuery.of(
-                                                              context,
-                                                            ).devicePixelRatio *
-                                                            4,
+                                                           ratio*5,
                                                       ),
                                                     ),
                                                   ],
@@ -2072,14 +1986,10 @@ class _EmpHomeState extends State<EmpHome> {
                                         : Image.asset(
                                           'assets/images/Break.png',
                                           width:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.width *
+                                              deviceWidth *
                                               0.12,
                                           height:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.width *
+                                             deviceWidth *
                                               0.12,
                                         ),
                                     ElevatedButton(
@@ -2122,16 +2032,13 @@ class _EmpHomeState extends State<EmpHome> {
                                         foregroundColor: Colors.white,
                                         padding: EdgeInsets.symmetric(
                                           horizontal:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.width *
+                                              deviceWidth*
                                               0.05,
                                           vertical: 4,
                                         ),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
-                                            MediaQuery.of(context).size.width *
-                                                0.07,
+                                            deviceWidth * 0.07,
                                           ),
                                         ),
                                         elevation: 4,
@@ -2172,10 +2079,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                       'Start',
                                                       style: TextStyle(
                                                         fontSize:
-                                                            MediaQuery.of(
-                                                              context,
-                                                            ).devicePixelRatio *
-                                                            4,
+                                                            ratio*6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -2184,20 +2088,14 @@ class _EmpHomeState extends State<EmpHome> {
                                                       '${item['break3in'] ?? '0'}',
                                                       style: TextStyle(
                                                         fontSize:
-                                                            MediaQuery.of(
-                                                              context,
-                                                            ).devicePixelRatio *
-                                                            4,
+                                                            ratio*5,
                                                       ),
                                                     ),
                                                     Text(
                                                       'End',
                                                       style: TextStyle(
                                                         fontSize:
-                                                            MediaQuery.of(
-                                                              context,
-                                                            ).devicePixelRatio *
-                                                            4,
+                                                            ratio*6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -2206,10 +2104,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                       '${item['break3out'] ?? '-'}',
                                                       style: TextStyle(
                                                         fontSize:
-                                                            MediaQuery.of(
-                                                              context,
-                                                            ).devicePixelRatio *
-                                                            4,
+                                                            ratio*5,
                                                       ),
                                                     ),
                                                   ],
@@ -2219,14 +2114,10 @@ class _EmpHomeState extends State<EmpHome> {
                                         : Image.asset(
                                           'assets/images/Break.png',
                                           width:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.width *
+                                              deviceWidth *
                                               0.12,
                                           height:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.width *
+                                              deviceWidth *
                                               0.12,
                                         ),
                                     ElevatedButton(
@@ -2269,16 +2160,13 @@ class _EmpHomeState extends State<EmpHome> {
                                         foregroundColor: Colors.white,
                                         padding: EdgeInsets.symmetric(
                                           horizontal:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.width *
+                                              deviceWidth *
                                               0.05,
                                           vertical: 4,
                                         ),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
-                                            MediaQuery.of(context).size.width *
-                                                0.07,
+                                            deviceWidth * 0.07,
                                           ),
                                         ),
                                         elevation: 4,
@@ -2300,7 +2188,7 @@ class _EmpHomeState extends State<EmpHome> {
                             10,
                           ), // Optional: Adds rounded corners
                         ),
-                        width: MediaQuery.of(context).size.width * 0.9,
+                        width: deviceWidth * 0.9,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -2327,16 +2215,12 @@ class _EmpHomeState extends State<EmpHome> {
                                   children: [
                                     Text(
                                       "Att. Report's",
-                                      style: TextStyle(fontSize: 15),
+                                      style: TextStyle(fontSize: ratio*7),
                                     ),
                                     Image.asset(
                                       'assets/images/Att  Report.png',
-                                      width:
-                                          MediaQuery.of(context).size.width *
-                                          0.25,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                          0.20,
+                                      width: deviceWidth * 0.25,
+                                      height: deviceWidth * 0.20,
                                     ),
                                     ElevatedButton(
                                       onPressed:
@@ -2353,16 +2237,13 @@ class _EmpHomeState extends State<EmpHome> {
                                         foregroundColor: Colors.white,
                                         padding: EdgeInsets.symmetric(
                                           horizontal:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.width *
+                                              deviceWidth *
                                               0.05,
                                           vertical: 4,
                                         ),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
-                                            MediaQuery.of(context).size.width *
-                                                0.07,
+                                            deviceWidth * 0.07,
                                           ),
                                         ),
                                         elevation: 4,
@@ -2396,16 +2277,12 @@ class _EmpHomeState extends State<EmpHome> {
                                   children: [
                                     Text(
                                       "Visit Report's",
-                                      style: TextStyle(fontSize: 15),
+                                      style: TextStyle(fontSize: ratio*7),
                                     ),
                                     Image.asset(
                                       'assets/images/visit_report.png',
-                                      width:
-                                          MediaQuery.of(context).size.width *
-                                          0.25,
-                                      height:
-                                          MediaQuery.of(context).size.width *
-                                          0.20,
+                                      width: deviceWidth * 0.25,
+                                      height: deviceWidth * 0.20,
                                     ),
                                     ElevatedButton(
                                       onPressed:
@@ -2429,8 +2306,7 @@ class _EmpHomeState extends State<EmpHome> {
                                         ),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
-                                            MediaQuery.of(context).size.width *
-                                                0.07,
+                                            deviceWidth * 0.07,
                                           ),
                                         ),
                                         elevation: 4,

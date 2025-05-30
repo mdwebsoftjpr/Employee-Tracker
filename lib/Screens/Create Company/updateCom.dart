@@ -237,16 +237,22 @@ void company_update(context) async {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final scale = MediaQuery.of(context).devicePixelRatio;
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if(deviceWidth<deviceHeight){
+      ratio=deviceHeight/deviceWidth;
+    }else{
+      ratio=deviceWidth/deviceHeight;
+    }
 
     InputDecoration buildInput(String label, IconData icon) {
       return InputDecoration(
         labelText: label,
-        contentPadding: EdgeInsets.all(4 * scale),
-        labelStyle: TextStyle(fontSize: 5 * scale, color: Colors.black),
+        contentPadding: EdgeInsets.all(ratio*7),
+        labelStyle: TextStyle(fontSize: ratio*7, color: Colors.black),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4 * scale),
+          borderRadius: BorderRadius.circular(ratio*5),
         ),
         filled: true,
         fillColor: Colors.grey[200],
@@ -283,7 +289,7 @@ void company_update(context) async {
         title: Text(
           'Update Company Details',
           style: TextStyle(
-            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
+            fontSize: ratio*9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -313,7 +319,7 @@ void company_update(context) async {
               : userdata == null
               ? Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
-                padding: EdgeInsets.all(size.width * 0.05),
+                padding: EdgeInsets.all(deviceWidth * 0.05),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -321,11 +327,11 @@ void company_update(context) async {
                       SizedBox(height: 5),
                       _imageFile != null
                           ? CircleAvatar(
-                            radius: size.width * 0.18,
+                            radius: deviceWidth * 0.18,
                             backgroundImage: FileImage(_imageFile!),
                           )
                           : CircleAvatar(
-                            radius: size.width * 0.18,
+                            radius: deviceWidth * 0.18,
                             backgroundImage: NetworkImage(
                               'https://testapi.rabadtechnology.com/$userImg',
                             ),
@@ -488,15 +494,15 @@ void company_update(context) async {
                             borderRadius: BorderRadius.circular(40),
                           ),
                           padding: EdgeInsets.symmetric(
-                            horizontal: 40,
-                            vertical: 10,
+                            horizontal: ratio*20,
+                            vertical: ratio*5,
                           ),
                         ),
                         child: Text(
                           'Update Company',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
+                            fontSize: ratio*8,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

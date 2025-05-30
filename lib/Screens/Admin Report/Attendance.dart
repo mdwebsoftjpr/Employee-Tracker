@@ -98,8 +98,13 @@ class AttendanceState extends State<Attendance> {
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
-    final devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
-
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if(deviceWidth<deviceHeight){
+      ratio=deviceHeight/deviceWidth;
+    }else{
+      ratio=deviceWidth/deviceHeight;
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF03a9f4),
@@ -107,7 +112,7 @@ class AttendanceState extends State<Attendance> {
         title: Text(
           'Daily Attendance Detail',
           style: TextStyle(
-            fontSize: 6 * devicePixelRatio,
+            fontSize: ratio*9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -122,7 +127,7 @@ class AttendanceState extends State<Attendance> {
                   children: [
                     CircleAvatar(
                       radius:
-                          MediaQuery.of(context).size.width *
+                          deviceWidth *
                           0.16, // Adjust the radius dynamically based on screen width
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
@@ -138,7 +143,7 @@ class AttendanceState extends State<Attendance> {
               ? Center(
                 child: Text(
                   'Attendance Not found',
-                  style: TextStyle(fontSize: devicePixelRatio * 6),
+                  style: TextStyle(fontSize: ratio * 8),
                 ),
               )
               : ListView.builder(
@@ -163,8 +168,8 @@ class AttendanceState extends State<Attendance> {
                     },
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        vertical: deviceWidth * 0.01,
-                        horizontal: deviceWidth * 0.04,
+                        vertical: ratio*1,
+                        horizontal: ratio*3,
                       ),
                       child: Container(
                         padding: EdgeInsets.all(10),
@@ -185,8 +190,8 @@ class AttendanceState extends State<Attendance> {
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.network(
                                         imageUrl,
-                                        width: devicePixelRatio * 20,
-                                        height: devicePixelRatio * 20,
+                                        width: ratio * 25,
+                                        height: ratio * 25,
                                         fit: BoxFit.cover,
                                         errorBuilder: (
                                           context,
@@ -195,8 +200,8 @@ class AttendanceState extends State<Attendance> {
                                         ) {
                                           return Image.network(
                                             imageUrl,
-                                            width: deviceWidth * 20,
-                                            height: deviceWidth * 20,
+                                            width: ratio * 25,
+                                        height: ratio * 25,
                                             fit: BoxFit.cover,
                                           );
                                         },
@@ -207,7 +212,7 @@ class AttendanceState extends State<Attendance> {
                                           ? '${item['empname'].substring(0, 7)}...'
                                           : item['empname'] ?? '',
                                       style: TextStyle(
-                                        fontSize: devicePixelRatio * 4,
+                                        fontSize: ratio * 6.5,
                                       ),
                                     ),
                                   ],
@@ -234,16 +239,16 @@ class AttendanceState extends State<Attendance> {
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           fontSize:
-                                                              devicePixelRatio *
-                                                              4,
+                                                              ratio *
+                                                              6,
                                                         ),
                                                       ),
                                                       Text(
                                                         "${item['time_in'] ?? ''}",
                                                         style: TextStyle(
                                                           fontSize:
-                                                              devicePixelRatio *
-                                                              4,
+                                                              ratio *
+                                                              6,
                                                         ),
                                                       ),
                                                     ],
@@ -257,16 +262,16 @@ class AttendanceState extends State<Attendance> {
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           fontSize:
-                                                              devicePixelRatio *
-                                                              4,
+                                                              ratio *
+                                                              6,
                                                         ),
                                                       ),
                                                       Text(
                                                         "${item['time_out'] ?? ''}",
                                                         style: TextStyle(
                                                           fontSize:
-                                                              devicePixelRatio *
-                                                              4,
+                                                              ratio *
+                                                              6,
                                                         ),
                                                       ),
                                                     ],
@@ -279,7 +284,7 @@ class AttendanceState extends State<Attendance> {
                                                     "Break:",
                                                     style: TextStyle(
                                                       fontSize:
-                                                          devicePixelRatio * 4,
+                                                          ratio * 6,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
@@ -311,9 +316,9 @@ class AttendanceState extends State<Attendance> {
                                               Container(
                                                 padding: EdgeInsets.symmetric(
                                                   horizontal:
-                                                      devicePixelRatio * 4,
+                                                      ratio * 4.5,
                                                   vertical:
-                                                      devicePixelRatio * 2,
+                                                      ratio * 2,
                                                 ),
                                                 decoration: BoxDecoration(
                                                   color:
@@ -343,16 +348,16 @@ class AttendanceState extends State<Attendance> {
                                                     "Total Hours: ",
                                                     style: TextStyle(
                                                       fontSize:
-                                                          devicePixelRatio * 4,
+                                                          ratio * 6,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
                                                   ),
-                                                  Text(
-                                                    "${item['hours']??0}",
+                                                  Text('100000',
+                                                    /* "${item['hours']??0}", */
                                                     style: TextStyle(
                                                       fontSize:
-                                                          devicePixelRatio * 3.5,
+                                                          ratio * 5,
                                                     ),
                                                   ),
                                                 ],
@@ -381,7 +386,7 @@ class AttendanceState extends State<Attendance> {
                                             TextSpan(
                                               text: "Address in: ",
                                               style: TextStyle(
-                                                fontSize: devicePixelRatio * 4,
+                                                fontSize: ratio * 6,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.black,
                                               ),
@@ -389,7 +394,7 @@ class AttendanceState extends State<Attendance> {
                                             TextSpan(
                                               text: item['address'],
                                               style: TextStyle(
-                                                fontSize: devicePixelRatio * 4,
+                                                fontSize: ratio * 6,
                                                 color: Colors.black,
                                               ),
                                             ),
@@ -405,7 +410,7 @@ class AttendanceState extends State<Attendance> {
                                             TextSpan(
                                               text: "Address Out: ",
                                               style: TextStyle(
-                                                fontSize: devicePixelRatio * 4,
+                                                fontSize: ratio * 6,
                                                 fontWeight: FontWeight.bold,
                                                 color: Colors.black,
                                               ),
@@ -413,7 +418,7 @@ class AttendanceState extends State<Attendance> {
                                             TextSpan(
                                               text: item['address_out'],
                                               style: TextStyle(
-                                                fontSize: devicePixelRatio * 4,
+                                                fontSize: ratio * 6,
                                                 color: Colors.black,
                                               ),
                                             ),
@@ -438,7 +443,7 @@ class AttendanceState extends State<Attendance> {
                                         icon: Icon(
                                           FontAwesomeIcons.mapLocationDot,
                                           color: Color(0xFF03a9f4),
-                                          size: devicePixelRatio * 7,
+                                          size: ratio * 10,
                                         ),
                                         onPressed: () {
                                           List<LatLng> points = [];
@@ -513,7 +518,7 @@ class AttendanceState extends State<Attendance> {
                                       Text(
                                         "Location..",
                                         style: TextStyle(
-                                          fontSize: devicePixelRatio * 4,
+                                          fontSize: ratio * 6,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),

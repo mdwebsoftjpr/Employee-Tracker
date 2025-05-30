@@ -156,172 +156,153 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     }
   }
 
-  Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          title: Center(
-            child: Text(
-              "Visit Details",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
+  double deviceWidth = MediaQuery.of(context).size.width;
+  double deviceHeight = MediaQuery.of(context).size.height;
+
+  // Calculate ratio
+  double ratio = deviceWidth < deviceHeight
+      ? deviceHeight / deviceWidth
+      : deviceWidth / deviceHeight;
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8 * ratio),
+        ),
+        title: Center(
+          child: Text(
+            "Visit Details",
+            style: TextStyle(
+              fontSize: ratio * 9,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          content: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight:
-                  MediaQuery.of(context).size.height *
-                  0.7, // allow scroll if too long
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children:
-                    visitList.map((visit) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (visit['imagev'] != null)
-                              Center(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.of(context).pop();
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder:
-                                              (_) => FullScreenImageViewer(
-                                                imageUrl: visit['imagev'],
-                                              ),
-                                        ),
-                                      );
-                                    },
-                                    child: Container(
-                                      width:
-                                          MediaQuery.of(
-                                            context,
-                                          ).devicePixelRatio *
-                                          25,
-                                      height:
-                                          MediaQuery.of(
-                                            context,
-                                          ).devicePixelRatio *
-                                          30,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                      ),
-                                      child: Image.network(
-                                        visit['imagev'],
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) =>
-                                                Icon(
-                                                  Icons.broken_image,
-                                                  size: 40,
-                                                ),
-                                      ),
+        ),
+        content: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: ratio * 200, // Adjust max height if needed
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: visitList.map((visit) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(vertical: ratio * 2,horizontal: ratio*1),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (visit['imagev'] != null)
+                        Center(
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8 * ratio),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => FullScreenImageViewer(
+                                      imageUrl: visit['imagev'],
                                     ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: ratio * 40,
+                                height: ratio * 40,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[200],
+                                ),
+                                child: Image.network(
+                                  visit['imagev'],
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Icon(
+                                    Icons.broken_image,
+                                    size: 40 * ratio,
                                   ),
                                 ),
                               ),
-                            SizedBox(height: 12),
-                            buildTextDetail(
-                              "Organization",
-                              visit['NameOfCustomer'],
-                              context,
                             ),
-                            buildTextDetail(
-                              "Concerned Person",
-                              visit['concernedperson'],
-                              context,
-                            ),
-                            buildTextDetail(
-                              "Mobile No.",
-                              visit['phoneno'],
-                              context,
-                            ),
-                            buildTextDetail("Date", visit['date'], context),
-                            buildTextDetail(
-                              "Start Time",
-                              visit['time'],
-                              context,
-                            ),
-                            buildTextDetail("End Time", visit['end'], context),
-                            buildTextDetail(
-                              "Transport",
-                              visit['transport'],
-                              context,
-                            ),
-                            buildTextDetail(
-                              "Probability",
-                              visit['probablity'],
-                              context,
-                            ),
-                            buildTextDetail(
-                              "Prospects",
-                              visit['prospects'],
-                              context,
-                            ),
-                            buildTextDetail(
-                              "Address",
-                              visit['address'],
-                              context,
-                            ),
-                            buildTextDetail(
-                              "Location Address",
-                              visit['address2'],
-                              context,
-                            ),
-                            Divider(thickness: 1, color: Colors.grey),
-                          ],
+                          ),
                         ),
-                      );
-                    }).toList(),
-              ),
+                      SizedBox(height: 5 * ratio),
+
+                      /// Custom text fields
+                      buildTextDetail("Organization", visit['NameOfCustomer'], context, ratio),
+                      buildTextDetail("Concerned Person", visit['concernedperson'], context, ratio),
+                      buildTextDetail("Mobile No.", visit['phoneno'], context, ratio),
+                      buildTextDetail("Date", visit['date'], context, ratio),
+                      buildTextDetail("Start Time", visit['time'], context, ratio),
+                      buildTextDetail("End Time", visit['end'], context, ratio),
+                      buildTextDetail("Transport", visit['transport'], context, ratio),
+                      buildTextDetail("Probability", visit['probablity'], context, ratio),
+                      buildTextDetail("Prospects", visit['prospects'], context, ratio),
+                      buildTextDetail("Address", visit['address'], context, ratio),
+                      buildTextDetail("Location Address", visit['address2'], context, ratio),
+
+                      Divider(thickness: 1 * ratio, color: Colors.grey),
+                    ],
+                  ),
+                );
+              }).toList(),
             ),
           ),
-          actions: [
-            Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text("Close"),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget buildTextDetail(String label, dynamic value, BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Text(
-        "$label: ${value ?? 'N/A'}",
-        style: TextStyle(
-          fontSize: MediaQuery.of(context).devicePixelRatio * 5,
-          fontWeight: FontWeight.w400,
         ),
+        actions: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(
+                    vertical: 5 * ratio, horizontal: 8 * ratio),
+                textStyle: TextStyle(fontSize: 8 * ratio),
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text("Close"),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+  Widget buildTextDetail(String label, String value, BuildContext context, double ratio) {
+  return Padding(
+    padding: EdgeInsets.symmetric(vertical: 2 * ratio,horizontal: ratio*1),
+    child: RichText(
+      text: TextSpan(
+        style: TextStyle(color: Colors.black, fontSize: 7 * ratio),
+        children: [
+          TextSpan(
+            text: "$label: ",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          TextSpan(text: value),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
-    double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if(deviceWidth<deviceHeight){
+      ratio=deviceHeight/deviceWidth;
+    }else{
+      ratio=deviceWidth/deviceHeight;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -330,7 +311,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
         title: Text(
           'Visit Report',
           style: TextStyle(
-            fontSize:  6*devicePixelRatio,
+            fontSize:  ratio*9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -347,7 +328,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                     Text(
                       "Date",
                       style: TextStyle(
-                        fontSize: devicePixelRatio * 5,
+                        fontSize: ratio * 7,
                         color: Colors.white,
                       ),
                     ),
@@ -370,7 +351,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                     Text(
                       "Month",
                       style: TextStyle(
-                        fontSize: devicePixelRatio * 5,
+                        fontSize: ratio * 7,
                         color: Colors.white,
                       ),
                     ),
@@ -416,7 +397,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
               ? Center(
                 child: Text(
                   'Visit Not Found',
-                  style: TextStyle(fontSize: devicePixelRatio*6, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: ratio*8, fontWeight: FontWeight.bold),
                 ),
               )
               : ListView.builder(
@@ -439,11 +420,11 @@ class AdminVisitreportState extends State<AdminVisitreport> {
 
                   return SingleChildScrollView(
                     child: Padding(
-                      padding: EdgeInsets.all(devicePixelRatio * .5),
+                      padding: EdgeInsets.all(ratio * 1),
                       child: Container(
                         margin: EdgeInsets.symmetric(
-                          vertical: devicePixelRatio * 2,
-                          horizontal: devicePixelRatio * 3.5,
+                          vertical: ratio * 1,
+                          horizontal: ratio * 2,
                         ),
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
@@ -463,8 +444,8 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                     borderRadius: BorderRadius.circular(8),
                                     child: Image.network(
                                       data['image'] ?? '',
-                                      width: devicePixelRatio * 25,
-                                      height: devicePixelRatio * 25,
+                                      width: ratio * 32,
+                                      height: ratio * 32,
                                       fit: BoxFit.cover,
                                       errorBuilder:
                                           (context, error, stackTrace) =>
@@ -474,12 +455,12 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                   Text(
                                     (data['name'] ?? '').toString().length > 10
                                         ? '${data['name'].toString().substring(0, 10)}...'
-                                        : data['name'].toString(),
+                                        : data['name'].toString(),style: TextStyle(fontSize: ratio*7),
                                   ),
                                 ],
                               ),
                             ),
-                            SizedBox(width: devicePixelRatio * 3),
+                            SizedBox(width: ratio * 3),
                             // Visit count
                             Expanded(
                               child: Row(
@@ -487,18 +468,18 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                   Text(
                                     "Total Visit:- ",
                                     style: TextStyle(
-                                      fontSize: devicePixelRatio * 4,
+                                      fontSize: ratio * 6,
                                     ),
                                   ),
                                   Container(
                                     padding: EdgeInsets.symmetric(
-                                      horizontal: devicePixelRatio * 4,
-                                      vertical: devicePixelRatio * 2,
+                                      horizontal: ratio * 4.5,
+                                      vertical: ratio * 1.8,
                                     ),
                                     decoration: BoxDecoration(
                                       color: Color(0xFF03a9f4),
                                       borderRadius: BorderRadius.circular(
-                                        devicePixelRatio * 6,
+                                        ratio * 6,
                                       ),
                                     ),
                                     child: Text(
@@ -512,7 +493,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                 ],
                               ),
                             ),
-                            SizedBox(width: devicePixelRatio * 3),
+                            SizedBox(width: ratio * 3),
                             // Buttons
                             Column(
                               children: [
@@ -537,7 +518,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                     foregroundColor: Colors.white,
                                     padding: EdgeInsets.symmetric(
                                       horizontal: deviceWidth * 0.06,
-                                      vertical: 10,
+                                      vertical: deviceHeight*0.006,
                                     ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(
@@ -548,7 +529,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                   ),
                                   child: Text("More"),
                                 ),
-                                SizedBox(height: devicePixelRatio * 2),
+                                SizedBox(height: ratio * 2),
                                 IconButton(
                                   onPressed: () {
                                     if (startLoc.isNotEmpty &&
@@ -643,7 +624,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                   icon: Icon(
                                     FontAwesomeIcons.mapLocationDot,
                                     color: Color(0xFF03a9f4),
-                                    size: devicePixelRatio * 10,
+                                    size: ratio * 10,
                                   ),
                                 ),
                               ],

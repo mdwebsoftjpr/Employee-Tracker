@@ -284,6 +284,14 @@ Future<void> _pickDateJoin(BuildContext context) async {
 
   @override
   Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if(deviceWidth<deviceHeight){
+      ratio=deviceHeight/deviceWidth;
+    }else{
+      ratio=deviceWidth/deviceHeight;
+    }
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
@@ -291,7 +299,7 @@ Future<void> _pickDateJoin(BuildContext context) async {
         title: Text(
           'Create Employee',
           style: TextStyle(
-            fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
+            fontSize: ratio*9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -321,8 +329,8 @@ Future<void> _pickDateJoin(BuildContext context) async {
               : Container(
                 padding: EdgeInsets.only(
                   top: 0,
-                  left: MediaQuery.of(context).size.width * 0.07,
-                  right: MediaQuery.of(context).size.width * 0.07,
+                  left: deviceWidth * 0.07,
+                  right:deviceWidth * 0.07,
                   bottom: 0,
                 ),
                 child: SingleChildScrollView(
@@ -333,13 +341,13 @@ Future<void> _pickDateJoin(BuildContext context) async {
                         SizedBox(height: 20),
                         _imageFile != null
                             ? CircleAvatar(
-                              radius: MediaQuery.of(context).size.width * 0.18,
+                              radius: deviceWidth * 0.18,
                               backgroundImage: FileImage(_imageFile!),
                               backgroundColor: Colors.grey,
                             )
                             : Container(
-                              width: MediaQuery.of(context).size.width * 0.32,
-                              height: MediaQuery.of(context).size.width * 0.32,
+                              width: deviceWidth * 0.32,
+                              height: deviceWidth * 0.32,
                               decoration: BoxDecoration(
                                 color: Colors.grey[300],
                                 borderRadius: BorderRadius.circular(50),
@@ -349,7 +357,7 @@ Future<void> _pickDateJoin(BuildContext context) async {
                         ElevatedButton(
                           onPressed: () => _pickImageFromCamera(),
                           child: Container(
-                            width: MediaQuery.of(context).size.width * 0.37,
+                            width: deviceWidth * 0.37,
                             child: Row(
                               children: [
                                 Text(
@@ -373,18 +381,18 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Enter Name',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                   ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                 ratio*7,
                               ),
                             ),
                             filled: true,
@@ -406,18 +414,18 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Enter Date Of Birth',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                 ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -444,18 +452,18 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Choose Designation',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ),
                             ),
                             filled: true,
@@ -512,18 +520,18 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Enter PAN Card No.',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -548,18 +556,18 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Enter Mobile No.',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -586,18 +594,18 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Enter Email',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -621,18 +629,18 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Enter Address',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -654,18 +662,18 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Enter Addhar Card No.',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -690,25 +698,25 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Enter Salary',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
                             fillColor: Colors.grey[200],
                             prefixIcon: Icon(
                               FontAwesomeIcons.indianRupeeSign,
-                              size: 6 * MediaQuery.of(context).devicePixelRatio,
+                              size:ratio*7,
                             ),
                           ),
                           keyboardType: TextInputType.phone,
@@ -727,18 +735,18 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Enter Working Hours',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -760,18 +768,18 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Enter Joinning Date',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -800,18 +808,18 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Enter User Name',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                 ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                 ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -837,18 +845,18 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             labelText: 'Enter Password',
                             contentPadding: EdgeInsets.symmetric(
                               vertical:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               horizontal:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
                               fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                4 * MediaQuery.of(context).devicePixelRatio,
+                                ratio*7,
                               ),
                             ),
                             filled: true,
@@ -884,7 +892,7 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             style: TextStyle(
                               color: Colors.white,
                               fontSize:
-                                  6 * MediaQuery.of(context).devicePixelRatio,
+                                  ratio*7,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

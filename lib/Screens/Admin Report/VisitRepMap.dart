@@ -21,6 +21,14 @@ class SimpleMapScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final LatLng initialPoint = points.isNotEmpty ? points.first : LatLng(0, 0);
     final double totalDistance = getTotalDistance(points);
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if(deviceWidth<deviceHeight){
+      ratio=deviceHeight/deviceWidth;
+    }else{
+      ratio=deviceWidth/deviceHeight;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -28,7 +36,7 @@ class SimpleMapScreen extends StatelessWidget {
         title: Text(
           'Visit Map',
           style: TextStyle(
-            fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
+            fontSize: ratio*9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -43,7 +51,7 @@ class SimpleMapScreen extends StatelessWidget {
                   FlutterMap(
                     options: MapOptions(
                       initialCenter: initialPoint,
-                      initialZoom: 18,
+                      initialZoom:ratio*7,
                     ),
                     children: [
                       TileLayer(
@@ -89,13 +97,13 @@ class SimpleMapScreen extends StatelessWidget {
                                     Icon(
                                       Icons.location_on,
                                       color: markerColor,
-                                      size: 35,
+                                      size: ratio*16,
                                     ),
                                     Text(
                                       label,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 12,
+                                        fontSize: ratio*6,
                                         color: Colors.black87,
                                       ),
                                     ),
@@ -107,24 +115,24 @@ class SimpleMapScreen extends StatelessWidget {
                     ],
                   ),
                   Positioned(
-                    top: 16,
-                    right: 16,
+                    top: ratio*6,
+                    right: ratio*4,
                     child: Container(
                       padding: EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
+                        horizontal: ratio*6,
+                        vertical: ratio*4,
                       ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(ratio*6),
                         boxShadow: [
-                          BoxShadow(color: Colors.black26, blurRadius: 4),
+                          BoxShadow(color: Colors.black26, blurRadius: ratio*4),
                         ],
                       ),
                       child: Text(
                         'Total Distance: ${totalDistance.toStringAsFixed(2)} km',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: ratio*6,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

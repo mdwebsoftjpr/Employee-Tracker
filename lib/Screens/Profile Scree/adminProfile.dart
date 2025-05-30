@@ -83,8 +83,14 @@ class AdminprofileState extends State<Adminprofile> {
 
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-
+double screenWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if(screenWidth<deviceHeight){
+      ratio=deviceHeight/screenWidth;
+    }else{
+      ratio=screenWidth/deviceHeight;
+    }
     if (userdata == null) {
       return Scaffold(
         appBar: AppBar(
@@ -102,7 +108,7 @@ class AdminprofileState extends State<Adminprofile> {
         title: Text(
           'Admin Profile',
           style: TextStyle(
-            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
+            fontSize:ratio*9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -116,7 +122,7 @@ class AdminprofileState extends State<Adminprofile> {
             /// Card with all details
             Card(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(ratio*15),
               ),
               elevation: 5,
               color: Color(0xFFF0F9FF),
@@ -185,7 +191,7 @@ class AdminprofileState extends State<Adminprofile> {
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(
                       horizontal: screenWidth * 0.06,
-                      vertical: 14,
+                      vertical: ratio*6,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
@@ -206,8 +212,8 @@ class AdminprofileState extends State<Adminprofile> {
                     backgroundColor: Color(0xFF03a9f4),
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.06,
-                      vertical: 14,
+                       horizontal: screenWidth * 0.06,
+                      vertical: ratio*6,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),

@@ -8,7 +8,6 @@ import 'dart:convert';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
@@ -92,18 +91,25 @@ class EmployeelistState extends State<Employeelist> {
     }
   }
 
-String formatDob(String? dateString) {
-  if (dateString == null || dateString.isEmpty) return 'Invalid Date';
-  try {
-    DateTime parsedDate = DateTime.parse(dateString);
-    return DateFormat('dd-MM-yyyy').format(parsedDate);
-  } catch (e) {
-    return 'Invalid Date';
+  String formatDob(String? dateString) {
+    if (dateString == null || dateString.isEmpty) return 'Invalid Date';
+    try {
+      DateTime parsedDate = DateTime.parse(dateString);
+      return DateFormat('dd-MM-yyyy').format(parsedDate);
+    } catch (e) {
+      return 'Invalid Date';
+    }
   }
-}
-
 
   void EmpData(BuildContext context, Map<String, dynamic> item) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
+    }
     showDialog(
       context: context,
       builder: (context) {
@@ -122,15 +128,11 @@ String formatDob(String? dateString) {
                       child: Column(
                         children: [
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(
-                              4 * MediaQuery.of(context).devicePixelRatio,
-                            ),
+                            borderRadius: BorderRadius.circular(ratio * 5),
                             child: Image.network(
                               item['image'] ?? '',
-                              width:
-                                  25 * MediaQuery.of(context).devicePixelRatio,
-                              height:
-                                  25 * MediaQuery.of(context).devicePixelRatio,
+                              width: ratio * 32,
+                              height: ratio * 32,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -138,8 +140,7 @@ String formatDob(String? dateString) {
                           Text(
                             item['name'] ?? '',
                             style: TextStyle(
-                              fontSize:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                              fontSize: ratio * 7,
                               fontWeight: FontWeight.bold,
                               color: Colors.black,
                             ),
@@ -154,26 +155,27 @@ String formatDob(String? dateString) {
                           SizedBox(height: 5),
                           Text(
                             "Designation:-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
                           ),
                           Text(
                             item['designation'] ?? '',
                             style: TextStyle(
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                              fontSize: ratio * 7,
                               color: Colors.black,
                             ),
                           ),
                           SizedBox(height: 8),
                           Text(
                             "Salary:-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: ratio * 7,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Text(
                             ("₹ ${item['salary']}" ?? 0).toString(),
                             style: TextStyle(
-                              fontSize:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                              fontSize: ratio * 7,
                               color: Colors.black,
                             ),
                           ),
@@ -191,56 +193,52 @@ String formatDob(String? dateString) {
                         children: [
                           Text(
                             "Date Of Birth:-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 3),
                           Text(
                             formatDob(item['dob']),
                             style: TextStyle(
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                              fontSize: ratio * 7,
                               color: Colors.black,
                             ),
                           ),
                           SizedBox(height: 5),
                           Text(
                             "Email:-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 3),
                           Text(
                             item['email'] ?? '',
                             style: TextStyle(
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                              fontSize: ratio * 7,
                               color: Colors.black,
                             ),
                           ),
                           SizedBox(height: 5),
                           Text(
                             "Pan Card No.:-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 3),
                           Text(
                             (item['pan_card'] ?? 0).toString(),
                             style: TextStyle(
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                              fontSize: ratio * 7,
                               color: Colors.black,
                             ),
                           ),
                           SizedBox(height: 5),
                           Text(
                             "Aadhaar Card No.:-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 3),
                           Text(
                             (item['aadharcard'] ?? 0).toString(),
                             style: TextStyle(
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                             fontSize: ratio * 7,
                               color: Colors.black,
                             ),
                           ),
@@ -254,56 +252,52 @@ String formatDob(String? dateString) {
                         children: [
                           Text(
                             "Address.:-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 3),
                           Text(
                             (item['address'] ?? 0).toString(),
                             style: TextStyle(
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                              fontSize: ratio * 7,
                               color: Colors.black,
                             ),
                           ),
                           SizedBox(height: 5),
                           Text(
                             "User Name:-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 3),
                           Text(
                             (item['username'] ?? 0).toString(),
                             style: TextStyle(
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                             fontSize: ratio * 7,
                               color: Colors.black,
                             ),
                           ),
                           SizedBox(height: 5),
                           Text(
                             "Joining Date.:-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 3),
                           Text(
                             formatDob(item['doinofdate']),
                             style: TextStyle(
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                              fontSize: ratio * 7,
                               color: Colors.black,
                             ),
                           ),
                           SizedBox(height: 5),
                           Text(
                             "Working Hours:-",
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
                           ),
                           SizedBox(height: 3),
                           Text(
                             (item['hours'] ?? 0).toString(),
                             style: TextStyle(
-                              fontSize:
-                                  5 * MediaQuery.of(context).devicePixelRatio,
+                              fontSize: ratio * 7,
                               color: Colors.black,
                             ),
                           ),
@@ -323,22 +317,22 @@ String formatDob(String? dateString) {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(
-                        6 * MediaQuery.of(context).devicePixelRatio,
+                        ratio * 7,
                       ),
                       color: Color(0xFF03a9f4),
                     ),
                     padding: EdgeInsets.only(
-                      top: 2 * MediaQuery.of(context).devicePixelRatio,
-                      bottom: 2 * MediaQuery.of(context).devicePixelRatio,
-                      left: 3 * MediaQuery.of(context).devicePixelRatio,
-                      right: 3 * MediaQuery.of(context).devicePixelRatio,
+                      top: ratio * 2,
+                      bottom: ratio * 2,
+                      left: ratio * 4,
+                      right: ratio * 4,
                     ),
                     alignment: Alignment.center,
                     child: Text(
                       "OK",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                        fontSize:ratio * 6
                       ),
                     ),
                   ),
@@ -354,22 +348,22 @@ String formatDob(String? dateString) {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(
-                        6 * MediaQuery.of(context).devicePixelRatio,
+                        ratio * 6
                       ),
                       color: Color(0xFF03a9f4),
                     ),
                     padding: EdgeInsets.only(
-                      top: 2 * MediaQuery.of(context).devicePixelRatio,
-                      bottom: 2 * MediaQuery.of(context).devicePixelRatio,
-                      left: 3 * MediaQuery.of(context).devicePixelRatio,
-                      right: 3 * MediaQuery.of(context).devicePixelRatio,
+                     top: ratio * 2,
+                      bottom: ratio * 2,
+                      left: ratio * 4,
+                      right: ratio * 4,
                     ),
                     alignment: Alignment.center,
                     child: Text(
                       "Attendance Detail",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 5 * MediaQuery.of(context).devicePixelRatio,
+                        fontSize: ratio*6
                       ),
                     ),
                   ),
@@ -384,6 +378,14 @@ String formatDob(String? dateString) {
 
   @override
   Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if(deviceWidth<deviceHeight){
+      ratio=deviceHeight/deviceWidth;
+    }else{
+      ratio=deviceWidth/deviceHeight;
+    }
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
@@ -391,7 +393,7 @@ String formatDob(String? dateString) {
         title: Text(
           'Employee List',
           style: TextStyle(
-            fontSize: 6 * MediaQuery.of(context).devicePixelRatio,
+            fontSize:ratio*9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -412,7 +414,7 @@ String formatDob(String? dateString) {
                       Text(
                         "Employee Not Found",
                         style: TextStyle(
-                          fontSize: MediaQuery.of(context).devicePixelRatio * 6,
+                          fontSize: ratio*9,
                         ),
                       ),
                     ],
@@ -426,17 +428,17 @@ String formatDob(String? dateString) {
                   final item = EmpDetail[index];
                   return Container(
                     margin: EdgeInsets.only(
-                      top: 5,
-                      left: MediaQuery.of(context).devicePixelRatio * 3,
-                      right: MediaQuery.of(context).devicePixelRatio * 3,
+                      top: ratio*2,
+                      left: ratio*3,
+                      right: ratio*3,
                     ),
                     padding: EdgeInsets.all(
-                      1 * MediaQuery.of(context).devicePixelRatio,
+                      ratio*1
                     ),
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 247, 239, 230),
                       borderRadius: BorderRadius.circular(
-                        2 * MediaQuery.of(context).devicePixelRatio,
+                        ratio*3
                       ),
                     ),
                     child: Column(
@@ -449,23 +451,14 @@ String formatDob(String? dateString) {
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(
-                                      4 *
-                                          MediaQuery.of(
-                                            context,
-                                          ).devicePixelRatio,
+                                      ratio*4
                                     ),
                                     child: Image.network(
                                       item['image'] ?? '',
                                       width:
-                                          25 *
-                                          MediaQuery.of(
-                                            context,
-                                          ).devicePixelRatio,
+                                          ratio*32,
                                       height:
-                                          25 *
-                                          MediaQuery.of(
-                                            context,
-                                          ).devicePixelRatio,
+                                         ratio*32,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -476,10 +469,7 @@ String formatDob(String? dateString) {
                                         : (item['name'] ?? '').toString(),
                                     style: TextStyle(
                                       fontSize:
-                                          4 *
-                                          MediaQuery.of(
-                                            context,
-                                          ).devicePixelRatio,
+                                          ratio*7,
                                       fontWeight: FontWeight.w600,
                                     ),
                                     overflow: TextOverflow.ellipsis,
@@ -497,36 +487,28 @@ String formatDob(String? dateString) {
                                 children: [
                                   Text(
                                     "Salary:-",
-                                    style: TextStyle(
+                                    style: TextStyle(fontSize: ratio*7,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
                                     (item['salary'] ?? 0).toString(),
                                     style: TextStyle(
-                                      fontSize:
-                                          4 *
-                                          MediaQuery.of(
-                                            context,
-                                          ).devicePixelRatio,
+                                      fontSize: ratio*7,
                                       color: Colors.black,
                                     ),
                                   ),
                                   SizedBox(height: 5),
                                   Text(
                                     "Designation:-",
-                                    style: TextStyle(
+                                    style: TextStyle(fontSize: ratio*7,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
                                     item['designation'] ?? '',
                                     style: TextStyle(
-                                      fontSize:
-                                          4 *
-                                          MediaQuery.of(
-                                            context,
-                                          ).devicePixelRatio,
+                                      fontSize: ratio*7,
                                       color: Colors.black,
                                     ),
                                   ),
@@ -534,44 +516,35 @@ String formatDob(String? dateString) {
                               ),
                             ),
                             SizedBox(
-                              width:
-                                  4 * MediaQuery.of(context).devicePixelRatio,
+                              width:ratio*5,
                             ),
                             Expanded(
                               child: Column(
                                 children: [
                                   Text(
                                     "Mobile No.:-",
-                                    style: TextStyle(
+                                    style: TextStyle(fontSize: ratio*7,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
                                     (item['mobile_no'] ?? '').toString(),
                                     style: TextStyle(
-                                      fontSize:
-                                          4 *
-                                          MediaQuery.of(
-                                            context,
-                                          ).devicePixelRatio,
+                                      fontSize: ratio*7,
                                       color: Colors.black,
                                     ),
                                   ),
                                   SizedBox(height: 5),
                                   Text(
                                     "Working Hour:-",
-                                    style: TextStyle(
+                                    style: TextStyle(fontSize: ratio*7,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
                                     (item['hours'] ?? '').toString(),
                                     style: TextStyle(
-                                      fontSize:
-                                          4 *
-                                          MediaQuery.of(
-                                            context,
-                                          ).devicePixelRatio,
+                                      fontSize: ratio*7,
                                       color: Colors.black,
                                     ),
                                   ),
@@ -589,21 +562,20 @@ String formatDob(String? dateString) {
                               },
                               child: Container(
                                 padding: EdgeInsets.all(
-                                  MediaQuery.of(context).devicePixelRatio * 3,
+                                 ratio*4,
                                 ),
                                 margin: EdgeInsets.zero,
                                 decoration: BoxDecoration(
                                   color: Colors.orange,
                                   borderRadius: BorderRadius.circular(
-                                    4 * MediaQuery.of(context).devicePixelRatio,
+                                   ratio*5,
                                   ),
                                 ),
                                 alignment: Alignment.center,
                                 child: Icon(
                                   FontAwesomeIcons.solidEye,
                                   size:
-                                      5 *
-                                      MediaQuery.of(context).devicePixelRatio,
+                                      ratio*7,
                                   color: Colors.white,
                                 ),
                               ),
@@ -620,21 +592,20 @@ String formatDob(String? dateString) {
                               },
                               child: Container(
                                 padding: EdgeInsets.all(
-                                  MediaQuery.of(context).devicePixelRatio * 3,
+                                  ratio*4,
                                 ),
                                 margin: EdgeInsets.zero,
                                 decoration: BoxDecoration(
                                   color: Colors.blue,
                                   borderRadius: BorderRadius.circular(
-                                    4 * MediaQuery.of(context).devicePixelRatio,
+                                    ratio*5,
                                   ),
                                 ),
                                 alignment: Alignment.center,
                                 child: Icon(
                                   FontAwesomeIcons.edit,
                                   size:
-                                      5 *
-                                      MediaQuery.of(context).devicePixelRatio,
+                                      ratio*7,
                                   color: Colors.white,
                                 ),
                               ),
@@ -651,21 +622,20 @@ String formatDob(String? dateString) {
                               },
                               child: Container(
                                 padding: EdgeInsets.all(
-                                  MediaQuery.of(context).devicePixelRatio * 3,
+                                  ratio*4,
                                 ),
                                 margin: EdgeInsets.zero,
                                 decoration: BoxDecoration(
                                   color: Colors.pink,
                                   borderRadius: BorderRadius.circular(
-                                    4 * MediaQuery.of(context).devicePixelRatio,
+                                    ratio*5,
                                   ),
                                 ),
                                 alignment: Alignment.center,
                                 child: Icon(
                                   FontAwesomeIcons.key,
                                   size:
-                                      5 *
-                                      MediaQuery.of(context).devicePixelRatio,
+                                      ratio*7,
                                   color: Colors.white,
                                 ),
                               ),

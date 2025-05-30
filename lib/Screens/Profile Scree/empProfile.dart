@@ -1,5 +1,4 @@
 import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
-import 'package:employee_tracker/main.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
@@ -45,6 +44,14 @@ class EmpprofileState extends State<Empprofile> {
   }
 
   Widget buildUserRow(String label, dynamic value) {
+     double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -56,7 +63,7 @@ class EmpprofileState extends State<Empprofile> {
               '$label',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                fontSize: 15,
+                fontSize: ratio*7,
                 color: Colors.grey[800],
               ),
             ),
@@ -65,7 +72,7 @@ class EmpprofileState extends State<Empprofile> {
             flex: 5,
             child: Text(
               '${value ?? 'N/A'}',
-              style: TextStyle(fontSize: 15, color: Colors.black87),
+              style: TextStyle(fontSize: ratio*7, color: Colors.black87),
             ),
           ),
         ],
@@ -73,48 +80,16 @@ class EmpprofileState extends State<Empprofile> {
     );
   }
 
-  Future<void> alert(BuildContext context, message) async {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Center(child: Text('Employee Tracker')),
-          content: Text(message, textAlign: TextAlign.center),
-          actions: [
-            ElevatedButton(
-              child: Text('OK'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF03a9f4),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void clearStorage(context) async {
-    try {
-      await localStorage.clear();
-      await alert(context, "Successfully Logged Out");
-
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => CreateScreen()),
-        (route) => false,
-      );
-    } catch (e) {
-      print('Error clearing local storage: $e');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final double screenWidth = MediaQuery.of(context).size.width;
-
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
+    }
     if (userdata == null) {
       return Scaffold(
         appBar: AppBar(
@@ -133,7 +108,7 @@ class EmpprofileState extends State<Empprofile> {
         title: Text(
           'Employee Profile',
           style: TextStyle(
-            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
+            fontSize: ratio*9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -144,23 +119,23 @@ class EmpprofileState extends State<Empprofile> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(screenWidth * 0.06),
+        padding: EdgeInsets.all(deviceWidth * 0.06),
         child: Column(
           children: [
             Card(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(ratio*10),
               ),
               elevation: 6,
               color: Color(0xFFF1F9FF),
               child: Padding(
-                padding: EdgeInsets.all(screenWidth * 0.06),
+                padding: EdgeInsets.all(deviceWidth * 0.06),
                 child: Column(
                   children: [
                     if (userdata!['image'] != null &&
                         userdata!['image'].toString().isNotEmpty)
                       CircleAvatar(
-                        radius: screenWidth * 0.2,
+                        radius: deviceWidth * 0.2,
                         backgroundImage: NetworkImage(
                           'https://testapi.rabadtechnology.com/${userdata!['image']}',
                         ),
@@ -168,9 +143,9 @@ class EmpprofileState extends State<Empprofile> {
                       )
                     else
                       CircleAvatar(
-                        radius: screenWidth * 0.2,
+                        radius: deviceWidth * 0.2,
                         backgroundColor: Colors.grey[300],
-                        child: Icon(Icons.person, size: screenWidth * 0.2),
+                        child: Icon(Icons.person, size: deviceWidth * 0.2),
                       ),
                     SizedBox(height: 20),
                     Divider(color: Colors.grey.shade400),
@@ -195,11 +170,9 @@ class EmpprofileState extends State<Empprofile> {
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EmpHome(),
-                        ),
-                      );
+                  context,
+                  MaterialPageRoute(builder: (context) => EmpHome()),
+                );
               },
               icon: Icon(Icons.home),
               label: Text("Go to Home"),
@@ -207,11 +180,11 @@ class EmpprofileState extends State<Empprofile> {
                 backgroundColor: Color(0xFF03a9f4),
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(
-                  horizontal: screenWidth * 0.06,
+                  horizontal: deviceWidth * 0.06,
                   vertical: 14,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(screenWidth * 0.07),
+                  borderRadius: BorderRadius.circular(deviceWidth * 0.07),
                 ),
                 elevation: 4,
               ),

@@ -349,6 +349,14 @@ class VisitOutState extends State<VisitOut> {
 
   @override
   Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if(deviceWidth<deviceHeight){
+      ratio=deviceHeight/deviceWidth;
+    }else{
+      ratio=deviceWidth/deviceHeight;
+    }
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
@@ -356,7 +364,7 @@ class VisitOutState extends State<VisitOut> {
         title: Text(
           'Visit Out',
           style: TextStyle(
-            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
+            fontSize:ratio*9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -371,7 +379,7 @@ class VisitOutState extends State<VisitOut> {
                   children: [
                     CircleAvatar(
                       radius:
-                          MediaQuery.of(context).size.width *
+                          deviceWidth *
                           0.16, // Adjust the radius dynamically based on screen width
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
@@ -387,7 +395,7 @@ class VisitOutState extends State<VisitOut> {
                 child: Center(
                   child: Container(
                     padding: EdgeInsets.all(16),
-                    width: MediaQuery.of(context).size.width,
+                    width: deviceWidth,
                     child: Form(
                       key: _formKey,
                       child: Column(
@@ -433,7 +441,7 @@ class VisitOutState extends State<VisitOut> {
                           SizedBox(height: 10),
                           Text(
                             "Mode Of Transport",
-                            style: TextStyle(fontSize: 20),
+                            style: TextStyle(fontSize: ratio*9,),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -474,7 +482,7 @@ class VisitOutState extends State<VisitOut> {
                                   "Take Photo",
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: 18,
+                                    fontSize: ratio*9,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -488,14 +496,14 @@ class VisitOutState extends State<VisitOut> {
                                     borderRadius: BorderRadius.circular(10),
                                     child: Image.file(
                                       File(_imageFile!.path),
-                                      width: 80,
-                                      height: 80,
+                                       width: ratio*40,
+                                    height: ratio*40,
                                       fit: BoxFit.cover,
                                     ),
                                   )
                                   : Container(
-                                    width: 80,
-                                    height: 80,
+                                    width: ratio*40,
+                                    height: ratio*40,
                                     color: Colors.grey[300],
                                   ),
                             ],
@@ -507,7 +515,7 @@ class VisitOutState extends State<VisitOut> {
                               "Visit Out",
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 6*MediaQuery.of(context).devicePixelRatio,
+                                fontSize: ratio*9,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

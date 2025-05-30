@@ -199,6 +199,14 @@ class MasterState extends State<Master> {
       text: currentDesignation,
     );
     final GlobalKey<FormState> _updateFormKey = GlobalKey<FormState>();
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
+    }
 
     await showDialog<String>(
       context: context,
@@ -213,17 +221,28 @@ class MasterState extends State<Master> {
                 children: [
                   TextFormField(
                     controller: _updateController,
-                    textCapitalization: TextCapitalization.words,
                     decoration: InputDecoration(
                       labelText: 'Enter Your Designation',
-                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: ratio * 7,
+                        horizontal: ratio * 7,
+                      ),
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                        fontSize: ratio * 7,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          ratio * 7,
+                        ), // Set the border radius
+                      ),
                       filled: true,
                       fillColor: Colors.grey[200],
                       prefixIcon: Icon(Icons.person),
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Enter your Designation';
+                        return 'Enter Working Hours';
                       }
                       return null;
                     },
@@ -238,7 +257,10 @@ class MasterState extends State<Master> {
                     },
                     child: Text(
                       "Update",
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF03a9f4),
                     ),
                   ),
                 ],
@@ -252,6 +274,14 @@ class MasterState extends State<Master> {
 
   @override
   Widget build(BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
+    }
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
@@ -259,7 +289,7 @@ class MasterState extends State<Master> {
         title: Text(
           'Create Designation',
           style: TextStyle(
-            fontSize: 6*MediaQuery.of(context).devicePixelRatio,
+            fontSize: ratio * 9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -272,7 +302,7 @@ class MasterState extends State<Master> {
             Text(
               'Add Designation',
               style: TextStyle(
-                fontSize: 7 * MediaQuery.of(context).devicePixelRatio,
+                fontSize: ratio * 8,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -281,17 +311,28 @@ class MasterState extends State<Master> {
               key: _formKey,
               child: TextFormField(
                 controller: designation,
-                textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   labelText: 'Enter Your Designation',
-                  border: OutlineInputBorder(),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: ratio * 7,
+                    horizontal: ratio * 7,
+                  ),
+                  labelStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: ratio * 7,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(
+                      ratio * 7,
+                    ), // Set the border radius
+                  ),
                   filled: true,
                   fillColor: Colors.grey[200],
                   prefixIcon: Icon(Icons.person),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Enter your Designation';
+                    return 'Enter Your Designation';
                   }
                   return null;
                 },
@@ -316,7 +357,7 @@ class MasterState extends State<Master> {
                           children: [
                             CircleAvatar(
                               radius:
-                                  MediaQuery.of(context).size.width *
+                                  deviceWidth *
                                   0.16, // Adjust the radius dynamically based on screen width
                               backgroundImage: AssetImage(
                                 'assets/splesh_Screen/Emp_Attend.png',
@@ -332,10 +373,7 @@ class MasterState extends State<Master> {
                       ? Center(
                         child: Text(
                           "Designation Not Found",
-                          style: TextStyle(
-                            fontSize:
-                                6 * MediaQuery.of(context).devicePixelRatio,
-                          ),
+                          style: TextStyle(fontSize: ratio * 8),
                         ),
                       )
                       : ListView.builder(
@@ -344,17 +382,15 @@ class MasterState extends State<Master> {
                           final item = designationList[index];
                           return Container(
                             margin: EdgeInsets.symmetric(
-                              vertical:
-                                  1 * MediaQuery.of(context).devicePixelRatio,
-                              horizontal:
-                                  1  * MediaQuery.of(context).devicePixelRatio,
+                              vertical: ratio * 1,
+                              horizontal: ratio * 1,
                             ),
-                            padding: EdgeInsets.all(3  * MediaQuery.of(context).devicePixelRatio),
+                            padding: EdgeInsets.all(
+                              3 * MediaQuery.of(context).devicePixelRatio,
+                            ),
                             decoration: BoxDecoration(
                               color: Color.fromARGB(255, 215, 229, 241),
-                              borderRadius: BorderRadius.circular(
-                                5 * MediaQuery.of(context).devicePixelRatio,
-                              ),
+                              borderRadius: BorderRadius.circular(ratio * 6),
                             ),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -371,23 +407,13 @@ class MasterState extends State<Master> {
                                       Text(
                                         "Designation:",
                                         style: TextStyle(
-                                          fontSize:
-                                              5 *
-                                              MediaQuery.of(
-                                                context,
-                                              ).devicePixelRatio,
+                                          fontSize: ratio * 7,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
                                         "${item['designationname']}",
-                                        style: TextStyle(
-                                          fontSize:
-                                              5 *
-                                              MediaQuery.of(
-                                                context,
-                                              ).devicePixelRatio,
-                                        ),
+                                        style: TextStyle(fontSize: ratio * 7),
                                       ),
                                     ],
                                   ),
@@ -409,21 +435,13 @@ class MasterState extends State<Master> {
                                           children: [
                                             Icon(
                                               FontAwesomeIcons.arrowsRotate,
-                                              size:
-                                                  7 *
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).devicePixelRatio,
+                                              size: ratio * 9,
                                               color: Colors.blue,
                                             ),
                                             Text(
                                               "Update",
                                               style: TextStyle(
-                                                fontSize:
-                                                    3 *
-                                                    MediaQuery.of(
-                                                      context,
-                                                    ).devicePixelRatio,
+                                                fontSize: ratio * 4,
                                               ),
                                             ),
                                           ],
@@ -436,21 +454,13 @@ class MasterState extends State<Master> {
                                           children: [
                                             Icon(
                                               FontAwesomeIcons.trash,
-                                              size:
-                                                  7 *
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).devicePixelRatio,
+                                              size: ratio * 9,
                                               color: Colors.deepOrangeAccent,
                                             ),
                                             Text(
                                               "Delete",
                                               style: TextStyle(
-                                                fontSize:
-                                                    3 *
-                                                    MediaQuery.of(
-                                                      context,
-                                                    ).devicePixelRatio,
+                                                fontSize: ratio * 4,
                                               ),
                                             ),
                                           ],

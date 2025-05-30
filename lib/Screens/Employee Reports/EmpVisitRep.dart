@@ -148,6 +148,14 @@ class EmpvisitrepState extends State<Empvisitrep> {
     showDialog(
       context: context,
       builder: (context) {
+        double deviceWidth = MediaQuery.of(context).size.width;
+        double deviceHeight = MediaQuery.of(context).size.height;
+        var ratio;
+        if (deviceWidth < deviceHeight) {
+          ratio = deviceHeight / deviceWidth;
+        } else {
+          ratio = deviceWidth / deviceHeight;
+        }
         return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -155,7 +163,10 @@ class EmpvisitrepState extends State<Empvisitrep> {
           title: Center(
             child: Text(
               "Visit Details:-",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: ratio * 8,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
           content: SingleChildScrollView(
@@ -181,9 +192,8 @@ class EmpvisitrepState extends State<Empvisitrep> {
                             );
                           },
                           child: Container(
-                            width: MediaQuery.of(context).devicePixelRatio * 25,
-                            height:
-                                MediaQuery.of(context).devicePixelRatio * 30,
+                            width: deviceWidth * .30,
+                            height: deviceWidth * .30,
                             decoration: BoxDecoration(color: Colors.grey[200]),
                             child: Image.network(
                               visit['image'] ?? '',
@@ -230,13 +240,11 @@ class EmpvisitrepState extends State<Empvisitrep> {
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(
-                        horizontal: MediaQuery.of(context).devicePixelRatio * 5,
-                        vertical: MediaQuery.of(context).devicePixelRatio * 3,
+                        horizontal: ratio * 7,
+                        vertical: ratio * 3,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          MediaQuery.of(context).devicePixelRatio * 7,
-                        ),
+                        borderRadius: BorderRadius.circular(ratio * 10),
                       ),
                     ),
                     onPressed: () => Navigator.of(context).pop(),
@@ -252,14 +260,19 @@ class EmpvisitrepState extends State<Empvisitrep> {
   }
 
   Widget buildTextDetail(String label, dynamic value, BuildContext context) {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Text(
         "$label: ${value ?? 'N/A'}",
-        style: TextStyle(
-          fontSize: MediaQuery.of(context).devicePixelRatio * 5,
-          fontWeight: FontWeight.w400,
-        ),
+        style: TextStyle(fontSize: ratio * 7, fontWeight: FontWeight.w400),
       ),
     );
   }
@@ -267,7 +280,13 @@ class EmpvisitrepState extends State<Empvisitrep> {
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
-    double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+    double deviceHeight = MediaQuery.of(context).size.height;
+    var ratio;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -276,7 +295,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
         title: Text(
           'Employee Visit',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: ratio * 9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -293,7 +312,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                     Text(
                       "Date",
                       style: TextStyle(
-                        fontSize: devicePixelRatio * 5,
+                        fontSize: ratio * 7,
                         color: Colors.white,
                       ),
                     ),
@@ -316,7 +335,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                     Text(
                       "Month",
                       style: TextStyle(
-                        fontSize: devicePixelRatio * 5,
+                        fontSize: ratio * 7,
                         color: Colors.white,
                       ),
                     ),
@@ -346,7 +365,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                   children: [
                     CircleAvatar(
                       radius:
-                          MediaQuery.of(context).size.width *
+                          deviceWidth *
                           0.16, // Adjust the radius dynamically based on screen width
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
@@ -362,7 +381,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
               ? Center(
                 child: Text(
                   "Visit Not Found",
-                  style: TextStyle(fontSize: devicePixelRatio * 6),
+                  style: TextStyle(fontSize: ratio * 8),
                 ),
               )
               : ListView.builder(
@@ -387,7 +406,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text("You Can See :-"),
-                          SizedBox(width: devicePixelRatio * 5),
+                          SizedBox(width: ratio * 7),
                           ElevatedButton(
                             onPressed: () {
                               List<LatLng> allPoints = [];
@@ -460,8 +479,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                               "All Visits",
                               style: TextStyle(
                                 fontSize:
-                                    devicePixelRatio *
-                                    5, // Adjust font size if necessary
+                                    ratio * 7, // Adjust font size if necessary
                                 color: Colors.white,
                               ),
                             ),
@@ -473,16 +491,15 @@ class EmpvisitrepState extends State<Empvisitrep> {
                         return Card(
                           color: const Color.fromARGB(255, 247, 239, 230),
                           margin: EdgeInsets.symmetric(
-                            horizontal: devicePixelRatio * 5,
-                            vertical: devicePixelRatio * 2,
+                            horizontal: ratio * 5,
+                            vertical: ratio * 2,
                           ),
                           child: ListTile(
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
                                 visit['imagev'] ?? '',
-                                width: devicePixelRatio * 22,
-                                height: devicePixelRatio * 22,
+                                width: ratio * 30,
                                 fit: BoxFit.cover,
                                 errorBuilder:
                                     (context, error, stackTrace) =>
@@ -491,9 +508,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                             ),
                             title: Text(
                               visit['NameOfCustomer'] ?? 'No Customer Name',
-                              style: TextStyle(
-                                fontSize: devicePixelRatio * 5.5,
-                              ),
+                              style: TextStyle(fontSize: ratio *7),
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -502,32 +517,26 @@ class EmpvisitrepState extends State<Empvisitrep> {
                                   children: [
                                     Text(
                                       "Start:",
-                                      style: TextStyle(
-                                        fontSize: devicePixelRatio * 4,
-                                      ),
+                                      style: TextStyle(fontSize: ratio * 6,fontWeight: FontWeight.bold),
                                     ),
                                     Text(
                                       "${visit['end'] ?? 'N/A'}",
-                                      style: TextStyle(
-                                        fontSize: devicePixelRatio * 4,
-                                      ),
+                                      style: TextStyle(fontSize: ratio * 6),
                                     ),
                                   ],
                                 ),
                                 Row(
                                   children: [
                                     Text(
-                                      "Start:",
+                                      "End:",
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: devicePixelRatio * 4,
+                                        fontSize: ratio * 6,
                                       ),
                                     ),
                                     Text(
                                       "${visit['time'] ?? 'N/A'}",
-                                      style: TextStyle(
-                                        fontSize: devicePixelRatio * 4,
-                                      ),
+                                      style: TextStyle(fontSize: ratio * 6),
                                     ),
                                   ],
                                 ),
@@ -570,7 +579,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                                     icon: Icon(
                                       FontAwesomeIcons.mapLocationDot,
                                       color: Color(0xFF03a9f4),
-                                      size: devicePixelRatio * 10,
+                                      size: ratio * 10,
                                     ),
                                     onPressed: () {
                                       List<LatLng> points = [];
