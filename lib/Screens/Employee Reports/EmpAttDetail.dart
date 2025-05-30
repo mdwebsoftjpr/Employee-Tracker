@@ -138,7 +138,12 @@ class EmpattdetailState extends State<EmpAttdetail> {
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
-    final devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
+    var ratio;
+    if(deviceWidth<deviceHeight){
+      ratio=deviceHeight/deviceWidth;
+    }else{
+      ratio=deviceWidth/deviceHeight;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -147,7 +152,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
         title: Text(
           'Attendance Detail',
           style: TextStyle(
-            fontSize: 6 * devicePixelRatio,
+            fontSize: ratio*9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -189,7 +194,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
               ? Center(
                 child: Text(
                   "Attendance Not Found",
-                  style: TextStyle(fontSize: devicePixelRatio * 6),
+                  style: TextStyle(fontSize: ratio * 6),
                 ),
               )
               : ListView.builder(
@@ -197,14 +202,14 @@ class EmpattdetailState extends State<EmpAttdetail> {
                 itemBuilder: (context, index) {
                   final data = attendanceData[index];
                   return Padding(
-                    padding: EdgeInsets.all(devicePixelRatio * .5),
+                    padding: EdgeInsets.all(ratio * .5),
                     child: Container(
                       margin: EdgeInsets.only(
-                        top: devicePixelRatio * 2,
-                        left: devicePixelRatio * 3.5,
-                        right: devicePixelRatio * 3.5,
+                        top: ratio * 2,
+                        left: ratio * 3.5,
+                        right: ratio * 3.5,
                       ),
-                      padding: EdgeInsets.all(devicePixelRatio * 1),
+                      padding: EdgeInsets.all(ratio * 1),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(deviceWidth * 0.03),
                         color: const Color.fromARGB(255, 247, 239, 230),
@@ -219,7 +224,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 Text(
                                   "Date:",
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
+                                    fontSize: ratio * 6,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -231,7 +236,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                           .join('-')
                                       : '',
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
+                                    fontSize:ratio * 6,
                                   ),
                                 ),
                                 Row(
@@ -239,7 +244,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                     Text(
                                       "Break: ",
                                       style: TextStyle(
-                                        fontSize: devicePixelRatio * 4,
+                                        fontSize: ratio * 6,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -251,27 +256,29 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                         if (data['break3'] == 'close') count++;
                                         return '$count';
                                       })(),style: TextStyle(
-                                        fontSize: devicePixelRatio * 4,
+                                        fontSize: ratio * 6,
                                       ),
                                     ),
                                   ],
                                 ),
+                                SizedBox(height: ratio*7,),
                                 Text(
                                   "Address in:",
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
+                                    fontSize: ratio * 6,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   "${data['address'] ?? ''}",
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
+                                    fontSize: ratio * 6,
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                          SizedBox(width: ratio*1,),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,45 +288,46 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 Text(
                                   "Punch In:",
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
+                                    fontSize: ratio * 6,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   data['time_in'] ?? '',
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
+                                    fontSize: ratio * 6,
                                   ),
                                 ),
                                 Text(
                                   "Punch Out:",
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
+                                    fontSize: ratio * 6,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   data['time_out'] ?? '',
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
+                                    fontSize: ratio * 6,
                                   ),
                                 ),
                                 Text(
                                   "Address Out:",
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
+                                    fontSize: ratio * 6,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
                                   data['address_out'] ?? '',
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
+                                    fontSize: ratio * 6,
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                          SizedBox(width: ratio*1,),
                           Expanded(
                             child: Column(
                               children: [
@@ -344,7 +352,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
-                                      fontSize: devicePixelRatio * 4,
+                                      fontSize: ratio * 6,
                                     ),
                                   ),
                                 ),
@@ -356,24 +364,24 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                     Text(
                                       "Total Hours:",
                                       style: TextStyle(
-                                        fontSize: devicePixelRatio * 4,
+                                        fontSize: ratio * 6,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     Text(
                                       "${data['hours']??0}",
                                       style: TextStyle(
-                                        fontSize: devicePixelRatio * 4,
+                                        fontSize: ratio * 6,
                                       ),
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: deviceHeight * 0.001),
+                                SizedBox(height: ratio *1),
                                 IconButton(
                                   icon: Icon(
                                     FontAwesomeIcons.mapLocationDot,
                                     color: Color(0xFF03a9f4),
-                                    size: devicePixelRatio * 7,
+                                    size: ratio * 10,
                                   ),
                                   onPressed: () {
                                     List<LatLng> points = [];
@@ -446,7 +454,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 Text(
                                   "Location..",
                                   style: TextStyle(
-                                    fontSize: devicePixelRatio * 4,
+                                    fontSize: ratio * 6,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
