@@ -356,9 +356,7 @@ class MasterState extends State<Master> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             CircleAvatar(
-                              radius:
-                                  deviceWidth *
-                                  0.16, // Adjust the radius dynamically based on screen width
+                              radius:ratio*25,
                               backgroundImage: AssetImage(
                                 'assets/splesh_Screen/Emp_Attend.png',
                               ), // Set the background image here

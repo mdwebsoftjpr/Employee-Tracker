@@ -548,9 +548,10 @@ class _EmpHomeState extends State<EmpHome> {
       setState(() {
         isLoading = false;
       });
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => CreateScreen()),
+        (route) => false,
       );
     } catch (e) {
       setState(() {
@@ -881,21 +882,21 @@ class _EmpHomeState extends State<EmpHome> {
                       (userImg != null)
                           ? Image.network(
                             'https://testapi.rabadtechnology.com/$userImg',
-                            width: deviceWidth * 0.10,
-                            height: deviceWidth * 0.10,
+                            width: ratio * 18,
+                            height:  ratio * 18,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               // If image fails to load (e.g. 404), show default icon
                               return Icon(
                                 Icons.account_circle,
-                                size:deviceWidth * 0.10,
+                                size: deviceWidth * 0.10,
                                 color: Colors.white,
                               );
                             },
                           )
                           : Icon(
                             Icons.account_circle,
-                            size: deviceWidth * 0.10,
+                            size: ratio * 18,
                             color: Colors.white,
                           ),
                 ),
@@ -913,7 +914,7 @@ class _EmpHomeState extends State<EmpHome> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: .23 * deviceHeight,
+                    height: ratio*85,
                     decoration: BoxDecoration(color: Color(0xFF03a9f4)),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -966,6 +967,7 @@ class _EmpHomeState extends State<EmpHome> {
                           style: TextStyle(fontSize: ratio * 7),
                         ),
                         onTap: () {
+                          Navigator.pop(context);
                           punchIn();
                         },
                       )
@@ -979,6 +981,7 @@ class _EmpHomeState extends State<EmpHome> {
                           style: TextStyle(fontSize: ratio * 7),
                         ),
                         onTap: () {
+                          Navigator.pop(context);
                           punchOutAlert(context);
                         },
                       ),
@@ -992,6 +995,7 @@ class _EmpHomeState extends State<EmpHome> {
                         ),
                         onTap: () {
                           if (Mainstatus != '' && Mainstatus == 'punchin') {
+                            Navigator.pop(context);
                             Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => VisitOut()),
@@ -1012,8 +1016,10 @@ class _EmpHomeState extends State<EmpHome> {
                         ),
                         onTap: () async {
                           if (Mainstatus != '' && Mainstatus == 'punchin') {
+                            Navigator.pop(context);
                             visitIn();
                           } else {
+                            Navigator.pop(context);
                             Alert.alert(
                               context,
                               'Please Mark Your Attendance Then Do Visit',
@@ -1029,6 +1035,7 @@ class _EmpHomeState extends State<EmpHome> {
                       style: TextStyle(fontSize: ratio * 7),
                     ),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => EmpAttdetail()),
@@ -1043,6 +1050,7 @@ class _EmpHomeState extends State<EmpHome> {
                       style: TextStyle(fontSize: ratio * 7),
                     ),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (_) => Empvisitrep()),
@@ -1057,6 +1065,7 @@ class _EmpHomeState extends State<EmpHome> {
                       style: TextStyle(fontSize: ratio * 7),
                     ),
                     onTap: () {
+                      Navigator.pop(context);
                       LogOutAlert(context);
                     },
                   ),
@@ -1126,7 +1135,7 @@ class _EmpHomeState extends State<EmpHome> {
                           Text(
                             'Maintain And Dev. By Md Websoft',
                             style: TextStyle(
-                              fontSize:ratio*6,
+                              fontSize: ratio * 6,
                               color: Colors.grey[600],
                               fontWeight: FontWeight.w500,
                             ),
@@ -1154,7 +1163,7 @@ class _EmpHomeState extends State<EmpHome> {
                           Text(
                             'About Us',
                             style: TextStyle(
-                              fontSize: ratio*6,
+                              fontSize: ratio * 6,
                               color: Colors.grey[600],
                               fontWeight: FontWeight.w500,
                             ),
@@ -1174,7 +1183,7 @@ class _EmpHomeState extends State<EmpHome> {
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.white,
         type: BottomNavigationBarType.fixed,
-        currentIndex: _selectedIndex, 
+        currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -1200,9 +1209,7 @@ class _EmpHomeState extends State<EmpHome> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:
-                          deviceWidth *
-                          0.16, // Adjust the radius dynamically based on screen width
+                      radius:ratio*25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here
@@ -1223,9 +1230,9 @@ class _EmpHomeState extends State<EmpHome> {
                           Container(
                             margin: EdgeInsets.only(
                               top: 0,
-                              bottom: ratio*1,
-                              right: ratio*2,
-                              left: ratio*2,
+                              bottom: ratio * 1,
+                              right: ratio * 2,
+                              left: ratio * 2,
                             ),
                             width: double.infinity,
                             child: Center(
@@ -1270,14 +1277,14 @@ class _EmpHomeState extends State<EmpHome> {
                                                             ),
                                                         child: Image.network(
                                                           'https://testapi.rabadtechnology.com/uploads/$UserImage',
-                                                          width: ratio*38,
-                                                          height:  ratio*38,
+                                                          width: ratio * 38,
+                                                          height: ratio * 38,
                                                           fit: BoxFit.cover,
                                                         ),
                                                       )
                                                       : Icon(
                                                         Icons.account_circle,
-                                                        size: ratio*38,
+                                                        size: ratio * 38,
                                                       ),
                                             ),
 
@@ -1291,7 +1298,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                   Text(
                                                     name,
                                                     style: TextStyle(
-                                                      fontSize: ratio*8,
+                                                      fontSize: ratio * 8,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                       color: Colors.white,
@@ -1301,7 +1308,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                   Text(
                                                     CurrentAddress,
                                                     style: TextStyle(
-                                                      fontSize: ratio*6,
+                                                      fontSize: ratio * 6,
                                                       fontWeight:
                                                           FontWeight.w600,
                                                       color: Colors.white,
@@ -1327,9 +1334,7 @@ class _EmpHomeState extends State<EmpHome> {
                                             MainAxisAlignment.end,
                                         children: [
                                           Container(
-                                            width:
-                                                deviceWidth *
-                                                0.85,
+                                            width: deviceWidth * 0.85,
                                             margin: EdgeInsets.only(bottom: 5),
                                             child: Column(
                                               children: [
@@ -1346,7 +1351,8 @@ class _EmpHomeState extends State<EmpHome> {
                                                               Text(
                                                                 'Today Report: $currentDate',
                                                                 style: TextStyle(
-                                                                  fontSize: ratio*7,
+                                                                  fontSize:
+                                                                      ratio * 7,
                                                                   color:
                                                                       Colors
                                                                           .black,
@@ -1355,7 +1361,8 @@ class _EmpHomeState extends State<EmpHome> {
                                                               Icon(
                                                                 Icons
                                                                     .arrow_drop_up,
-                                                                size: ratio*10,
+                                                                size:
+                                                                    ratio * 10,
                                                               ),
                                                             ],
                                                           ),
@@ -1377,7 +1384,8 @@ class _EmpHomeState extends State<EmpHome> {
                                                               Text(
                                                                 'Today Report: $currentDate',
                                                                 style: TextStyle(
-                                                                  fontSize: ratio*7,
+                                                                  fontSize:
+                                                                      ratio * 7,
                                                                   color:
                                                                       Colors
                                                                           .black,
@@ -1386,7 +1394,8 @@ class _EmpHomeState extends State<EmpHome> {
                                                               Icon(
                                                                 Icons
                                                                     .arrow_drop_down,
-                                                                size: ratio*10,
+                                                                size:
+                                                                    ratio * 10,
                                                               ),
                                                             ],
                                                           ),
@@ -1407,148 +1416,210 @@ class _EmpHomeState extends State<EmpHome> {
                                                     color: Colors.white,
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                          ratio*7,
+                                                          ratio * 7,
                                                         ),
                                                   ),
                                                   child:
                                                       drop
-                                                          ? Column(
-                                                            children: [
-                                                              Container(
-                                                                height: deviceHeight*.03,
-                                                                child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceEvenly,
-                                                                  children: [
-                                                                    Text(
-                                                                      "View",
-                                                                      style: TextStyle(
-                                                                        color:
-                                                                            Colors.black,
+                                                          ? Container(
+                                                            height:
+                                                                ratio *
+                                                                27,
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceAround,
+                                                              children: [
+                                                                Expanded(
+                                                                  flex: 1,
+                                                                  child: Column(
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      Text(
+                                                                        "View",
+                                                                        style: TextStyle(
+                                                                          fontSize: ratio*6,
+                                                                          color:
+                                                                              Colors.black,
+                                                                        ),
                                                                       ),
-                                                                    ),
-                                                                    Text(
-                                                                      "Attendance",
-                                                                      style: TextStyle(
-                                                                        color:
-                                                                            Colors.black,
+                                                                      SizedBox(height: ratio*4,),
+                                                                      Container(
+                                                                        width: ratio*14,
+                                                                        height: ratio*14,
+                                                                        child: IconButton(
+                                                                          padding:
+                                                                              EdgeInsets.zero,
+                                                                          onPressed:
+                                                                              () => Navigator.push(
+                                                                                context,
+                                                                                MaterialPageRoute(
+                                                                                  builder:
+                                                                                      (
+                                                                                        context,
+                                                                                      ) =>
+                                                                                          EmpAttdetail(),
+                                                                                ),
+                                                                              ),
+                                                                          icon: Icon(
+                                                                            Icons.remove_red_eye,
+                                                                            size:
+                                                                                ratio *
+                                                                                14,
+                                                                          ),
+                                                                        ),
                                                                       ),
-                                                                    ),
-                                                                    Text(
-                                                                      "Work Start",
-                                                                      style: TextStyle(
-                                                                        color:
-                                                                            Colors.black,
-                                                                      ),
-                                                                    ),
-                                                                    Text(
-                                                                      "End",
-                                                                      style: TextStyle(
-                                                                        color:
-                                                                            Colors.black,
-                                                                      ),
-                                                                    ),
-                                                                  ],
+                                                                    ],
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              Container(
-                                                                child: Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .spaceBetween,
-                                                                  children: [
-                                                                    TextButton(
-                                                                      onPressed:
-                                                                          () => Navigator.push(
-                                                                            context,
-                                                                            MaterialPageRoute(
-                                                                              builder:
-                                                                                  (
-                                                                                    context,
-                                                                                  ) =>
-                                                                                      EmpAttdetail(),
-                                                                            ),
-                                                                          ),
-                                                                      child: Icon(
-                                                                        Icons
-                                                                            .remove_red_eye,
-                                                                        size:
-                                                                            ratio*15,
-                                                                        color:
-                                                                            Colors.black,
+                                                                Expanded(
+                                                                  flex: 1,
+                                                                  child: Column(
+                                                                     mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      Text(
+                                                                        "Attendance",
+                                                                        style: TextStyle(
+                                                                          fontSize: ratio*6,
+                                                                          color:
+                                                                              Colors.black,
+                                                                        ),
                                                                       ),
-                                                                    ),
-                                                                    (Mainstatus !=
-                                                                            "")
-                                                                        ? Container(
-                                                                          width:
-                                                                              ratio*30,
-                                                                          height:
-                                                                              ratio*9,
-                                                                          color:
-                                                                              Colors.green,
-                                                                          child: Center(
-                                                                            child: Text(
-                                                                              PSatatus,
-                                                                              style: TextStyle(
-                                                                                color:
-                                                                                    Colors.white,
+                                                                      SizedBox(height: ratio*4,),
+                                                                      (Mainstatus !=
+                                                                              "")
+                                                                          ? Container(
+                                                                            width:
+                                                                                ratio *
+                                                                                30,
+                                                                            height:
+                                                                                ratio *
+                                                                                9,
+                                                                            color:
+                                                                                Colors.green,
+                                                                            child: Center(
+                                                                              child: Text(
+                                                                                PSatatus,
+                                                                                style: TextStyle(
+                                                                                  fontSize: ratio*6,
+                                                                                  color:
+                                                                                      Colors.white,
+                                                                                ),
                                                                               ),
                                                                             ),
+                                                                          )
+                                                                          : Text(
+                                                                            "Not Marked",
                                                                           ),
-                                                                        )
-                                                                        : Text(
-                                                                          "Not Marked",
-                                                                        ),
-                                                                    (punchIntime !=
-                                                                            '')
-                                                                        ? Container(
-                                                                          width:
-                                                                              ratio*30,
-                                                                          height:
-                                                                              ratio*9,
-                                                                          color:
-                                                                              Colors.white,
-                                                                          child: Center(
-                                                                            child: Text(
-                                                                              punchIntime,
-                                                                              style: TextStyle(
-                                                                                color:
-                                                                                    Colors.black,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        )
-                                                                        : Text(
-                                                                          "      -  ",
-                                                                        ),
-                                                                    (punchOuttime !=
-                                                                            '')
-                                                                        ? Container(
-                                                                          width:
-                                                                              ratio*30,
-                                                                          height:
-                                                                              ratio*9,
-                                                                          color:
-                                                                              Colors.white,
-                                                                          child: Center(
-                                                                            child: Text(
-                                                                              punchOuttime,
-                                                                              style: TextStyle(
-                                                                                color:
-                                                                                    Colors.black,
-                                                                              ),
-                                                                            ),
-                                                                          ),
-                                                                        )
-                                                                        : Text(
-                                                                          "     -  ",
-                                                                        ),
-                                                                  ],
+                                                                    ],
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                            ],
+                                                                Expanded(
+                                                                  flex: 1,
+                                                                  child: Column(
+                                                                     mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      Text(
+                                                                        "Work Start",
+                                                                        style: TextStyle(
+                                                                          fontSize: ratio*6,
+                                                                          color:
+                                                                              Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                      SizedBox(height: ratio*4,),
+                                                                      (punchIntime !=
+                                                                              '')
+                                                                          ? Container(
+                                                                            width:
+                                                                                ratio *
+                                                                                30,
+                                                                            height:
+                                                                                ratio *
+                                                                                9,
+                                                                            color:
+                                                                                Colors.white,
+                                                                            child: Center(
+                                                                              child: Text(
+                                                                                punchIntime,
+                                                                                style: TextStyle(
+                                                                                  fontSize: ratio*6,
+                                                                                  color:
+                                                                                      Colors.black,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          )
+                                                                          : Text(
+                                                                            "      -  ",
+                                                                          ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                                Expanded(
+                                                                  flex: 1,
+                                                                  child: Column(
+                                                                     mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .center,
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .center,
+                                                                    children: [
+                                                                      Text(
+                                                                        "Work End",
+                                                                        style: TextStyle(
+                                                                          fontSize: ratio*6,
+                                                                          color:
+                                                                              Colors.black,
+                                                                        ),
+                                                                      ),
+                                                                      SizedBox(height: ratio*4,),
+                                                                      (punchOuttime !=
+                                                                              '')
+                                                                          ? Container(
+                                                                            width:
+                                                                                ratio *
+                                                                                30,
+                                                                            height:
+                                                                                ratio *
+                                                                                9,
+                                                                            color:
+                                                                                Colors.white,
+                                                                            child: Center(
+                                                                              child: Text(
+                                                                                punchOuttime,
+                                                                                style: TextStyle(
+                                                                                  fontSize: ratio*6,
+                                                                                  color:
+                                                                                      Colors.black,
+                                                                                ),
+                                                                              ),
+                                                                            ),
+                                                                          )
+                                                                          : Text(
+                                                                            "     -  ",
+                                                                          ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
                                                           )
                                                           : Text(""),
                                                 ),
@@ -1601,7 +1672,7 @@ class _EmpHomeState extends State<EmpHome> {
                                   children: [
                                     Text(
                                       "Mark Attendance",
-                                      style: TextStyle(fontSize: ratio*7),
+                                      style: TextStyle(fontSize: ratio * 7),
                                     ),
                                     Image.asset(
                                       'assets/images/attendance.png',
@@ -1619,9 +1690,7 @@ class _EmpHomeState extends State<EmpHome> {
                                             backgroundColor: Color(0xFF03a9f4),
                                             foregroundColor: Colors.white,
                                             padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  deviceWidth *
-                                                  0.05,
+                                              horizontal: deviceWidth * 0.05,
                                               vertical: 4,
                                             ),
                                             shape: RoundedRectangleBorder(
@@ -1645,16 +1714,13 @@ class _EmpHomeState extends State<EmpHome> {
                                             backgroundColor: Color(0xFF03a9f4),
                                             foregroundColor: Colors.white,
                                             padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  deviceWidth *
-                                                  0.05,
+                                              horizontal: deviceWidth * 0.05,
                                               vertical: 4,
                                             ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(
-                                                    deviceWidth *
-                                                        0.07,
+                                                    deviceWidth * 0.07,
                                                   ),
                                             ),
                                             elevation: 4,
@@ -1689,7 +1755,7 @@ class _EmpHomeState extends State<EmpHome> {
                                     Text(
                                       "Visit Time",
                                       style: TextStyle(
-                                        fontSize: ratio*7,
+                                        fontSize: ratio * 7,
                                         color: Colors.black,
                                       ),
                                     ),
@@ -1723,16 +1789,13 @@ class _EmpHomeState extends State<EmpHome> {
                                             backgroundColor: Color(0xFF03a9f4),
                                             foregroundColor: Colors.white,
                                             padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  deviceWidth *
-                                                  0.05,
+                                              horizontal: deviceWidth * 0.05,
                                               vertical: 4,
                                             ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(
-                                                    deviceWidth*
-                                                        0.07,
+                                                    deviceWidth * 0.07,
                                                   ),
                                             ),
                                             elevation: 4,
@@ -1755,16 +1818,13 @@ class _EmpHomeState extends State<EmpHome> {
                                             backgroundColor: Color(0xFF03a9f4),
                                             foregroundColor: Colors.white,
                                             padding: EdgeInsets.symmetric(
-                                              horizontal:
-                                                  deviceWidth *
-                                                  0.05,
+                                              horizontal: deviceWidth * 0.05,
                                               vertical: 4,
                                             ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(
-                                                    deviceWidth *
-                                                        0.07,
+                                                    deviceWidth * 0.07,
                                                   ),
                                             ),
                                             elevation: 4,
@@ -1819,9 +1879,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                     Text(
                                                       'Start',
                                                       style: TextStyle(
-                                                        fontSize:
-                                                            ratio *
-                                                            6,
+                                                        fontSize: ratio * 6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -1829,17 +1887,13 @@ class _EmpHomeState extends State<EmpHome> {
                                                     Text(
                                                       '${item['break1in'] ?? '0'}',
                                                       style: TextStyle(
-                                                        fontSize:
-                                                            ratio *
-                                                            5,
+                                                        fontSize: ratio * 5,
                                                       ),
                                                     ),
                                                     Text(
                                                       'End',
                                                       style: TextStyle(
-                                                        fontSize:
-                                                            ratio *
-                                                            6,
+                                                        fontSize: ratio * 6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -1847,8 +1901,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                     Text(
                                                       '${item['break1out'] ?? '-'}',
                                                       style: TextStyle(
-                                                        fontSize:
-                                                            ratio*5
+                                                        fontSize: ratio * 5,
                                                       ),
                                                     ),
                                                   ],
@@ -1857,12 +1910,8 @@ class _EmpHomeState extends State<EmpHome> {
                                         )
                                         : Image.asset(
                                           'assets/images/Break.png',
-                                          width:
-                                              deviceWidth *
-                                              0.12,
-                                          height:
-                                              deviceWidth *
-                                              0.12,
+                                          width: deviceWidth * 0.12,
+                                          height: deviceWidth * 0.12,
                                         ),
                                     ElevatedButton(
                                       onPressed:
@@ -1903,9 +1952,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                 : Color(0xFF03a9f4),
                                         foregroundColor: Colors.white,
                                         padding: EdgeInsets.symmetric(
-                                          horizontal:
-                                              deviceWidth *
-                                              0.05,
+                                          horizontal: deviceWidth * 0.05,
                                           vertical: 4,
                                         ),
                                         shape: RoundedRectangleBorder(
@@ -1950,8 +1997,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                     Text(
                                                       'Start',
                                                       style: TextStyle(
-                                                        fontSize:
-                                                            ratio*6,
+                                                        fontSize: ratio * 6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -1959,15 +2005,13 @@ class _EmpHomeState extends State<EmpHome> {
                                                     Text(
                                                       '${item['break2in'] ?? '0'}',
                                                       style: TextStyle(
-                                                        fontSize:
-                                                            ratio*5,
+                                                        fontSize: ratio * 5,
                                                       ),
                                                     ),
                                                     Text(
                                                       'End',
                                                       style: TextStyle(
-                                                        fontSize:
-                                                            ratio*6,
+                                                        fontSize: ratio * 6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -1975,8 +2019,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                     Text(
                                                       '${item['break2out'] ?? '-'}',
                                                       style: TextStyle(
-                                                        fontSize:
-                                                           ratio*5,
+                                                        fontSize: ratio * 5,
                                                       ),
                                                     ),
                                                   ],
@@ -1985,12 +2028,8 @@ class _EmpHomeState extends State<EmpHome> {
                                         )
                                         : Image.asset(
                                           'assets/images/Break.png',
-                                          width:
-                                              deviceWidth *
-                                              0.12,
-                                          height:
-                                             deviceWidth *
-                                              0.12,
+                                          width: deviceWidth * 0.12,
+                                          height: deviceWidth * 0.12,
                                         ),
                                     ElevatedButton(
                                       onPressed:
@@ -2031,9 +2070,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                 : Color(0xFF03a9f4),
                                         foregroundColor: Colors.white,
                                         padding: EdgeInsets.symmetric(
-                                          horizontal:
-                                              deviceWidth*
-                                              0.05,
+                                          horizontal: deviceWidth * 0.05,
                                           vertical: 4,
                                         ),
                                         shape: RoundedRectangleBorder(
@@ -2078,8 +2115,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                     Text(
                                                       'Start',
                                                       style: TextStyle(
-                                                        fontSize:
-                                                            ratio*6,
+                                                        fontSize: ratio * 6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -2087,15 +2123,13 @@ class _EmpHomeState extends State<EmpHome> {
                                                     Text(
                                                       '${item['break3in'] ?? '0'}',
                                                       style: TextStyle(
-                                                        fontSize:
-                                                            ratio*5,
+                                                        fontSize: ratio * 5,
                                                       ),
                                                     ),
                                                     Text(
                                                       'End',
                                                       style: TextStyle(
-                                                        fontSize:
-                                                            ratio*6,
+                                                        fontSize: ratio * 6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
@@ -2103,8 +2137,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                     Text(
                                                       '${item['break3out'] ?? '-'}',
                                                       style: TextStyle(
-                                                        fontSize:
-                                                            ratio*5,
+                                                        fontSize: ratio * 5,
                                                       ),
                                                     ),
                                                   ],
@@ -2113,12 +2146,8 @@ class _EmpHomeState extends State<EmpHome> {
                                         )
                                         : Image.asset(
                                           'assets/images/Break.png',
-                                          width:
-                                              deviceWidth *
-                                              0.12,
-                                          height:
-                                              deviceWidth *
-                                              0.12,
+                                          width: deviceWidth * 0.12,
+                                          height: deviceWidth * 0.12,
                                         ),
                                     ElevatedButton(
                                       onPressed:
@@ -2159,9 +2188,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                 : Color(0xFF03a9f4),
                                         foregroundColor: Colors.white,
                                         padding: EdgeInsets.symmetric(
-                                          horizontal:
-                                              deviceWidth *
-                                              0.05,
+                                          horizontal: deviceWidth * 0.05,
                                           vertical: 4,
                                         ),
                                         shape: RoundedRectangleBorder(
@@ -2215,7 +2242,7 @@ class _EmpHomeState extends State<EmpHome> {
                                   children: [
                                     Text(
                                       "Att. Report's",
-                                      style: TextStyle(fontSize: ratio*7),
+                                      style: TextStyle(fontSize: ratio * 7),
                                     ),
                                     Image.asset(
                                       'assets/images/Att  Report.png',
@@ -2236,9 +2263,7 @@ class _EmpHomeState extends State<EmpHome> {
                                         backgroundColor: Color(0xFF03a9f4),
                                         foregroundColor: Colors.white,
                                         padding: EdgeInsets.symmetric(
-                                          horizontal:
-                                              deviceWidth *
-                                              0.05,
+                                          horizontal: deviceWidth * 0.05,
                                           vertical: 4,
                                         ),
                                         shape: RoundedRectangleBorder(
@@ -2277,7 +2302,7 @@ class _EmpHomeState extends State<EmpHome> {
                                   children: [
                                     Text(
                                       "Visit Report's",
-                                      style: TextStyle(fontSize: ratio*7),
+                                      style: TextStyle(fontSize: ratio * 7),
                                     ),
                                     Image.asset(
                                       'assets/images/visit_report.png',

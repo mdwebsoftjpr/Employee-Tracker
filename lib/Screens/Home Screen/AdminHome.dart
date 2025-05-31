@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:employee_tracker/Screens/Admin%20Report/Attendance.dart';
 import 'package:employee_tracker/Screens/Admin%20Report/VisitReport.dart';
-import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Employee%20Reports/employeeList.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
 import 'package:employee_tracker/Screens/create%20employee/Master.dart';
@@ -133,9 +132,10 @@ class AdminhomeState extends State<AdminHome> {
   void clearStorage(context) async {
     try {
       await localStorage.clear();
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => CreateScreen()),
+        (route) => false,
       );
     } catch (e) {
       print('Error clearing local storage: $e');
@@ -218,18 +218,18 @@ class AdminhomeState extends State<AdminHome> {
             textAlign: TextAlign.center,
           ),
           actions: [
-                ElevatedButton(
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                    clearStorage(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF03A9F4),
-                    foregroundColor: Colors.white,
-                  ),
-                  child: Text('LogOut'),
-                ),
-              ],
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                clearStorage(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF03A9F4),
+                foregroundColor: Colors.white,
+              ),
+              child: Text('LogOut'),
+            ),
+          ],
         );
       },
     );
@@ -240,10 +240,10 @@ class AdminhomeState extends State<AdminHome> {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
     var ratio;
-    if(deviceWidth<deviceHeight){
-      ratio=deviceHeight/deviceWidth;
-    }else{
-      ratio=deviceWidth/deviceHeight;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
     }
     return Scaffold(
       appBar: AppBar(
@@ -268,7 +268,7 @@ class AdminhomeState extends State<AdminHome> {
                 comName,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize:ratio*9,
+                  fontSize: ratio * 9,
                   fontWeight: FontWeight.bold,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -288,13 +288,13 @@ class AdminhomeState extends State<AdminHome> {
                       (image != null && image.isNotEmpty)
                           ? Image.network(
                             'https://testapi.rabadtechnology.com/$image',
-                            width: deviceWidth* 0.10,
-                            height: deviceWidth* 0.10,
+                           width: ratio * 18,
+                            height:  ratio * 18,
                             fit: BoxFit.cover,
                           )
                           : Icon(
                             Icons.account_circle,
-                            size: 36,
+                            size: deviceWidth * 0.10,
                             color: Colors.white,
                           ),
                 ),
@@ -304,7 +304,7 @@ class AdminhomeState extends State<AdminHome> {
         ),
       ),
       drawer: Drawer(
-        width: deviceWidth* 0.6,
+        width: deviceWidth * 0.6,
         child: ListView(
           children: <Widget>[
             Container(
@@ -313,33 +313,37 @@ class AdminhomeState extends State<AdminHome> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: deviceHeight*.24,
+                    height: ratio*85,
                     decoration: BoxDecoration(color: Color(0xFF03a9f4)),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(
-                            ratio*5
-                          ),
+                          borderRadius: BorderRadius.circular(ratio * 5),
                           child: Image.network(
                             'https://testapi.rabadtechnology.com/$image',
-                            width:  ratio*80,
-                            height:
-                                 ratio*40,
+                            width: ratio * 80,
+                            height: ratio * 40,
                             fit: BoxFit.cover,
                           ),
                         ),
                         SizedBox(height: 12),
                         Text(
                           comName,
-                          style: TextStyle(color: Colors.white, fontSize: ratio*8,fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: ratio * 8,
+                            fontWeight: FontWeight.bold,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                         Text(
                           email,
-                          style: TextStyle(color: Colors.white, fontSize: ratio*7),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: ratio * 7,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -350,14 +354,17 @@ class AdminhomeState extends State<AdminHome> {
                       "Activity",
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: ratio*8,
+                        fontSize: ratio * 8,
                       ),
                     ),
                   ),
-                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.fact_check,size: ratio*10,),
-                    title: Text("Attendance Report",style: TextStyle(fontSize:ratio*7),),
+                    leading: Icon(Icons.fact_check, size: ratio * 10),
+                    title: Text(
+                      "Attendance Report",
+                      style: TextStyle(fontSize: ratio * 7),
+                    ),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
@@ -366,10 +373,13 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
-                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.receipt_long,size: ratio*10,),
-                    title: Text("Visit Report",style: TextStyle(fontSize:  ratio*7),),
+                    leading: Icon(Icons.receipt_long, size: ratio * 10),
+                    title: Text(
+                      "Visit Report",
+                      style: TextStyle(fontSize: ratio * 7),
+                    ),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
@@ -380,10 +390,13 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
-                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: ratio*1),
                   ListTile(
-                    leading: Icon(Icons.people_alt,size: ratio*10,),
-                    title: Text("Create Employee",style: TextStyle(fontSize:ratio*7),),
+                    leading: Icon(Icons.people_alt, size: ratio * 10),
+                    title: Text(
+                      "Create Employee",
+                      style: TextStyle(fontSize: ratio * 7),
+                    ),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
@@ -394,10 +407,13 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
-                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.person_add_alt_1,size:  ratio*10,),
-                    title: Text("Create Designation",style: TextStyle(fontSize:  ratio*7,),),
+                    leading: Icon(Icons.person_add_alt_1, size: ratio * 10),
+                    title: Text(
+                      "Create Designation",
+                      style: TextStyle(fontSize: ratio * 7),
+                    ),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
@@ -406,10 +422,13 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
-                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.person,size:  ratio*10,),
-                    title: Text("Profile",style: TextStyle(fontSize:  ratio*7,),),
+                    leading: Icon(Icons.person, size: ratio * 10),
+                    title: Text(
+                      "Profile",
+                      style: TextStyle(fontSize: ratio * 7),
+                    ),
                     onTap: () {
                       Navigator.pop(context); // Close the drawer first
                       Navigator.push(
@@ -418,15 +437,18 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
-                  SizedBox(height:1 * MediaQuery.of(context).devicePixelRatio),
+                  SizedBox(height: 1 * MediaQuery.of(context).devicePixelRatio),
                   ListTile(
-                    leading: Icon(Icons.logout,size:  ratio*10,),
-                    title: Text("Logout",style: TextStyle(fontSize:  ratio*7,),),
+                    leading: Icon(Icons.logout, size: ratio * 10),
+                    title: Text(
+                      "Logout",
+                      style: TextStyle(fontSize: ratio * 7),
+                    ),
                     onTap: () {
                       LogOutAlert(context);
                     },
                   ),
-                 SizedBox(height:.010*deviceHeight),
+                  SizedBox(height: .015 * deviceHeight),
                   Divider(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),
@@ -445,7 +467,7 @@ class AdminhomeState extends State<AdminHome> {
                           Text(
                             'Copy Rights',
                             style: TextStyle(
-                              fontSize: ratio*5,
+                              fontSize: ratio * 5,
                               color: Colors.grey[600],
                               fontWeight: FontWeight.w500,
                             ),
@@ -456,14 +478,17 @@ class AdminhomeState extends State<AdminHome> {
                             children: [
                               Icon(
                                 Icons.copyright,
-                                size: ratio*7,
+                                size: ratio * 7,
                                 color: Colors.grey,
                               ),
-                              SizedBox(width: 1 * MediaQuery.of(context).devicePixelRatio),
+                              SizedBox(
+                                width:
+                                    1 * MediaQuery.of(context).devicePixelRatio,
+                              ),
                               Text(
                                 '2025 $comName',
                                 style: TextStyle(
-                                  fontSize:ratio*5,
+                                  fontSize: ratio * 5,
                                   color: Colors.grey[600],
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -489,10 +514,10 @@ class AdminhomeState extends State<AdminHome> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                           Text(
+                          Text(
                             'Maintain And Dev. By Md Websoft',
                             style: TextStyle(
-                              fontSize: ratio*5,
+                              fontSize: ratio * 5,
                               color: Colors.grey[600],
                               fontWeight: FontWeight.w500,
                             ),
@@ -520,7 +545,7 @@ class AdminhomeState extends State<AdminHome> {
                           Text(
                             'About Us',
                             style: TextStyle(
-                              fontSize: ratio*5,
+                              fontSize: ratio * 5,
                               color: Colors.grey[600],
                               fontWeight: FontWeight.w500,
                             ),
@@ -568,9 +593,9 @@ class AdminhomeState extends State<AdminHome> {
                   Container(
                     margin: EdgeInsets.only(
                       top: 0,
-                      bottom: ratio*1,
-                      right: ratio*5,
-                      left: ratio*5,
+                      bottom: ratio * 1,
+                      right: ratio * 5,
+                      left: ratio * 5,
                     ),
                     width: double.infinity,
                     child: Container(
@@ -586,7 +611,7 @@ class AdminhomeState extends State<AdminHome> {
                           ),
                         ],
                       ),
-                      width: deviceWidth* 0.9,
+                      width: deviceWidth * 0.9,
                       child: Column(
                         children: [
                           Column(
@@ -594,19 +619,13 @@ class AdminhomeState extends State<AdminHome> {
                               SizedBox(height: 10),
                               Row(
                                 children: [
-                                  SizedBox(
-                                    width:
-                                        deviceWidth*
-                                        0.03,
-                                  ),
+                                  SizedBox(width: deviceWidth * 0.03),
                                   Container(
-                                    width:
-                                        ratio*50,
-                                    height:
-                                        ratio*30,
+                                    width: ratio * 50,
+                                    height: ratio * 30,
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(
-                                       ratio*5,
+                                        ratio * 5,
                                       ),
                                       image: DecorationImage(
                                         image: NetworkImage(
@@ -624,7 +643,7 @@ class AdminhomeState extends State<AdminHome> {
                                       Text(
                                         comName,
                                         style: TextStyle(
-                                          fontSize: ratio*7,
+                                          fontSize: ratio * 7,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black,
                                         ),
@@ -637,14 +656,14 @@ class AdminhomeState extends State<AdminHome> {
                                       Text(
                                         key_person,
                                         style: TextStyle(
-                                          fontSize: ratio*7,
+                                          fontSize: ratio * 7,
                                           fontWeight: FontWeight.w400,
                                         ),
                                       ),
                                       Text(
                                         email,
                                         style: TextStyle(
-                                          fontSize: ratio*6,
+                                          fontSize: ratio * 6,
                                           fontWeight: FontWeight.w400,
                                         ),
                                       ),
@@ -668,7 +687,7 @@ class AdminhomeState extends State<AdminHome> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                width: deviceWidth* 0.9,
+                width: deviceWidth * 0.9,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -705,14 +724,14 @@ class AdminhomeState extends State<AdminHome> {
                               Text(
                                 "Att. Report",
                                 style: TextStyle(
-                                  fontSize: ratio*7,
+                                  fontSize: ratio * 7,
                                   color: Colors.black,
                                 ),
                               ),
                               Image.asset(
                                 'assets/images/Att  Report.png',
-                                width: deviceWidth* 0.4,
-                                height: deviceWidth* 0.3,
+                                width: deviceWidth * 0.4,
+                                height: deviceWidth * 0.3,
                               ),
                             ],
                           ),
@@ -752,14 +771,14 @@ class AdminhomeState extends State<AdminHome> {
                               Text(
                                 "Visit Report",
                                 style: TextStyle(
-                                  fontSize: ratio*7,
+                                  fontSize: ratio * 7,
                                   color: Colors.black,
                                 ),
                               ),
                               Image.asset(
                                 'assets/images/visit_report.png',
-                                width: deviceWidth* 0.6,
-                                height: deviceWidth* 0.3,
+                                width: deviceWidth * 0.6,
+                                height: deviceWidth * 0.3,
                               ),
                             ],
                           ),
@@ -777,7 +796,7 @@ class AdminhomeState extends State<AdminHome> {
                     10,
                   ), // Optional: Adds rounded corners
                 ),
-                width: deviceWidth* 0.9,
+                width: deviceWidth * 0.9,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -813,14 +832,14 @@ class AdminhomeState extends State<AdminHome> {
                               Text(
                                 "Add Employee",
                                 style: TextStyle(
-                                  fontSize: ratio*7,
+                                  fontSize: ratio * 7,
                                   color: Colors.black,
                                 ),
                               ),
                               Image.asset(
                                 'assets/images/addEmp.png',
-                                width: deviceWidth* 0.6,
-                                height: deviceWidth* 0.3,
+                                width: deviceWidth * 0.6,
+                                height: deviceWidth * 0.3,
                               ),
                             ],
                           ),
@@ -858,14 +877,14 @@ class AdminhomeState extends State<AdminHome> {
                               Text(
                                 "Designation",
                                 style: TextStyle(
-                                  fontSize: ratio*7,
+                                  fontSize: ratio * 7,
                                   color: Colors.black,
                                 ),
                               ),
                               Image.asset(
                                 'assets/images/Designation.png',
-                                width: deviceWidth* 0.6,
-                                height: deviceWidth* 0.3,
+                                width: deviceWidth * 0.6,
+                                height: deviceWidth * 0.3,
                               ),
                             ],
                           ),
@@ -883,7 +902,7 @@ class AdminhomeState extends State<AdminHome> {
                     10,
                   ), // Optional: Adds rounded corners
                 ),
-                width: deviceWidth* 0.9,
+                width: deviceWidth * 0.9,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -919,14 +938,14 @@ class AdminhomeState extends State<AdminHome> {
                               Text(
                                 "View Employee",
                                 style: TextStyle(
-                                  fontSize: ratio*7,
+                                  fontSize: ratio * 7,
                                   color: Colors.black,
                                 ),
                               ),
                               Image.asset(
                                 'assets/images/empList.png',
-                                width: deviceWidth* 0.6,
-                                height: deviceWidth* 0.3,
+                                width: deviceWidth * 0.6,
+                                height: deviceWidth * 0.3,
                               ),
                             ],
                           ),

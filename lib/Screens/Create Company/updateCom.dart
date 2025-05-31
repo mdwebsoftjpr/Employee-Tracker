@@ -216,11 +216,10 @@ void company_update(context) async {
     final Map<String, dynamic> data = jsonDecode(responseBody.body);
 
     if (data['success'] == true) {
-      await Alert.alert(context, "Thank you, ${data['message']}. Redirecting to login screen.");
-      await localStorage.clear();
-      Navigator.pushReplacement(
+      await Alert.alert(context, "Thank you, ${data['message']}.");
+      Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => CreateScreen()),
+        MaterialPageRoute(builder: (_) => AdminHome()),
       );
     } else {
       Alert.alert(context, data['message']);
@@ -303,9 +302,7 @@ void company_update(context) async {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:
-                          MediaQuery.of(context).size.width *
-                          0.16, // Adjust the radius dynamically based on screen width
+                      radius:ratio*25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here

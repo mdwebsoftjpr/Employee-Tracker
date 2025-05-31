@@ -178,7 +178,21 @@ class AttendanceDetailState extends State<AttendanceDetail> {
       body:
           isLoading
               ? Center(
-                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius:ratio*25,
+                      backgroundImage: AssetImage(
+                        'assets/splesh_Screen/Emp_Attend.png',
+                      ), // Set the background image here
+                    ),
+
+                    SizedBox(height: 5),
+                    CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                  ],
+                ),
               )
               : Column(
                 children: [

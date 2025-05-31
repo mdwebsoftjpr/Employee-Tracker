@@ -380,9 +380,7 @@ Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:
-                          MediaQuery.of(context).size.width *
-                          0.16, // Adjust the radius dynamically based on screen width
+                      radius:ratio*25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here

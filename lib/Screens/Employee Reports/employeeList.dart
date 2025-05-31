@@ -401,9 +401,24 @@ class EmployeelistState extends State<Employeelist> {
       ),
       body:
           isLoading
-              ? Center(
-                child: CircularProgressIndicator(color: Color(0xFF03a9f4)),
-              ) // ✅ Show loader first
+              ?  Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius:
+                          ratio*25,
+                      backgroundImage: AssetImage(
+                        'assets/splesh_Screen/Emp_Attend.png',
+                      ), // Set the background image here
+                    ),
+
+                    SizedBox(height: 5),
+                    CircularProgressIndicator(color: Color(0xFF03a9f4)),
+                  ],
+                ),
+              )
               : EmpDetail.isEmpty
               ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
