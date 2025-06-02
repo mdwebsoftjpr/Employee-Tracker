@@ -155,7 +155,10 @@ class EmployeelistState extends State<Employeelist> {
                           SizedBox(height: 5),
                           Text(
                             "Designation:-",
-                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: ratio * 7,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           Text(
                             item['designation'] ?? '',
@@ -193,7 +196,10 @@ class EmployeelistState extends State<Employeelist> {
                         children: [
                           Text(
                             "Date Of Birth:-",
-                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: ratio * 7,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           SizedBox(height: 3),
                           Text(
@@ -206,7 +212,10 @@ class EmployeelistState extends State<Employeelist> {
                           SizedBox(height: 5),
                           Text(
                             "Email:-",
-                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: ratio * 7,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           SizedBox(height: 3),
                           Text(
@@ -219,7 +228,10 @@ class EmployeelistState extends State<Employeelist> {
                           SizedBox(height: 5),
                           Text(
                             "Pan Card No.:-",
-                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: ratio * 7,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           SizedBox(height: 3),
                           Text(
@@ -232,13 +244,16 @@ class EmployeelistState extends State<Employeelist> {
                           SizedBox(height: 5),
                           Text(
                             "Aadhaar Card No.:-",
-                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: ratio * 7,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           SizedBox(height: 3),
                           Text(
                             (item['aadharcard'] ?? 0).toString(),
                             style: TextStyle(
-                             fontSize: ratio * 7,
+                              fontSize: ratio * 7,
                               color: Colors.black,
                             ),
                           ),
@@ -252,7 +267,10 @@ class EmployeelistState extends State<Employeelist> {
                         children: [
                           Text(
                             "Address.:-",
-                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: ratio * 7,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           SizedBox(height: 3),
                           Text(
@@ -265,20 +283,26 @@ class EmployeelistState extends State<Employeelist> {
                           SizedBox(height: 5),
                           Text(
                             "User Name:-",
-                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: ratio * 7,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           SizedBox(height: 3),
                           Text(
                             (item['username'] ?? 0).toString(),
                             style: TextStyle(
-                             fontSize: ratio * 7,
+                              fontSize: ratio * 7,
                               color: Colors.black,
                             ),
                           ),
                           SizedBox(height: 5),
                           Text(
                             "Joining Date.:-",
-                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: ratio * 7,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           SizedBox(height: 3),
                           Text(
@@ -291,7 +315,10 @@ class EmployeelistState extends State<Employeelist> {
                           SizedBox(height: 5),
                           Text(
                             "Working Hours:-",
-                            style: TextStyle(fontSize: ratio * 7,fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: ratio * 7,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           SizedBox(height: 3),
                           Text(
@@ -316,9 +343,7 @@ class EmployeelistState extends State<Employeelist> {
                   onPressed: () => Navigator.pop(context),
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        ratio * 7,
-                      ),
+                      borderRadius: BorderRadius.circular(ratio * 7),
                       color: Color(0xFF03a9f4),
                     ),
                     padding: EdgeInsets.only(
@@ -332,7 +357,7 @@ class EmployeelistState extends State<Employeelist> {
                       "OK",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize:ratio * 6
+                        fontSize: ratio * 6,
                       ),
                     ),
                   ),
@@ -347,13 +372,11 @@ class EmployeelistState extends State<Employeelist> {
                       ),
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(
-                        ratio * 6
-                      ),
+                      borderRadius: BorderRadius.circular(ratio * 6),
                       color: Color(0xFF03a9f4),
                     ),
                     padding: EdgeInsets.only(
-                     top: ratio * 2,
+                      top: ratio * 2,
                       bottom: ratio * 2,
                       left: ratio * 4,
                       right: ratio * 4,
@@ -363,7 +386,7 @@ class EmployeelistState extends State<Employeelist> {
                       "Attendance Detail",
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: ratio*6
+                        fontSize: ratio * 6,
                       ),
                     ),
                   ),
@@ -381,10 +404,10 @@ class EmployeelistState extends State<Employeelist> {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
     var ratio;
-    if(deviceWidth<deviceHeight){
-      ratio=deviceHeight/deviceWidth;
-    }else{
-      ratio=deviceWidth/deviceHeight;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
     }
     return Scaffold(
       appBar: AppBar(
@@ -393,7 +416,7 @@ class EmployeelistState extends State<Employeelist> {
         title: Text(
           'Employee List',
           style: TextStyle(
-            fontSize:ratio*9,
+            fontSize: ratio * 9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -401,14 +424,13 @@ class EmployeelistState extends State<Employeelist> {
       ),
       body:
           isLoading
-              ?  Center(
+              ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:
-                          ratio*25,
+                      radius: ratio * 25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here
@@ -428,9 +450,7 @@ class EmployeelistState extends State<Employeelist> {
                     children: [
                       Text(
                         "Employee Not Found",
-                        style: TextStyle(
-                          fontSize: ratio*9,
-                        ),
+                        style: TextStyle(fontSize: ratio * 9),
                       ),
                     ],
                   ),
@@ -443,37 +463,45 @@ class EmployeelistState extends State<Employeelist> {
                   final item = EmpDetail[index];
                   return Container(
                     margin: EdgeInsets.only(
-                      top: ratio*2,
-                      left: ratio*3,
-                      right: ratio*3,
+                      top: ratio * 2,
+                      left: ratio * 3,
+                      right: ratio * 3,
                     ),
-                    padding: EdgeInsets.all(
-                      ratio*1
-                    ),
+                    padding: EdgeInsets.all(ratio * 1),
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 247, 239, 230),
-                      borderRadius: BorderRadius.circular(
-                        ratio*3
-                      ),
+                      borderRadius: BorderRadius.circular(ratio * 3),
                     ),
                     child: Column(
                       children: [
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(ratio * 6),
+                                color: Colors.blue,
+                              ),
+                              width: ratio * 10,
+                              height: ratio * 10,
+                              child: Center(
+                                child: Text(
+                                '${index + 1}',
+                                style: TextStyle(fontSize: ratio * 7,color: Colors.white),
+                              ),
+                              )
+                            ),
                             Expanded(
                               child: Column(
                                 children: [
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(
-                                      ratio*4
+                                      ratio * 4,
                                     ),
                                     child: Image.network(
                                       item['image'] ?? '',
-                                      width:
-                                          ratio*32,
-                                      height:
-                                         ratio*32,
+                                      width: ratio * 32,
+                                      height: ratio * 32,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -483,8 +511,7 @@ class EmployeelistState extends State<Employeelist> {
                                         ? '${(item['name'] ?? '').toString().substring(0, 10)}...'
                                         : (item['name'] ?? '').toString(),
                                     style: TextStyle(
-                                      fontSize:
-                                          ratio*7,
+                                      fontSize: ratio * 7,
                                       fontWeight: FontWeight.w600,
                                     ),
                                     overflow: TextOverflow.ellipsis,
@@ -502,65 +529,60 @@ class EmployeelistState extends State<Employeelist> {
                                 children: [
                                   Text(
                                     "Salary:-",
-                                    style: TextStyle(fontSize: ratio*7,
+                                    style: TextStyle(
+                                      fontSize: ratio * 7,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
                                     (item['salary'] ?? 0).toString(),
                                     style: TextStyle(
-                                      fontSize: ratio*7,
+                                      fontSize: ratio * 7,
                                       color: Colors.black,
                                     ),
                                   ),
                                   SizedBox(height: 5),
                                   Text(
                                     "Designation:-",
-                                    style: TextStyle(fontSize: ratio*7,
+                                    style: TextStyle(
+                                      fontSize: ratio * 7,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
                                     item['designation'] ?? '',
                                     style: TextStyle(
-                                      fontSize: ratio*7,
+                                      fontSize: ratio * 7,
                                       color: Colors.black,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            SizedBox(
-                              width:ratio*5,
-                            ),
+                            SizedBox(width: ratio * 8),
                             Expanded(
                               child: Column(
                                 children: [
                                   Text(
                                     "Mobile No.:-",
-                                    style: TextStyle(fontSize: ratio*7,
+                                    style: TextStyle(
+                                      fontSize: ratio * 7,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
                                     (item['mobile_no'] ?? '').toString(),
                                     style: TextStyle(
-                                      fontSize: ratio*7,
+                                      fontSize: ratio * 7,
                                       color: Colors.black,
                                     ),
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    "Working Hour:-",
-                                    style: TextStyle(fontSize: ratio*7,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    (item['hours'] ?? '').toString(),
+                                    "Working Hour:- ${item['hours'] ?? ''}",
                                     style: TextStyle(
-                                      fontSize: ratio*7,
-                                      color: Colors.black,
+                                      fontSize: ratio * 7,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ],
@@ -576,21 +598,18 @@ class EmployeelistState extends State<Employeelist> {
                                 EmpData(context, item);
                               },
                               child: Container(
-                                padding: EdgeInsets.all(
-                                 ratio*4,
-                                ),
+                                padding: EdgeInsets.all(ratio * 4),
                                 margin: EdgeInsets.zero,
                                 decoration: BoxDecoration(
                                   color: Colors.orange,
                                   borderRadius: BorderRadius.circular(
-                                   ratio*5,
+                                    ratio * 5,
                                   ),
                                 ),
                                 alignment: Alignment.center,
                                 child: Icon(
                                   FontAwesomeIcons.solidEye,
-                                  size:
-                                      ratio*7,
+                                  size: ratio * 7,
                                   color: Colors.white,
                                 ),
                               ),
@@ -606,21 +625,18 @@ class EmployeelistState extends State<Employeelist> {
                                 );
                               },
                               child: Container(
-                                padding: EdgeInsets.all(
-                                  ratio*4,
-                                ),
+                                padding: EdgeInsets.all(ratio * 4),
                                 margin: EdgeInsets.zero,
                                 decoration: BoxDecoration(
                                   color: Colors.blue,
                                   borderRadius: BorderRadius.circular(
-                                    ratio*5,
+                                    ratio * 5,
                                   ),
                                 ),
                                 alignment: Alignment.center,
                                 child: Icon(
                                   FontAwesomeIcons.edit,
-                                  size:
-                                      ratio*7,
+                                  size: ratio * 7,
                                   color: Colors.white,
                                 ),
                               ),
@@ -636,21 +652,18 @@ class EmployeelistState extends State<Employeelist> {
                                 );
                               },
                               child: Container(
-                                padding: EdgeInsets.all(
-                                  ratio*4,
-                                ),
+                                padding: EdgeInsets.all(ratio * 4),
                                 margin: EdgeInsets.zero,
                                 decoration: BoxDecoration(
                                   color: Colors.pink,
                                   borderRadius: BorderRadius.circular(
-                                    ratio*5,
+                                    ratio * 5,
                                   ),
                                 ),
                                 alignment: Alignment.center,
                                 child: Icon(
                                   FontAwesomeIcons.key,
-                                  size:
-                                      ratio*7,
+                                  size: ratio * 7,
                                   color: Colors.white,
                                 ),
                               ),
