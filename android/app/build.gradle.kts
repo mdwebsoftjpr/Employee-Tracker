@@ -6,14 +6,14 @@ plugins {
 }
 
 android {
-    namespace = "com.example.employee_tracker"
+    namespace = "com.employee_tracker"
 
     // ✅ Use Flutter-defined compile SDK version
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
-        applicationId = "com.example.employee_tracker"
+        applicationId = "com.employee_tracker"
         minSdk = flutter.minSdkVersion
         targetSdk = 34 // ✅ Updated to meet Google Play's latest requirements
         versionCode = flutter.versionCode
