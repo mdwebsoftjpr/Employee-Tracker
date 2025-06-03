@@ -249,7 +249,7 @@ class AttendanceState extends State<Attendance> {
                                                   Column(
                                                     children: [
                                                       Text(
-                                                        "Punch in:-",
+                                                        "Punch in",
                                                         style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,
@@ -268,7 +268,7 @@ class AttendanceState extends State<Attendance> {
                                                   Column(
                                                     children: [
                                                       Text(
-                                                        "Punch Out:-",
+                                                        "Punch Out",
                                                         style: TextStyle(
                                                           fontWeight:
                                                               FontWeight.bold,

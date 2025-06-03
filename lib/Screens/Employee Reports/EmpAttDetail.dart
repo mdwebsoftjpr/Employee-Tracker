@@ -219,7 +219,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Date:",
+                                  "Date",
                                   style: TextStyle(
                                     fontSize: ratio * 6,
                                     fontWeight: FontWeight.bold,
@@ -234,10 +234,10 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                       : '',
                                   style: TextStyle(fontSize: ratio * 6),
                                 ),
-                                Row(
+                                Column(
                                   children: [
                                     Text(
-                                      "Break Time: ",
+                                      "Break Time",
                                       style: TextStyle(
                                         fontSize: ratio * 6,
                                         fontWeight: FontWeight.bold,
@@ -254,7 +254,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 ),
                                 SizedBox(height: ratio * 7),
                                 Text(
-                                  "Address in:",
+                                  "Address in",
                                   style: TextStyle(
                                     fontSize: ratio * 6,
                                     fontWeight: FontWeight.bold,
@@ -275,7 +275,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
 
                               children: [
                                 Text(
-                                  "Punch In:",
+                                  "Punch In",
                                   style: TextStyle(
                                     fontSize: ratio * 6,
                                     fontWeight: FontWeight.bold,
@@ -297,7 +297,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                   style: TextStyle(fontSize: ratio * 6),
                                 ),
                                 Text(
-                                  "Address Out:",
+                                  "Address Out",
                                   style: TextStyle(
                                     fontSize: ratio * 6,
                                     fontWeight: FontWeight.bold,

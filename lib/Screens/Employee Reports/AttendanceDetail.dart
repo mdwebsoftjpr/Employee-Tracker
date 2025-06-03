@@ -334,7 +334,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  "Date:",
+                                                  "Date",
                                                   style: TextStyle(
                                                     fontSize: ratio * 6,
                                                     fontWeight: FontWeight.bold,
@@ -352,7 +352,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   ),
                                                 ),
                                                 Text(
-                                                  "Total Hours:",
+                                                  "Total Hours",
                                                   style: TextStyle(
                                                     fontSize: ratio * 6,
                                                     fontWeight: FontWeight.bold,
@@ -374,7 +374,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  "Punch In:",
+                                                  "Punch In",
                                                   style: TextStyle(
                                                     fontSize: ratio * 6,
                                                     fontWeight: FontWeight.bold,
@@ -387,7 +387,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   ),
                                                 ),
                                                 Text(
-                                                  "Punch Out:",
+                                                  "Punch Out",
                                                   style: TextStyle(
                                                     fontSize: ratio * 6,
                                                     fontWeight: FontWeight.bold,
@@ -446,7 +446,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     Text(
-                                                      "Break Time:",
+                                                      "Break Time",
                                                       style: TextStyle(
                                                         fontSize: ratio * 6,
                                                         fontWeight:
