@@ -16,8 +16,9 @@ android {
         applicationId = "com.employee_tracker"
         minSdk = flutter.minSdkVersion
         targetSdk = 34 // ✅ Updated to meet Google Play's latest requirements
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        versionName = "0.1.0"
+
+        versionCode = 5
         multiDexEnabled = true
     }
 

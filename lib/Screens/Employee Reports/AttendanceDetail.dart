@@ -141,10 +141,10 @@ class AttendanceDetailState extends State<AttendanceDetail> {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
     var ratio;
-    if(deviceWidth<deviceHeight){
-      ratio=deviceHeight/deviceWidth;
-    }else{
-      ratio=deviceWidth/deviceHeight;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
     }
     final imageUrl =
         (item['image'] != null && item['image'].toString().trim().isNotEmpty)
@@ -158,7 +158,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
         title: Text(
           'Monthly Attendance Detail',
           style: TextStyle(
-            fontSize:ratio*9,
+            fontSize: ratio * 9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -183,7 +183,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:ratio*25,
+                      radius: ratio * 25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here
@@ -217,9 +217,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                               SizedBox(height: deviceHeight * 0.01),
                               Text(
                                 item['empname'] ?? 'Unknown',
-                                style: TextStyle(
-                                  fontSize: ratio * 6,
-                                ),
+                                style: TextStyle(fontSize: ratio * 6),
                               ),
                             ],
                           ),
@@ -252,9 +250,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                               ),
                               Text(
                                 "This Month Attendance % ${attendancePercentage.toStringAsFixed(2)}",
-                                style: TextStyle(
-                                  fontSize: ratio * 5,
-                                ),
+                                style: TextStyle(fontSize: ratio * 5),
                               ),
                             ],
                           ),
@@ -297,9 +293,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                             ? Center(
                               child: Text(
                                 "Attendance Not Found",
-                                style: TextStyle(
-                                  fontSize: ratio * 9,
-                                ),
+                                style: TextStyle(fontSize: ratio * 9),
                               ),
                             )
                             : ListView.builder(
@@ -343,8 +337,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                 Text(
                                                   "Date:",
                                                   style: TextStyle(
-                                                    fontSize:
-                                                        ratio * 6,
+                                                    fontSize: ratio * 6,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -356,23 +349,20 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                           .join('-')
                                                       : '',
                                                   style: TextStyle(
-                                                    fontSize:
-                                                        ratio * 6,
+                                                    fontSize: ratio * 6,
                                                   ),
                                                 ),
                                                 Text(
                                                   "Total Hours:",
                                                   style: TextStyle(
-                                                    fontSize:
-                                                        ratio * 6,
+                                                    fontSize: ratio * 6,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
                                                 Text(
                                                   "${data['hours']}",
                                                   style: TextStyle(
-                                                    fontSize:
-                                                        ratio * 6,
+                                                    fontSize: ratio * 6,
                                                   ),
                                                 ),
                                               ],
@@ -387,37 +377,33 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                 Text(
                                                   "Punch In:",
                                                   style: TextStyle(
-                                                    fontSize:
-                                                        ratio * 6,
+                                                    fontSize: ratio * 6,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
                                                 Text(
                                                   '${data['time_in'] ?? ''}',
                                                   style: TextStyle(
-                                                    fontSize:
-                                                        ratio * 6,
+                                                    fontSize: ratio * 6,
                                                   ),
                                                 ),
                                                 Text(
                                                   "Punch Out:",
                                                   style: TextStyle(
-                                                    fontSize:
-                                                        ratio * 6,
+                                                    fontSize: ratio * 6,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
                                                 Text(
                                                   '${data['time_out'] ?? ''}',
                                                   style: TextStyle(
-                                                    fontSize:
-                                                        ratio * 6,
+                                                    fontSize: ratio * 6,
                                                   ),
                                                 ),
                                               ],
                                             ),
                                           ),
-                                          SizedBox(width: ratio * 5),
+                                          SizedBox(width: ratio * 2),
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:
@@ -449,52 +435,39 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       color: Colors.white,
                                                       fontWeight:
                                                           FontWeight.bold,
-                                                      fontSize:
-                                                          ratio * 5,
+                                                      fontSize: ratio * 5,
                                                     ),
                                                   ),
                                                 ),
                                                 SizedBox(
                                                   height: deviceHeight * 0.005,
                                                 ),
-                                                Row(
+                                                Column(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     Text(
-                                                      "Break:",
+                                                      "Break Time:",
                                                       style: TextStyle(
-                                                        fontSize:
-                                                            ratio * 6,
+                                                        fontSize: ratio * 6,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
                                                     ),
-                                                    SizedBox(
-                                                      width:
-                                                         ratio * 6,
-                                                    ),
+                                                    SizedBox(width: ratio * 6),
                                                     Text(
-                                                      (() {
-                                                        int count = 0;
-                                                        if (data['break1'] ==
-                                                            'close')
-                                                          count++;
-                                                        if (data['break2'] ==
-                                                            'close')
-                                                          count++;
-                                                        if (data['break3'] ==
-                                                            'close')
-                                                          count++;
-                                                        return '$count';
-                                                      })(),style: TextStyle(fontSize: ratio*6),
+                                                      data['breakhour']??'',
+                                                      style: TextStyle(
+                                                        fontSize: ratio * 6,
+                                                        color: Colors.black,
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
                                               ],
                                             ),
                                           ),
-                                          SizedBox(width: ratio * 5),
+                                          SizedBox(width: ratio * 2),
                                           Expanded(
                                             child: Column(
                                               children: [
@@ -574,7 +547,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       } else {
                                                         Alert.alert(
                                                           context,
-                                                           "Attemdance Not Marked",
+                                                          "Attemdance Not Marked",
                                                         );
                                                       }
                                                     } catch (e) {
@@ -589,12 +562,10 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                 Text(
                                                   "Location..",
                                                   style: TextStyle(
-                                                    fontSize:
-                                                        ratio * 6,
+                                                    fontSize: ratio * 6,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                                
                                               ],
                                             ),
                                           ),
@@ -616,9 +587,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       TextSpan(
                                                         text: "Address In: ",
                                                         style: TextStyle(
-                                                          fontSize:
-                                                              ratio *
-                                                              6,
+                                                          fontSize: ratio * 6,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           color: Colors.black,
@@ -629,9 +598,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                             data['address'] ??
                                                             'No address available',
                                                         style: TextStyle(
-                                                          fontSize:
-                                                              ratio *
-                                                              6,
+                                                          fontSize: ratio * 6,
                                                           color: Colors.black,
                                                         ),
                                                       ),
@@ -648,9 +615,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       TextSpan(
                                                         text: "Address Out: ",
                                                         style: TextStyle(
-                                                          fontSize:
-                                                              ratio *
-                                                              6,
+                                                          fontSize: ratio * 6,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           color: Colors.black,
@@ -661,9 +626,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                             data['address_out'] ??
                                                             'No address available',
                                                         style: TextStyle(
-                                                          fontSize:
-                                                              ratio *
-                                                              6,
+                                                          fontSize: ratio * 6,
                                                           color: Colors.black,
                                                         ),
                                                       ),
@@ -678,6 +641,123 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                           ),
                                         ],
                                       ),
+                                      Container(
+                                        width: deviceWidth * .9,
+                                        height: ratio * 20,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(
+                                            ratio * 5,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    "Break 1",
+                                                    style: TextStyle(
+                                                      fontSize: ratio * 6,
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    (data['break1hour']
+                                                                    .toString() ==
+                                                                '0' ||
+                                                            data['break1hour']
+                                                                    .toString() ==
+                                                                '')
+                                                        ? ''
+                                                        : data['break1hour']
+                                                            .toString(),
+                                                    style: TextStyle(
+                                                      fontSize: ratio * 6,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    "Break 2",
+                                                    style: TextStyle(
+                                                      fontSize: ratio * 6,
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    (data['break2hour']
+                                                                    .toString() ==
+                                                                '0' ||
+                                                            data['break2hour']
+                                                                    .toString() ==
+                                                                '')
+                                                        ? ''
+                                                        : data['break2hour']
+                                                            .toString(),
+                                                    style: TextStyle(
+                                                      fontSize: ratio * 6,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    "Break 3",
+                                                    style: TextStyle(
+                                                      fontSize: ratio * 6,
+                                                      color: Colors.black,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    (data['break3hour']
+                                                                    .toString() ==
+                                                                '0' ||
+                                                            data['break3hour']
+                                                                    .toString() ==
+                                                                '')
+                                                        ? ''
+                                                        : data['break3hour']
+                                                            .toString(),
+                                                    style: TextStyle(
+                                                      fontSize: ratio * 6,
+                                                      color: Colors.black,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      SizedBox(height: ratio * 2),
                                     ],
                                   ),
                                 );

@@ -139,10 +139,10 @@ class EmpattdetailState extends State<EmpAttdetail> {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
     var ratio;
-    if(deviceWidth<deviceHeight){
-      ratio=deviceHeight/deviceWidth;
-    }else{
-      ratio=deviceWidth/deviceHeight;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
     }
 
     return Scaffold(
@@ -152,7 +152,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
         title: Text(
           'Attendance Detail',
           style: TextStyle(
-            fontSize: ratio*9,
+            fontSize: ratio * 9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -177,7 +177,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:ratio*25,
+                      radius: ratio * 25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here
@@ -212,7 +212,9 @@ class EmpattdetailState extends State<EmpAttdetail> {
                         borderRadius: BorderRadius.circular(deviceWidth * 0.03),
                         color: const Color.fromARGB(255, 247, 239, 230),
                       ),
-                      child: Row(
+                      child: Column(
+                        children: [
+                          Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           Expanded(
@@ -233,33 +235,27 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                           .reversed
                                           .join('-')
                                       : '',
-                                  style: TextStyle(
-                                    fontSize:ratio * 6,
-                                  ),
+                                  style: TextStyle(fontSize: ratio * 6),
                                 ),
                                 Row(
                                   children: [
                                     Text(
-                                      "Break: ",
+                                      "Break Time: ",
                                       style: TextStyle(
                                         fontSize: ratio * 6,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     Text(
-                                      (() {
-                                        int count = 0;
-                                        if (data['break1'] == 'close') count++;
-                                        if (data['break2'] == 'close') count++;
-                                        if (data['break3'] == 'close') count++;
-                                        return '$count';
-                                      })(),style: TextStyle(
+                                      data['breakhour']??'',
+                                      style: TextStyle(
                                         fontSize: ratio * 6,
+                                        color: Colors.black,
                                       ),
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: ratio*7,),
+                                SizedBox(height: ratio * 7),
                                 Text(
                                   "Address in:",
                                   style: TextStyle(
@@ -269,14 +265,12 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 ),
                                 Text(
                                   "${data['address'] ?? ''}",
-                                  style: TextStyle(
-                                    fontSize: ratio * 6,
-                                  ),
+                                  style: TextStyle(fontSize: ratio * 6),
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(width: ratio*1,),
+                          SizedBox(width: ratio * 1),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -292,9 +286,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 ),
                                 Text(
                                   data['time_in'] ?? '',
-                                  style: TextStyle(
-                                    fontSize: ratio * 6,
-                                  ),
+                                  style: TextStyle(fontSize: ratio * 6),
                                 ),
                                 Text(
                                   "Punch Out:",
@@ -305,9 +297,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 ),
                                 Text(
                                   data['time_out'] ?? '',
-                                  style: TextStyle(
-                                    fontSize: ratio * 6,
-                                  ),
+                                  style: TextStyle(fontSize: ratio * 6),
                                 ),
                                 Text(
                                   "Address Out:",
@@ -318,14 +308,12 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 ),
                                 Text(
                                   data['address_out'] ?? '',
-                                  style: TextStyle(
-                                    fontSize: ratio * 6,
-                                  ),
+                                  style: TextStyle(fontSize: ratio * 6),
                                 ),
                               ],
                             ),
                           ),
-                          SizedBox(width: ratio*1,),
+                          SizedBox(width: ratio * 1),
                           Expanded(
                             child: Column(
                               children: [
@@ -356,8 +344,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                 ),
                                 SizedBox(height: deviceHeight * 0.005),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
                                       "Total Hours:",
@@ -367,14 +354,12 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                       ),
                                     ),
                                     Text(
-                                      "${data['hours']??0}",
-                                      style: TextStyle(
-                                        fontSize: ratio * 6,
-                                      ),
+                                      "${data['hours'] ?? 0}",
+                                      style: TextStyle(fontSize: ratio * 6),
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: ratio *1),
+                                SizedBox(height: ratio * 1),
                                 IconButton(
                                   icon: Icon(
                                     FontAwesomeIcons.mapLocationDot,
@@ -437,7 +422,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                       } else {
                                         Alert.alert(
                                           context,
-                                           "Attemdance Not Marked",
+                                          "Attemdance Not Marked",
                                         );
                                       }
                                     } catch (e) {
@@ -459,8 +444,102 @@ class EmpattdetailState extends State<EmpAttdetail> {
                               ],
                             ),
                           ),
+                          
                         ],
                       ),
+                       Container(
+                        width: deviceWidth*.9,
+                        height: ratio*20,
+                        decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(ratio*5)),
+                        child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Break 1",
+                                        style: TextStyle(
+                                          fontSize: ratio * 6,
+                                          color: Colors.black,fontWeight:FontWeight.bold
+                                        ),
+                                      ),
+                                      Text(
+                                        (data['break1hour'].toString() == '0' ||
+                                                data['break1hour'].toString() ==
+                                                    '')
+                                            ? ''
+                                            : data['break1hour'].toString(),
+                                        style: TextStyle(
+                                          fontSize: ratio * 6,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Break 2",
+                                        style: TextStyle(
+                                          fontSize: ratio * 6,
+                                          color: Colors.black,fontWeight:FontWeight.bold
+                                        ),
+                                      ),
+                                      Text(
+                                        (data['break2hour'].toString() == '0' ||
+                                                data['break2hour'].toString() ==
+                                                    '')
+                                            ? ''
+                                            : data['break2hour'].toString(),
+                                        style: TextStyle(
+                                          fontSize: ratio * 6,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Break 3",
+                                        style: TextStyle(
+                                          fontSize: ratio * 6,
+                                          color: Colors.black,fontWeight:FontWeight.bold
+                                        ),
+                                      ),
+                                      Text(
+                                        (data['break3hour'].toString() == '0' ||
+                                                data['break3hour'].toString() ==
+                                                    '')
+                                            ? ''
+                                            : data['break3hour'].toString(),
+                                        style: TextStyle(
+                                          fontSize: ratio * 6,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                       ),
+                       SizedBox(height: ratio*2,)
+                        ],
+                      )
                     ),
                   );
                 },

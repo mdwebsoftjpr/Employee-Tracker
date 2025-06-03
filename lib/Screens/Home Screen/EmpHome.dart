@@ -1449,7 +1449,6 @@ class _EmpHomeState extends State<EmpHome> {
                                                                               Colors.black,
                                                                         ),
                                                                       ),
-                                                                      SizedBox(height: ratio*4,),
                                                                       Container(
                                                                         width: ratio*14,
                                                                         height: ratio*14,
@@ -1496,7 +1495,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                               Colors.black,
                                                                         ),
                                                                       ),
-                                                                      SizedBox(height: ratio*4,),
+                                                                      SizedBox(height: ratio*3,),
                                                                       (Mainstatus !=
                                                                               "")
                                                                           ? Container(
@@ -1543,7 +1542,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                               Colors.black,
                                                                         ),
                                                                       ),
-                                                                      SizedBox(height: ratio*4,),
+                                                                      SizedBox(height: ratio*3,),
                                                                       (punchIntime !=
                                                                               '')
                                                                           ? Container(
@@ -1567,7 +1566,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                             ),
                                                                           )
                                                                           : Text(
-                                                                            "      -  ",
+                                                                            "-",
                                                                           ),
                                                                     ],
                                                                   ),
@@ -1590,7 +1589,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                               Colors.black,
                                                                         ),
                                                                       ),
-                                                                      SizedBox(height: ratio*4,),
+                                                                      SizedBox(height: ratio*3,),
                                                                       (punchOuttime !=
                                                                               '')
                                                                           ? Container(
@@ -1614,7 +1613,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                             ),
                                                                           )
                                                                           : Text(
-                                                                            "     -  ",
+                                                                            "-",
                                                                           ),
                                                                     ],
                                                                   ),

@@ -288,27 +288,18 @@ class AttendanceState extends State<Attendance> {
                                               Row(
                                                 children: [
                                                   Text(
-                                                    "Break:",
+                                                    "Break Time:",
                                                     style: TextStyle(
                                                       fontSize: ratio * 6,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
                                                   ),
-                                                  Text(
-                                                    (() {
-                                                      int count = 0;
-                                                      if (item['break1'] ==
-                                                          'close')
-                                                        count++;
-                                                      if (item['break2'] ==
-                                                          'close')
-                                                        count++;
-                                                      if (item['break3'] ==
-                                                          'close')
-                                                        count++;
-                                                      return '$count';
-                                                    })(),
+                                                  Text(item['breakhour']??'',
+                                                    style: TextStyle(
+                                                      fontSize: ratio * 6,
+                                                      color: Colors.black,
+                                                    ),
                                                   ),
                                                 ],
                                               ),
@@ -357,8 +348,7 @@ class AttendanceState extends State<Attendance> {
                                                     ),
                                                   ),
                                                   Text(
-                                                    (item['hours'])
-                                                        .toString(),
+                                                    (item['hours']).toString(),
                                                     style: TextStyle(
                                                       fontSize: ratio * 5,
                                                     ),
@@ -530,6 +520,96 @@ class AttendanceState extends State<Attendance> {
                                 ),
                               ],
                             ),
+                            Container(
+                        width: deviceWidth*.9,
+                        height: ratio*20,
+                        decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(ratio*5)),
+                        child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Break 1",
+                                        style: TextStyle(
+                                          fontSize: ratio * 6,
+                                          color: Colors.black,fontWeight:FontWeight.bold
+                                        ),
+                                      ),
+                                      Text(
+                                        (item['break1hour'].toString() == '0' ||
+                                                item['break1hour'].toString() ==
+                                                    '')
+                                            ? ''
+                                            : item['break1hour'].toString(),
+                                        style: TextStyle(
+                                          fontSize: ratio * 6,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Break 2",
+                                        style: TextStyle(
+                                          fontSize: ratio * 6,
+                                          color: Colors.black,fontWeight:FontWeight.bold
+                                        ),
+                                      ),
+                                      Text(
+                                        (item['break2hour'].toString() == '0' ||
+                                                item['break2hour'].toString() ==
+                                                    '')
+                                            ? ''
+                                            : item['break2hour'].toString(),
+                                        style: TextStyle(
+                                          fontSize: ratio * 6,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Break 3",
+                                        style: TextStyle(
+                                          fontSize: ratio * 6,
+                                          color: Colors.black,fontWeight:FontWeight.bold
+                                        ),
+                                      ),
+                                      Text(
+                                        (item['break3hour'].toString() == '0' ||
+                                                item['break3hour'].toString() ==
+                                                    '')
+                                            ? ''
+                                            : item['break3hour'].toString(),
+                                        style: TextStyle(
+                                          fontSize: ratio * 6,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                       ),
                           ],
                         ),
                       ),
