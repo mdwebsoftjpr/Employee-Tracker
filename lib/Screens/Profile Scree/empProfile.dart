@@ -38,7 +38,6 @@ class EmpprofileState extends State<Empprofile> {
           userdata = user;
         });
       } catch (e) {
-        print("Error decoding user data: $e");
       }
     }
   }

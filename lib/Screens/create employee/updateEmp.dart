@@ -273,7 +273,6 @@ class UpdateEmpState extends State<UpdateEmp> {
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
       final responseData = jsonDecode(response.body);
-      print('update$responseData');
 
       if (response.statusCode == 200 && responseData['success'] == true) {
         if (!mounted) return;
@@ -302,7 +301,6 @@ class UpdateEmpState extends State<UpdateEmp> {
     } else {
       ratio = deviceWidth / deviceHeight;
     }
-    print(widget.item);
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),

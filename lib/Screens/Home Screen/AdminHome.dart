@@ -50,21 +50,18 @@ class AdminhomeState extends State<AdminHome> {
     var userJson = localStorage.getItem('user');
     if (userJson != null) {
       var user = jsonDecode(userJson);
-      print(user);
       setState(() {
         comName = user['company_name'] ?? 'Default Company';
         key_person = user['key_person'] ?? 'Default User';
         email = user['db_email'] ?? 'Default User';
         image = user['image'] ?? 'Default User';
       });
-      print(image);
     }
     var Visit = localStorage.getItem('visitout') ?? false;
     if (Visit == true) {
       setState(() {
         visit:
         Visit;
-        print(Visit);
       });
     }
   }
@@ -79,8 +76,6 @@ class AdminhomeState extends State<AdminHome> {
         _imageFile = pickedFile;
       });
     }
-
-    print("addSds$ImageSource");
   }
 
   // Notification method to navigate to Notification screen
@@ -123,7 +118,6 @@ class AdminhomeState extends State<AdminHome> {
   ).format(DateTime.now()); // Make sure this is defined in your state
 
   void dropdown() {
-    print("Down");
     setState(() {
       drop = false;
     });
@@ -138,12 +132,10 @@ class AdminhomeState extends State<AdminHome> {
         (route) => false,
       );
     } catch (e) {
-      print('Error clearing local storage: $e');
     }
   }
 
   void dropUp() {
-    print("UP");
     setState(() {
       drop = true;
     });

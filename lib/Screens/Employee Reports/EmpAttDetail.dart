@@ -44,7 +44,6 @@ class EmpattdetailState extends State<EmpAttdetail> {
     var userJson = localStorage.getItem('user');
     if (userJson != null) {
       var user = jsonDecode(userJson);
-      print("Sahil$user");
       setState(() {
         ComId = user['company_id'] ?? 0;
         empId = user['id'] ?? 0;
@@ -53,7 +52,6 @@ class EmpattdetailState extends State<EmpAttdetail> {
   }
 
   void EmpAttDetail() async {
-    print("$empId,$ComId,$MonthNo,$YearNo");
     try {
       final url = Uri.parse(
         'https://testapi.rabadtechnology.com/getSingleEmpAttendanceAll.php',
@@ -77,7 +75,6 @@ class EmpattdetailState extends State<EmpAttdetail> {
 
       if (success) {
         final AttData = data['data'];
-        print(AttData);
 
         List<Map<String, dynamic>> tempList = [];
         if (AttData != null && AttData is Map<String, dynamic>) {

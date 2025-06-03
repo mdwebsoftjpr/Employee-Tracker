@@ -84,7 +84,6 @@ class MasterState extends State<Master> {
     setState(() {
       isLoading = true;
     });
-    print("$designation,$id");
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/updatedesignation.php',
     );

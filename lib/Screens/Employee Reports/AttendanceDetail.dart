@@ -66,7 +66,6 @@ class AttendanceDetailState extends State<AttendanceDetail> {
 
       if (success) {
         final AttData = data['data'];
-        print(AttData);
 
         List<Map<String, dynamic>> tempList = [];
         if (AttData != null && AttData is Map<String, dynamic>) {

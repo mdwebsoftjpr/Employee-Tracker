@@ -95,7 +95,6 @@ class UpdatecomState extends State<Updatecom> {
           NoOfEmp.text = (user['noofemp'] ?? '').toString();
         });
       } catch (e) {
-        print("Error decoding user data: $e");
       }
     }
   }
@@ -225,8 +224,7 @@ void company_update(context) async {
       Alert.alert(context, data['message']);
     }
   } catch (e) {
-    /* Alert.alert(context, 'Error: $e'); */
-    print(e);
+    Alert.alert(context, 'Error: $e');
   } finally {
     if (mounted) setState(() => isLoading = false);
   }

@@ -61,9 +61,7 @@ class VisitOutState extends State<VisitOut> {
           comid = user['company_id'] ?? 0;
           trade_name = user['trade_name'] ?? 0;
         });
-        print("$comid,$empid");
       } catch (e) {
-        print("Error decoding user data: $e");
       }
     }
   }
@@ -158,7 +156,6 @@ class VisitOutState extends State<VisitOut> {
 
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      print('Location services are disabled. Please enable them.');
       await Geolocator.openLocationSettings();
       return;
     }
@@ -167,13 +164,11 @@ class VisitOutState extends State<VisitOut> {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        print('Location permission denied.');
         return;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      print('Location permission permanently denied.');
       return;
     }
 
@@ -190,9 +185,7 @@ class VisitOutState extends State<VisitOut> {
         lat = latitude.toString();
         long = longitude.toString();
       });
-      print('Latitude: $latitude, Longitude: $longitude');
     } catch (e) {
-      print('Error getting location: $e');
     }
   }
 
@@ -313,7 +306,6 @@ class VisitOutState extends State<VisitOut> {
         // Get the response and handle it
         var responseData = await Response.fromStream(response);
         var data = jsonDecode(responseData.body);
-        print(data);
 
         if (response.statusCode == 200) {
           if (data['success'] == true) {

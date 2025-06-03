@@ -112,7 +112,6 @@ class _EmpHomeState extends State<EmpHome> {
       isLoading = true;
     });
     var userJson = localStorage.getItem('user');
-    print(userJson);
     if (userJson != null) {
       var user = jsonDecode(userJson);
       setState(() {
@@ -140,7 +139,6 @@ class _EmpHomeState extends State<EmpHome> {
 
       var success = responseData['success'];
       var message = responseData['message'];
-      /* print("GetApi $responseData"); */
       if (success == true) {
         var data = responseData['data'];
         var statusin = data[0]['status_PunchIn'] ?? '';
@@ -162,7 +160,6 @@ class _EmpHomeState extends State<EmpHome> {
             Break2 = break2;
             Break3 = break3;
           });
-          print('Status$statusData,$Break1,$Break2,$Break3');
         } else {
           setState(() {
             isLoading = false;
@@ -171,20 +168,16 @@ class _EmpHomeState extends State<EmpHome> {
             punchIntime = punchInTime;
           });
         }
-        print(message);
       } else {
         setState(() {
           isLoading = false;
           Mainstatus = '';
         });
-
-        print(message);
       }
     } catch (e) {
       setState(() {
         isLoading = false;
       });
-      print("ihcauihhuih $e");
     }
   }
 
@@ -209,10 +202,8 @@ class _EmpHomeState extends State<EmpHome> {
         setState(() {
           visitStatus = visitPunc;
         });
-        print(visitPunc);
       }
     } catch (e) {
-      print("ihcauihhuih $e");
     }
   }
 
@@ -315,7 +306,6 @@ class _EmpHomeState extends State<EmpHome> {
   String currentDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
   void dropdown() {
-    print("Down");
     setState(() {
       drop = false;
     });
@@ -354,11 +344,8 @@ class _EmpHomeState extends State<EmpHome> {
         } else {
           Alert.alert(context, message);
         }
-      } else {
-        print('HTTP error: ${response.statusCode}, response: ${response.body}');
       }
     } catch (e) {
-      print('Exception occurred: $e');
     }
   }
 
@@ -392,7 +379,6 @@ class _EmpHomeState extends State<EmpHome> {
     // Send request
     final response = await request.send();
     if (response.statusCode == 200) {
-      print("✅ Image uploaded successfully");
       final response1 = await http.Response.fromStream(response);
       var data = jsonDecode(response1.body);
       var success = data['success'];
@@ -402,7 +388,6 @@ class _EmpHomeState extends State<EmpHome> {
         setState(() {
           isLoading = false;
         });
-        print("Success $success");
         getApi();
         Alert.alert(context, message);
       } else {
@@ -437,7 +422,6 @@ class _EmpHomeState extends State<EmpHome> {
     request.files.add(
       await http.MultipartFile.fromPath('image', _imageFile!.path),
     );
-    print(Comid);
     // Optional: send extra fields
     request.fields['trade_name'] = trade_name.toString();
     request.fields['multipoint'] = '${latitude}_${longitude}';
@@ -445,11 +429,9 @@ class _EmpHomeState extends State<EmpHome> {
     request.fields['address'] = CurrentAddress;
     request.fields['employeeid'] = '$userid';
     request.fields['company_id'] = Comid.toString();
-    print("punch out vsonfon");
-    // Send request
+
     final response = await request.send();
     if (response.statusCode == 200) {
-      print("✅ Image uploaded successfully");
       final response1 = await http.Response.fromStream(response);
       var data = jsonDecode(response1.body);
 
@@ -515,10 +497,8 @@ class _EmpHomeState extends State<EmpHome> {
       var message = data['message'] ?? '';
 
       if (success) {
-        print(data);
         var status = data['status'] ?? '';
         var id = status[0]['id'] ?? '';
-        print(id);
         setState(() {
           isLoading = false;
           VisitId = id;
@@ -562,7 +542,6 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   void dropUp() {
-    print("UP");
     setState(() {
       drop = true;
     });
@@ -609,13 +588,9 @@ class _EmpHomeState extends State<EmpHome> {
         latitude = position.latitude.toString();
         longitude = position.longitude.toString();
       });
-
-      print('Location fetched successfully.');
-
       // Now fetch the address
       await fetchAndPrintAddress();
     } catch (e) {
-      print('Error getting location: $e');
     }
   }
 
@@ -627,7 +602,6 @@ class _EmpHomeState extends State<EmpHome> {
     double? lng = double.tryParse(longitude);
 
     if (lat == null || lng == null) {
-      print('Invalid latitude or longitude.');
       return;
     }
 
@@ -642,13 +616,8 @@ class _EmpHomeState extends State<EmpHome> {
           CurrentAddress = address;
           isLoading = false;
         });
-
-        print('📍 Address: $address');
-      } else {
-        print('No address found.');
-      }
+      } 
     } catch (e) {
-      print('Error fetching address: $e');
     }
   }
 
@@ -799,7 +768,6 @@ class _EmpHomeState extends State<EmpHome> {
     String message,
     String btn,
   ) async {
-    print(btn);
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -1767,7 +1735,6 @@ class _EmpHomeState extends State<EmpHome> {
                                     (visitStatus == 'opne')
                                         ? ElevatedButton(
                                           onPressed: () {
-                                            print(VisitId);
                                             if (Mainstatus != '' &&
                                                 Mainstatus == 'punchin') {
                                               Navigator.push(

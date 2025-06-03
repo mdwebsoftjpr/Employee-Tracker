@@ -459,7 +459,6 @@ class EmployeelistState extends State<Employeelist> {
               : ListView.builder(
                 itemCount: EmpDetail.length,
                 itemBuilder: (context, index) {
-                  print(isSwitchedList);
                   final item = EmpDetail[index];
                   return Container(
                     margin: EdgeInsets.only(

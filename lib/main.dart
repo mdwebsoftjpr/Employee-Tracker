@@ -274,7 +274,7 @@ class _createScreen extends State<CreateScreen> {
                               },
                             ),
                             TextButton(
-                              onPressed: () => print("Terms clicked"),
+                              onPressed: () => {},
                               child: Text(
                                 "I Remember",
                                 style: TextStyle(color: Colors.black),

@@ -73,7 +73,6 @@ class AdminVisitreportState extends State<AdminVisitreport> {
       );
 
       final responseData = jsonDecode(response.body);
-      print("Response: $responseData");
 
       if (responseData['success'] == true) {
         setState(() {
@@ -94,7 +93,6 @@ class AdminVisitreportState extends State<AdminVisitreport> {
       setState(() {
         isLoading = false;
       });
-      print("Error fetching data: $e");
     }
   }
 
@@ -151,7 +149,6 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     try {
       return double.parse(input.replaceAll('"', '').replaceAll("'", '').trim());
     } catch (e) {
-      print("Error parsing double: $e");
       return 0.0;
     }
   }
