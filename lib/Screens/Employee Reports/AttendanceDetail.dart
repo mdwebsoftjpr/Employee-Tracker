@@ -134,6 +134,216 @@ class AttendanceDetailState extends State<AttendanceDetail> {
     }
   }
 
+  Future<void> more(Map<String, dynamic> item, double ratio) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ratio * 4),
+          ),
+          title: Center(
+            child: Text(
+              'Attendance Details',
+              style: TextStyle(
+                fontSize: ratio * 8,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF333333),
+              ),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(ratio * 2.5),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: ratio * 25,
+                    backgroundColor: Colors.grey.shade300,
+                    backgroundImage: NetworkImage(item['image'] ?? ''),
+                    onBackgroundImageError: (_, __) {},
+                  ),
+                  SizedBox(height: ratio * 3),
+
+                  // Name
+                  _infoRow('Name', item['empname'], ratio),
+                  _infoRow('Time In', item['time_in'], ratio),
+                  _infoRow('Time Out', item['time_out'], ratio),
+                  _infoRow('Address In', item['address'], ratio, maxLines: 2),
+                  _infoRow(
+                    'Address Out',
+                    item['address_out'],
+                    ratio,
+                    maxLines: 2,
+                  ),
+                  _infoRow('Working Hours', item['hours'].toString(), ratio),
+                  Divider(height: ratio * 4, color: Colors.grey.shade400),
+
+                  // Breaks
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _breakInfo('Break 1', item['break1hour'], ratio),
+                      _breakInfo('Break 2', item['break2hour'], ratio),
+                      _breakInfo('Break 3', item['break3hour'], ratio),
+                    ],
+                  ),
+
+                  SizedBox(height: ratio * 2),
+                  _infoRow('Total Break Time', item['breakhour'], ratio),
+
+                  SizedBox(height: ratio * 3),
+                  Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'View on Map',
+                        style: TextStyle(
+                          fontSize: ratio * 6,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF333333),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          FontAwesomeIcons.mapLocationDot,
+                          color: Color(0xFF03a9f4),
+                          size: ratio * 10,
+                        ),
+                        onPressed: () {
+                          _openMap(item);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF03a9f4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ratio*10),
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: ratio * 2,
+                  vertical: ratio * 2,
+                ),
+              ),
+              child: Text('OK', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _infoRow(
+    String label,
+    dynamic value,
+    double ratio, {
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: ratio * 1.2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 4,
+            child: Text(
+              '$label:',
+              style: TextStyle(
+                fontSize: ratio * 6,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: Text(
+              value?.toString() ?? '',
+              maxLines: maxLines,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: ratio * 6, color: Colors.black87),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _breakInfo(String title, dynamic value, double ratio) {
+    return Column(
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: ratio * 6,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        Text(
+          (value == null || value == 0) ? '' : value.toString(),
+          style: TextStyle(fontSize: ratio * 6),
+        ),
+      ],
+    );
+  }
+
+  void _openMap(Map<String, dynamic> item) {
+    List<LatLng> points = [];
+
+    final point1 = item['multipoint'];
+    final point2 = item['multipoint_out'];
+
+    try {
+      if (point1 != null && point1.isNotEmpty) {
+        final p1Parts = point1.split('_');
+        if (p1Parts.length == 2) {
+          points.add(
+            LatLng(
+              safeParseDouble(p1Parts[0].trim()),
+              safeParseDouble(p1Parts[1].trim()),
+            ),
+          );
+        }
+      }
+
+      if (points.isNotEmpty && point2 != null && point2.isNotEmpty) {
+        final p2Parts = point2.split('_');
+        if (p2Parts.length == 2) {
+          points.add(
+            LatLng(
+              safeParseDouble(p2Parts[0].trim()),
+              safeParseDouble(p2Parts[1].trim()),
+            ),
+          );
+        }
+      }
+
+      if (points.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SimpleMapScreen(points: points),
+          ),
+        );
+      } else {
+        Alert.alert(context, "Attendance Not Marked");
+      }
+    } catch (e) {
+      Alert.alert(context, "Error parsing coordinates.");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final item = widget.items;
@@ -333,6 +543,40 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
+                                                Column(
+                                                  children: [
+                                                    Text(
+                                                      "S.r.no.",
+                                                      style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: ratio * 6,
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical:
+                                                       ratio *1,
+                                                    horizontal:
+                                                        ratio *3,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        Color(0xFF03a9f4),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          ratio * 5,
+                                                        ),
+                                                  ),
+                                                  child: Text(
+                                                      '${index + 1}',
+                                                      style: TextStyle(
+                                                        fontSize: ratio * 5,color: Colors.white
+                                                      ),
+                                                    ),
+                                                ),
+                                                  ],
+                                                ),
                                                 Text(
                                                   "Date",
                                                   style: TextStyle(
@@ -351,23 +595,9 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                     fontSize: ratio * 6,
                                                   ),
                                                 ),
-                                                Text(
-                                                  "Total Hours",
-                                                  style: TextStyle(
-                                                    fontSize: ratio * 6,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  "${data['hours']}",
-                                                  style: TextStyle(
-                                                    fontSize: ratio * 6,
-                                                  ),
-                                                ),
                                               ],
                                             ),
                                           ),
-                                          SizedBox(width: ratio * 5),
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:
@@ -402,7 +632,6 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                               ],
                                             ),
                                           ),
-                                          SizedBox(width: ratio * 2),
                                           Expanded(
                                             child: Column(
                                               crossAxisAlignment:
@@ -411,9 +640,9 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                 Container(
                                                   padding: EdgeInsets.symmetric(
                                                     vertical:
-                                                        deviceHeight * 0.005,
+                                                        ratio * 1.3,
                                                     horizontal:
-                                                        deviceWidth * 0.025,
+                                                        ratio*3,
                                                   ),
                                                   decoration: BoxDecoration(
                                                     color:
@@ -425,7 +654,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                             : Colors.redAccent,
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                          deviceWidth * 0.044,
+                                                          ratio*6,
                                                         ),
                                                   ),
                                                   child: Text(
@@ -455,7 +684,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                     ),
                                                     SizedBox(width: ratio * 6),
                                                     Text(
-                                                      data['breakhour']??'',
+                                                      data['breakhour'] ?? '',
                                                       style: TextStyle(
                                                         fontSize: ratio * 6,
                                                         color: Colors.black,
@@ -466,104 +695,57 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                               ],
                                             ),
                                           ),
-                                          SizedBox(width: ratio * 2),
                                           Expanded(
                                             child: Column(
                                               children: [
                                                 IconButton(
+                                                  padding:
+                                                      EdgeInsets
+                                                          .zero,
+                                                  constraints: BoxConstraints(minHeight: 0),
+                                                  onPressed:
+                                                      () =>
+                                                          (data['attendance_status'] ==
+                                                                      'p' ||
+                                                                  data['attendance_status'] ==
+                                                                      'P')
+                                                              ? more(
+                                                                data,
+                                                                ratio,
+                                                              )
+                                                              : Alert.alert(
+                                                                context,
+                                                                "Attendance Not Marked",
+                                                              ),
                                                   icon: Icon(
-                                                    FontAwesomeIcons
-                                                        .mapLocationDot,
-                                                    color: Color(0xFF03a9f4),
-                                                    size: ratio * 10,
+                                                    FontAwesomeIcons.circleInfo,
+                                                    size: ratio * 12,
                                                   ),
-                                                  onPressed: () {
-                                                    List<LatLng> points = [];
-
-                                                    final point1 =
-                                                        data['multipoint'];
-                                                    final point2 =
-                                                        data['multipoint_out'];
-
-                                                    try {
-                                                      // Add point1 if available and valid
-                                                      if (point1 != null &&
-                                                          point1.isNotEmpty) {
-                                                        final p1Parts = point1
-                                                            .split('_');
-                                                        if (p1Parts.length ==
-                                                            2) {
-                                                          points.add(
-                                                            LatLng(
-                                                              safeParseDouble(
-                                                                p1Parts[0]
-                                                                    .trim(),
-                                                              ),
-                                                              safeParseDouble(
-                                                                p1Parts[1]
-                                                                    .trim(),
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }
-                                                      }
-
-                                                      // Add point2 only if point1 was added and point2 is valid
-                                                      if (points.isNotEmpty &&
-                                                          point2 != null &&
-                                                          point2.isNotEmpty) {
-                                                        final p2Parts = point2
-                                                            .split('_');
-                                                        if (p2Parts.length ==
-                                                            2) {
-                                                          points.add(
-                                                            LatLng(
-                                                              safeParseDouble(
-                                                                p2Parts[0]
-                                                                    .trim(),
-                                                              ),
-                                                              safeParseDouble(
-                                                                p2Parts[1]
-                                                                    .trim(),
-                                                              ),
-                                                            ),
-                                                          );
-                                                        }
-                                                      }
-
-                                                      if (points.isNotEmpty) {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder:
-                                                                (context) =>
-                                                                    SimpleMapScreen(
-                                                                      points:
-                                                                          points,
-                                                                    ),
-                                                          ),
-                                                        );
-                                                      } else {
-                                                        Alert.alert(
-                                                          context,
-                                                          "Attemdance Not Marked",
-                                                        );
-                                                      }
-                                                    } catch (e) {
-                                                      Alert.alert(
-                                                        context,
-                                                        "Error parsing coordinates.",
-                                                      );
-                                                    }
-                                                  },
                                                 ),
-
                                                 Text(
-                                                  "Location..",
+                                                  "More Info.",
                                                   style: TextStyle(
                                                     fontSize: ratio * 6,
                                                     fontWeight: FontWeight.bold,
                                                   ),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      "Total Hours:",
+                                                      style: TextStyle(
+                                                        fontSize: ratio * 4,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      "${data['hours']}",
+                                                      style: TextStyle(
+                                                        fontSize: ratio * 4,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
                                             ),
@@ -571,192 +753,6 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                         ],
                                       ),
                                       SizedBox(height: ratio * 1),
-                                      Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                RichText(
-                                                  text: TextSpan(
-                                                    children: [
-                                                      TextSpan(
-                                                        text: "Address In: ",
-                                                        style: TextStyle(
-                                                          fontSize: ratio * 6,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                      TextSpan(
-                                                        text:
-                                                            data['address'] ??
-                                                            'No address available',
-                                                        style: TextStyle(
-                                                          fontSize: ratio * 6,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.visible,
-                                                  softWrap: true,
-                                                ),
-                                                SizedBox(height: 6),
-                                                RichText(
-                                                  text: TextSpan(
-                                                    children: [
-                                                      TextSpan(
-                                                        text: "Address Out: ",
-                                                        style: TextStyle(
-                                                          fontSize: ratio * 6,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                      TextSpan(
-                                                        text:
-                                                            data['address_out'] ??
-                                                            'No address available',
-                                                        style: TextStyle(
-                                                          fontSize: ratio * 6,
-                                                          color: Colors.black,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.visible,
-                                                  softWrap: true,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Container(
-                                        width: deviceWidth * .9,
-                                        height: ratio * 20,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(
-                                            ratio * 5,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    "Break 1",
-                                                    style: TextStyle(
-                                                      fontSize: ratio * 6,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    (data['break1hour']
-                                                                    .toString() ==
-                                                                '0' ||
-                                                            data['break1hour']
-                                                                    .toString() ==
-                                                                '')
-                                                        ? ''
-                                                        : data['break1hour']
-                                                            .toString(),
-                                                    style: TextStyle(
-                                                      fontSize: ratio * 6,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    "Break 2",
-                                                    style: TextStyle(
-                                                      fontSize: ratio * 6,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    (data['break2hour']
-                                                                    .toString() ==
-                                                                '0' ||
-                                                            data['break2hour']
-                                                                    .toString() ==
-                                                                '')
-                                                        ? ''
-                                                        : data['break2hour']
-                                                            .toString(),
-                                                    style: TextStyle(
-                                                      fontSize: ratio * 6,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Expanded(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    "Break 3",
-                                                    style: TextStyle(
-                                                      fontSize: ratio * 6,
-                                                      color: Colors.black,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    (data['break3hour']
-                                                                    .toString() ==
-                                                                '0' ||
-                                                            data['break3hour']
-                                                                    .toString() ==
-                                                                '')
-                                                        ? ''
-                                                        : data['break3hour']
-                                                            .toString(),
-                                                    style: TextStyle(
-                                                      fontSize: ratio * 6,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      SizedBox(height: ratio * 2),
                                     ],
                                   ),
                                 );

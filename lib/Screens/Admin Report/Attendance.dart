@@ -7,6 +7,8 @@ import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Employee%20Reports/AttendanceDetail.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:intl/intl.dart';
+
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
@@ -31,12 +33,15 @@ class AttendanceState extends State<Attendance> {
   int? comId;
   List<Map<String, dynamic>> attendanceData = [];
   bool isLoading = true;
+  String day = '';
 
-  @override
-  void initState() {
-    super.initState();
-    _loadUser().then((_) => ShowMaster());
-  }
+@override
+void initState() {
+  super.initState(); // Keep only this one
+  final DateTime now = DateTime.now();
+  day = DateFormat('yyyy-MM-dd').format(now);
+  _loadUser().then((_) => ShowMaster());
+}
 
   Future<void> _loadUser() async {
     var userJson = localStorage.getItem('user');
@@ -86,6 +91,216 @@ class AttendanceState extends State<Attendance> {
     }
   }
 
+  Future<void> more(Map<String, dynamic> item, double ratio) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ratio * 4),
+          ),
+          title: Center(
+            child: Text(
+              'Attendance Details',
+              style: TextStyle(
+                fontSize: ratio * 8,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF333333),
+              ),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(ratio * 2.5),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: ratio * 25,
+                    backgroundColor: Colors.grey.shade300,
+                    backgroundImage: NetworkImage(item['image'] ?? ''),
+                    onBackgroundImageError: (_, __) {},
+                  ),
+                  SizedBox(height: ratio * 3),
+
+                  // Name
+                  _infoRow('Name', item['empname'], ratio),
+                  _infoRow('Time In', item['time_in'], ratio),
+                  _infoRow('Time Out', item['time_out'], ratio),
+                  _infoRow('Address In', item['address'], ratio, maxLines: 2),
+                  _infoRow(
+                    'Address Out',
+                    item['address_out'],
+                    ratio,
+                    maxLines: 2,
+                  ),
+                  _infoRow('Working Hours', item['hours'].toString(), ratio),
+                  Divider(height: ratio * 4, color: Colors.grey.shade400),
+
+                  // Breaks
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _breakInfo('Break 1', item['break1hour'], ratio),
+                      _breakInfo('Break 2', item['break2hour'], ratio),
+                      _breakInfo('Break 3', item['break3hour'], ratio),
+                    ],
+                  ),
+
+                  SizedBox(height: ratio * 2),
+                  _infoRow('Total Break Time', item['breakhour'], ratio),
+
+                  SizedBox(height: ratio * 3),
+                  Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'View on Map',
+                        style: TextStyle(
+                          fontSize: ratio * 6,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF333333),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          FontAwesomeIcons.mapLocationDot,
+                          color: Color(0xFF03a9f4),
+                          size: ratio * 10,
+                        ),
+                        onPressed: () {
+                          _openMap(item);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF03a9f4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ratio * 10),
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: ratio * 2,
+                  vertical: ratio * 2,
+                ),
+              ),
+              child: Text('OK', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _infoRow(
+    String label,
+    dynamic value,
+    double ratio, {
+    int maxLines = 1,
+  }) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: ratio * 1.2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 4,
+            child: Text(
+              '$label:',
+              style: TextStyle(
+                fontSize: ratio * 6,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 6,
+            child: Text(
+              value?.toString() ?? '',
+              maxLines: maxLines,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: ratio * 6, color: Colors.black87),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _breakInfo(String title, dynamic value, double ratio) {
+    return Column(
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: ratio * 6,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        Text(
+          (value == null || value == 0) ? '' : value.toString(),
+          style: TextStyle(fontSize: ratio * 6),
+        ),
+      ],
+    );
+  }
+
+  void _openMap(Map<String, dynamic> item) {
+    List<LatLng> points = [];
+
+    final point1 = item['multipoint'];
+    final point2 = item['multipoint_out'];
+
+    try {
+      if (point1 != null && point1.isNotEmpty) {
+        final p1Parts = point1.split('_');
+        if (p1Parts.length == 2) {
+          points.add(
+            LatLng(
+              safeParseDouble(p1Parts[0].trim()),
+              safeParseDouble(p1Parts[1].trim()),
+            ),
+          );
+        }
+      }
+
+      if (points.isNotEmpty && point2 != null && point2.isNotEmpty) {
+        final p2Parts = point2.split('_');
+        if (p2Parts.length == 2) {
+          points.add(
+            LatLng(
+              safeParseDouble(p2Parts[0].trim()),
+              safeParseDouble(p2Parts[1].trim()),
+            ),
+          );
+        }
+      }
+
+      if (points.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => SimpleMapScreen(points: points),
+          ),
+        );
+      } else {
+        Alert.alert(context, "Attendance Not Marked");
+      }
+    } catch (e) {
+      Alert.alert(context, "Error parsing coordinates.");
+    }
+  }
+
   double safeParseDouble(String input) {
     try {
       return double.parse(input.replaceAll('"', '').replaceAll("'", '').trim());
@@ -94,6 +309,26 @@ class AttendanceState extends State<Attendance> {
       return 0.0;
     }
   }
+
+void _pickDate() async {
+  DateTime? pickedDate = await showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime(2000),
+    lastDate: DateTime(2100),
+  );
+
+  if (pickedDate != null) {
+    setState(() {
+      day = DateFormat('yyyy-MM-dd').format(pickedDate); // Format to full date
+      isLoading = true;
+    });
+
+    // Fetch attendance for the selected date
+    ShowMaster();
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +352,17 @@ class AttendanceState extends State<Attendance> {
             color: Colors.white,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.date_range,
+              color: Colors.white,
+              size: deviceWidth * 0.09,
+            ),
+            onPressed: _pickDate,
+            tooltip: "Pick Month",
+          ),
+        ],
       ),
       body:
           isLoading
@@ -166,11 +412,11 @@ class AttendanceState extends State<Attendance> {
                     },
                     child: Padding(
                       padding: EdgeInsets.symmetric(
-                        vertical: ratio * 1,
-                        horizontal: ratio * 3,
+                        vertical: ratio * 2,
+                        horizontal: ratio * 4,
                       ),
                       child: Container(
-                        padding: EdgeInsets.all(10),
+                        padding: EdgeInsets.all(ratio * 3),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(
                             deviceWidth * 0.03,
@@ -179,437 +425,224 @@ class AttendanceState extends State<Attendance> {
                         ),
                         child: Column(
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(
-                                      ratio * 6,
-                                    ),
-                                    color: Colors.blue,
-                                  ),
-                                  width: ratio * 10,
-                                  height: ratio * 10,
-                                  child: Center(
-                                    child: Text(
-                                      '${index + 1}',
-                                      style: TextStyle(
-                                        fontSize: ratio * 7,
-                                        color: Colors.white,
+                            Container(
+                              child: Row(
+                                children: [
+                                  SizedBox(width: ratio * 10),
+                                  Container(
+                                    clipBehavior: Clip.antiAlias,
+                                    width: ratio * 27,
+                                    height: ratio * 27,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(
+                                        ratio * 13,
                                       ),
                                     ),
+                                    child: Image.network(
+                                      imageUrl,
+                                      fit: BoxFit.fill,
+                                    ),
                                   ),
-                                ),
-                                Column(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Image.network(
-                                        imageUrl,
-                                        width: ratio * 25,
-                                        height: ratio * 25,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (
-                                          context,
-                                          error,
-                                          stackTrace,
-                                        ) {
-                                          return Image.network(
-                                            imageUrl,
-                                            width: ratio * 25,
-                                            height: ratio * 25,
-                                            fit: BoxFit.cover,
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    Text(
-                                      (item['empname'] ?? '').length > 7
-                                          ? '${item['empname'].substring(0, 7)}...'
-                                          : item['empname'] ?? '',
-                                      style: TextStyle(fontSize: ratio * 6.5),
-                                    ),
-                                  ],
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    children: [
-                                      SizedBox(height: 4),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Column(
-                                            children: [
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Column(
-                                                    children: [
-                                                      Text(
-                                                        "Punch in",
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: ratio * 6,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        "${item['time_in'] ?? ''}",
-                                                        style: TextStyle(
-                                                          fontSize: ratio * 6,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  SizedBox(width: 12),
-                                                  Column(
-                                                    children: [
-                                                      Text(
-                                                        "Punch Out",
-                                                        style: TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: ratio * 6,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        "${item['time_out'] ?? ''}",
-                                                        style: TextStyle(
-                                                          fontSize: ratio * 6,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ],
+                                  SizedBox(width: ratio * 5),
+                                  Container(
+                                    width: deviceWidth * .65,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              (item['empname'] ?? ''),
+                                              style: TextStyle(
+                                                fontSize: ratio * 5,
+                                                fontWeight: FontWeight.bold,
                                               ),
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    "Break Time:",
+                                            ),
+                                            Text(
+                                              ('Full Time'),
+                                              style: TextStyle(
+                                                fontSize: ratio * 5,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            Column(
+                                              children: [
+                                                Container(
+                                                  margin: EdgeInsets.all(
+                                                    ratio * 4.5,
+                                                  ),
+                                                  padding: EdgeInsets.symmetric(
+                                                    horizontal: ratio * 4.5,
+                                                    vertical: ratio * 2,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color:
+                                                        (item['attendance_status']
+                                                                    ?.toLowerCase() ==
+                                                                'p')
+                                                            ? Color(0xFF03a9f4)
+                                                            : Colors.red,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          20,
+                                                        ),
+                                                  ),
+                                                  child: Text(
+                                                    item['attendance_status'] ??
+                                                        '',
                                                     style: TextStyle(
-                                                      fontSize: ratio * 6,
+                                                      color: Colors.white,
                                                       fontWeight:
                                                           FontWeight.bold,
                                                     ),
                                                   ),
-                                                  Text(item['breakhour']??'',
-                                                    style: TextStyle(
-                                                      fontSize: ratio * 6,
-                                                      color: Colors.black,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-
-                                            children: [
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                  horizontal: ratio * 4.5,
-                                                  vertical: ratio * 2,
                                                 ),
-                                                decoration: BoxDecoration(
-                                                  color:
-                                                      (item['attendance_status']
-                                                                  ?.toLowerCase() ==
-                                                              'p')
-                                                          ? Color(0xFF03a9f4)
-                                                          : Colors.red,
-                                                  borderRadius:
-                                                      BorderRadius.circular(20),
-                                                ),
-                                                child: Text(
-                                                  item['attendance_status'] ??
-                                                      '',
+                                                Text(
+                                                  'Status',
                                                   style: TextStyle(
-                                                    color: Colors.white,
+                                                    fontSize: ratio * 5,
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
-                                              ),
-                                              SizedBox(height: 8),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    "Total Hours: ",
-                                                    style: TextStyle(
-                                                      fontSize: ratio * 6,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    (item['hours']).toString(),
-                                                    style: TextStyle(
-                                                      fontSize: ratio * 5,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              text: "Address in: ",
-                                              style: TextStyle(
-                                                fontSize: ratio * 6,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                              ),
+                                              ],
                                             ),
-                                            TextSpan(
-                                              text: item['address'],
-                                              style: TextStyle(
-                                                fontSize: ratio * 6,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        softWrap: true,
-                                        overflow: TextOverflow.visible,
-                                      ),
-                                      SizedBox(height: 5),
-                                      RichText(
-                                        text: TextSpan(
-                                          children: [
-                                            TextSpan(
-                                              text: "Address Out: ",
-                                              style: TextStyle(
-                                                fontSize: ratio * 6,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text: item['address_out'],
-                                              style: TextStyle(
-                                                fontSize: ratio * 6,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        softWrap: true,
-                                        overflow: TextOverflow.visible,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-
-                                Expanded(
-                                  flex: 1,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(
-                                          FontAwesomeIcons.mapLocationDot,
-                                          color: Color(0xFF03a9f4),
-                                          size: ratio * 10,
-                                        ),
-                                        onPressed: () {
-                                          List<LatLng> points = [];
-
-                                          final point1 = item['multipoint'];
-                                          final point2 = item['multipoint_out'];
-
-                                          try {
-                                            // Add point1 if available and valid
-                                            if (point1 != null &&
-                                                point1.isNotEmpty) {
-                                              final p1Parts = point1.split('_');
-                                              if (p1Parts.length == 2) {
-                                                points.add(
-                                                  LatLng(
-                                                    safeParseDouble(
-                                                      p1Parts[0].trim(),
-                                                    ),
-                                                    safeParseDouble(
-                                                      p1Parts[1].trim(),
-                                                    ),
+                                            SizedBox(width: ratio * 3),
+                                            Column(
+                                              children: [
+                                                IconButton(
+                                                  onPressed:
+                                                      () =>
+                                                          (item['attendance_status'] ==
+                                                                      'p' ||
+                                                                  item['attendance_status'] ==
+                                                                      'P')
+                                                              ? more(
+                                                                item,
+                                                                ratio,
+                                                              )
+                                                              : Alert.alert(
+                                                                context,
+                                                                "Attendance Not Marked",
+                                                              ),
+                                                  icon: Icon(
+                                                    FontAwesomeIcons.circleInfo,
+                                                    size: ratio * 12,
                                                   ),
-                                                );
-                                              }
-                                            }
-
-                                            // Add point2 only if point1 was added and point2 is valid
-                                            if (points.isNotEmpty &&
-                                                point2 != null &&
-                                                point2.isNotEmpty) {
-                                              final p2Parts = point2.split('_');
-                                              if (p2Parts.length == 2) {
-                                                points.add(
-                                                  LatLng(
-                                                    safeParseDouble(
-                                                      p2Parts[0].trim(),
-                                                    ),
-                                                    safeParseDouble(
-                                                      p2Parts[1].trim(),
-                                                    ),
-                                                  ),
-                                                );
-                                              }
-                                            }
-
-                                            if (points.isNotEmpty) {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder:
-                                                      (context) =>
-                                                          SimpleMapScreen(
-                                                            points: points,
-                                                          ),
                                                 ),
-                                              );
-                                            } else {
-                                              Alert.alert(
-                                                context,
-                                                "Attemdance Not Marked",
-                                              );
-                                            }
-                                          } catch (e) {
-                                            Alert.alert(
-                                              context,
-                                              "Error parsing coordinates.",
-                                            );
-                                          }
-                                        },
-                                      ),
-
-                                      Text(
-                                        "Location..",
-                                        style: TextStyle(
-                                          fontSize: ratio * 6,
-                                          fontWeight: FontWeight.bold,
+                                                Text(
+                                                  "More info",
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: ratio * 5,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                             Container(
-                        width: deviceWidth*.9,
-                        height: ratio*20,
-                        decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(ratio*5)),
-                        child: Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Break 1",
-                                        style: TextStyle(
-                                          fontSize: ratio * 6,
-                                          color: Colors.black,fontWeight:FontWeight.bold
-                                        ),
-                                      ),
-                                      Text(
-                                        (item['break1hour'].toString() == '0' ||
-                                                item['break1hour'].toString() ==
-                                                    '')
-                                            ? ''
-                                            : item['break1hour'].toString(),
-                                        style: TextStyle(
-                                          fontSize: ratio * 6,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Break 2",
-                                        style: TextStyle(
-                                          fontSize: ratio * 6,
-                                          color: Colors.black,fontWeight:FontWeight.bold
-                                        ),
-                                      ),
-                                      Text(
-                                        (item['break2hour'].toString() == '0' ||
-                                                item['break2hour'].toString() ==
-                                                    '')
-                                            ? ''
-                                            : item['break2hour'].toString(),
-                                        style: TextStyle(
-                                          fontSize: ratio * 6,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Break 3",
-                                        style: TextStyle(
-                                          fontSize: ratio * 6,
-                                          color: Colors.black,fontWeight:FontWeight.bold
-                                        ),
-                                      ),
-                                      Text(
-                                        (item['break3hour'].toString() == '0' ||
-                                                item['break3hour'].toString() ==
-                                                    '')
-                                            ? ''
-                                            : item['break3hour'].toString(),
-                                        style: TextStyle(
-                                          fontSize: ratio * 6,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                              margin: EdgeInsets.symmetric(
+                                vertical: ratio * 1.5,
+                              ),
+                              width: deviceWidth * .9,
+                              height: 1,
+                              color: const Color.fromARGB(255, 211, 203, 203),
                             ),
-                       ),
+                            Container(
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text(
+                                        "S.r.no.",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: ratio * 5,
+                                        ),
+                                      ),
+                                      Text(
+                                        '${index + 1}',
+                                        style: TextStyle(fontSize: ratio * 5),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        "Time in",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: ratio * 5,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${item['time_in'] ?? ''}",
+                                        style: TextStyle(fontSize: ratio * 5),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        "Time Out",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: ratio * 5,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${item['time_out'] ?? ''}",
+                                        style: TextStyle(fontSize: ratio * 5),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        "Total Hours",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: ratio * 5,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${item['hours'] ?? ''}",
+                                        style: TextStyle(fontSize: ratio * 5),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        "Break Time",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: ratio * 5,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${item['breakhour'] ?? ''}",
+                                        style: TextStyle(fontSize: ratio * 5),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -620,3 +653,4 @@ class AttendanceState extends State<Attendance> {
     );
   }
 }
+
