@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:employee_tracker/Screens/Admin%20Report/Attendance.dart';
 import 'package:employee_tracker/Screens/Admin%20Report/VisitReport.dart';
+import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Employee%20Reports/employeeList.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
 import 'package:employee_tracker/Screens/create%20employee/Master.dart';
@@ -266,7 +267,7 @@ class AdminhomeState extends State<AdminHome> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            IconButton(onPressed: ()=>{}, icon: Icon(Icons.notifications,size: ratio*15,color: Colors.white,)),
+            IconButton(onPressed: ()=>Alert.alert(context, "Comming Soon..."), icon: Icon(Icons.notifications,size: ratio*15,color: Colors.white,)),
             GestureDetector(
               onTapDown: _openDropdown,
               child: Container(

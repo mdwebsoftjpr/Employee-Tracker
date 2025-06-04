@@ -134,7 +134,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
     }
   }
 
-  Future<void> more(Map<String, dynamic> item, double ratio) async {
+  Future<void> more(Map<String, dynamic> item, double ratio,String image) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -161,13 +161,10 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                   CircleAvatar(
                     radius: ratio * 25,
                     backgroundColor: Colors.grey.shade300,
-                    backgroundImage: NetworkImage(item['image'] ?? ''),
-                    onBackgroundImageError: (_, __) {},
+                    backgroundImage: NetworkImage(image),
                   ),
                   SizedBox(height: ratio * 3),
 
-                  // Name
-                  _infoRow('Name', item['empname'], ratio),
                   _infoRow('Time In', item['time_in'], ratio),
                   _infoRow('Time Out', item['time_out'], ratio),
                   _infoRow('Address In', item['address'], ratio, maxLines: 2),
@@ -418,8 +415,8 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                 ),
                                 child: Image.network(
                                   imageUrl,
-                                  width: deviceWidth * 0.22,
-                                  height: deviceHeight * 0.15,
+                                  width: ratio * 70,
+                                  height: ratio * 60,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -511,9 +508,9 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                 final data = attendanceData[index];
                                 return Container(
                                   margin: EdgeInsets.only(
-                                    top: ratio * 2,
-                                    left: ratio * 3.5,
-                                    right: ratio * 3.5,
+                                    top: ratio * 3,
+                                    left: ratio * 5,
+                                    right: ratio * 5,
                                   ),
                                   padding: EdgeInsets.only(
                                     top: ratio * 2,
@@ -711,7 +708,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                                       'P')
                                                               ? more(
                                                                 data,
-                                                                ratio,
+                                                                ratio,imageUrl
                                                               )
                                                               : Alert.alert(
                                                                 context,

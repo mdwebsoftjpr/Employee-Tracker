@@ -836,7 +836,7 @@ class _EmpHomeState extends State<EmpHome> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            IconButton(onPressed: ()=>{}, icon: Icon(Icons.notifications,size: ratio*15,color: Colors.white,)),
+            IconButton(onPressed: ()=>Alert.alert(context,"Comming Soon..."), icon: Icon(Icons.notifications,size: ratio*15,color: Colors.white,)),
             GestureDetector(
               onTapDown: _openDropdown,
               child: Container(

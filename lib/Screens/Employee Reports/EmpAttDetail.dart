@@ -155,16 +155,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
               padding: EdgeInsets.all(ratio * 2.5),
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: ratio * 25,
-                    backgroundColor: Colors.grey.shade300,
-                    backgroundImage: NetworkImage(item['image'] ?? ''),
-                    onBackgroundImageError: (_, __) {},
-                  ),
                   SizedBox(height: ratio * 3),
-
-                  // Name
-                  _infoRow('Name', item['empname'], ratio),
                   _infoRow('Time In', item['time_in'], ratio),
                   _infoRow('Time Out', item['time_out'], ratio),
                   _infoRow('Address In', item['address'], ratio, maxLines: 2),

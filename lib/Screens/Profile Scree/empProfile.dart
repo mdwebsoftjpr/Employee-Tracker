@@ -158,7 +158,7 @@ class EmpprofileState extends State<Empprofile> {
                     buildUserRow("PAN Card No.:", userdata!['pan_card']),
                     buildUserRow("Aadhar No. :", userdata!['aadharcard']),
                     buildUserRow("D.O.B. :", userdata!['dob']),
-                    buildUserRow("Joining Date:", userdata!['create_at']),
+                   buildUserRow("Joining Date:", userdata!['create_at']?.substring(0, 10) ?? ''),
                     buildUserRow("Work Hour:", userdata!['hours']),
                     buildUserRow("Username:", userdata!['username']),
                   ],
