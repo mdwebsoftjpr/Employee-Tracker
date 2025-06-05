@@ -155,7 +155,6 @@ class EmpattdetailState extends State<EmpAttdetail> {
               padding: EdgeInsets.all(ratio * 2.5),
               child: Column(
                 children: [
-                  SizedBox(height: ratio * 3),
                   _infoRow('Time In', item['time_in'], ratio),
                   _infoRow('Time Out', item['time_out'], ratio),
                   _infoRow('Address In', item['address'], ratio, maxLines: 2),
@@ -402,8 +401,8 @@ class EmpattdetailState extends State<EmpAttdetail> {
                     child: Container(
                       margin: EdgeInsets.only(
                         top: ratio * 2,
-                        left: ratio * 3.5,
-                        right: ratio * 3.5,
+                        left: ratio * 5,
+                        right: ratio * 5,
                       ),
                       padding: EdgeInsets.all(ratio * 1),
                       decoration: BoxDecoration(
@@ -422,31 +421,31 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                     Row(
                                       children: [
                                         Text(
-                                      "S.r.No.",
-                                      style: TextStyle(
-                                        fontSize: ratio * 6,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                                          "S.r.No.",
+                                          style: TextStyle(
+                                            fontSize: ratio * 6,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                         Container(
-                                      padding: EdgeInsets.symmetric(
-                                        vertical: ratio * 1,
-                                        horizontal: ratio * 3,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFF03a9f4),
-                                        borderRadius: BorderRadius.circular(
-                                          ratio * 5,
+                                          padding: EdgeInsets.symmetric(
+                                            vertical: ratio * 1,
+                                            horizontal: ratio * 3,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Color(0xFF03a9f4),
+                                            borderRadius: BorderRadius.circular(
+                                              ratio * 5,
+                                            ),
+                                          ),
+                                          child: Text(
+                                            '${index + 1}',
+                                            style: TextStyle(
+                                              fontSize: ratio * 5,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                      child: Text(
-                                        '${index + 1}',
-                                        style: TextStyle(
-                                          fontSize: ratio * 5,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
                                       ],
                                     ),
                                     Text(
@@ -529,10 +528,9 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                           children: [
                                             SizedBox(height: ratio * 4),
                                             Container(
-                                              padding: EdgeInsets.symmetric(
-                                                vertical: deviceHeight * 0.006,
-                                                horizontal: deviceWidth * 0.025,
-                                              ),
+                                              width: ratio * 13,
+                                              height: ratio * 13,
+                                              alignment: Alignment.center,
                                               decoration: BoxDecoration(
                                                 color:
                                                     (data['attendance_status'] ==
@@ -560,7 +558,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                             Text(
                                               "Status",
                                               style: TextStyle(
-                                                fontSize: ratio * 6,
+                                                fontSize: ratio * 5,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -593,7 +591,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                             Text(
                                               "More Info.",
                                               style: TextStyle(
-                                                fontSize: ratio * 6,
+                                                fontSize: ratio * 5,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),

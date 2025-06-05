@@ -85,6 +85,9 @@ class _EmpHomeState extends State<EmpHome> {
   String? Break2;
   String? Break3;
   String? Status;
+  String? totalDays;
+  int? totalPresent;
+  int? totalAbsent;
   List<dynamic> statusData = [];
 
   Future<String?> getDeviceId() async {
@@ -148,6 +151,9 @@ class _EmpHomeState extends State<EmpHome> {
         var break1 = data[0]['break1'] ?? '';
         var break2 = data[0]['break2'] ?? '';
         var break3 = data[0]['break3'] ?? '';
+        var totaldays = data[0]['working_count'] ?? '';
+        var totalpresent = data[0]['present_count'] ?? '';
+        var totalabsent = data[0]['absent_count'] ?? '';
         if (statusin != '') {
           setState(() {
             statusData = data;
@@ -159,6 +165,9 @@ class _EmpHomeState extends State<EmpHome> {
             Break1 = break1;
             Break2 = break2;
             Break3 = break3;
+            totalPresent = totalpresent;
+            totalAbsent = totalabsent;
+            totalDays = totaldays;
           });
         } else {
           setState(() {
@@ -203,8 +212,7 @@ class _EmpHomeState extends State<EmpHome> {
           visitStatus = visitPunc;
         });
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   /*   void checkAutoPunchOut() {
@@ -345,8 +353,7 @@ class _EmpHomeState extends State<EmpHome> {
           Alert.alert(context, message);
         }
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   void punchIn() async {
@@ -590,8 +597,7 @@ class _EmpHomeState extends State<EmpHome> {
       });
       // Now fetch the address
       await fetchAndPrintAddress();
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   Future<void> fetchAndPrintAddress() async {
@@ -616,9 +622,8 @@ class _EmpHomeState extends State<EmpHome> {
           CurrentAddress = address;
           isLoading = false;
         });
-      } 
-    } catch (e) {
-    }
+      }
+    } catch (e) {}
   }
 
   void _showSnackBar(String message) {
@@ -836,7 +841,14 @@ class _EmpHomeState extends State<EmpHome> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            IconButton(onPressed: ()=>Alert.alert(context,"Comming Soon..."), icon: Icon(Icons.notifications,size: ratio*15,color: Colors.white,)),
+            IconButton(
+              onPressed: () => Alert.alert(context, "Comming Soon..."),
+              icon: Icon(
+                Icons.notifications,
+                size: ratio * 15,
+                color: Colors.white,
+              ),
+            ),
             GestureDetector(
               onTapDown: _openDropdown,
               child: Container(
@@ -852,7 +864,7 @@ class _EmpHomeState extends State<EmpHome> {
                           ? Image.network(
                             'https://testapi.rabadtechnology.com/$userImg',
                             width: ratio * 18,
-                            height:  ratio * 18,
+                            height: ratio * 18,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               // If image fails to load (e.g. 404), show default icon
@@ -883,7 +895,7 @@ class _EmpHomeState extends State<EmpHome> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: ratio*85,
+                    height: ratio * 85,
                     decoration: BoxDecoration(color: Color(0xFF03a9f4)),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -1178,7 +1190,7 @@ class _EmpHomeState extends State<EmpHome> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:ratio*25,
+                      radius: ratio * 25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here
@@ -1296,7 +1308,6 @@ class _EmpHomeState extends State<EmpHome> {
                                         ),
                                       ],
                                     ),
-                                    SizedBox(height: 10),
                                     Container(
                                       child: Column(
                                         mainAxisAlignment:
@@ -1391,9 +1402,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                   child:
                                                       drop
                                                           ? Container(
-                                                            height:
-                                                                ratio *
-                                                                27,
+                                                            height: ratio * 27,
                                                             child: Row(
                                                               mainAxisAlignment:
                                                                   MainAxisAlignment
@@ -1412,14 +1421,20 @@ class _EmpHomeState extends State<EmpHome> {
                                                                       Text(
                                                                         "View",
                                                                         style: TextStyle(
-                                                                          fontSize: ratio*6,
+                                                                          fontSize:
+                                                                              ratio *
+                                                                              6,
                                                                           color:
                                                                               Colors.black,
                                                                         ),
                                                                       ),
                                                                       Container(
-                                                                        width: ratio*14,
-                                                                        height: ratio*14,
+                                                                        width:
+                                                                            ratio *
+                                                                            14,
+                                                                        height:
+                                                                            ratio *
+                                                                            14,
                                                                         child: IconButton(
                                                                           padding:
                                                                               EdgeInsets.zero,
@@ -1448,7 +1463,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                 Expanded(
                                                                   flex: 1,
                                                                   child: Column(
-                                                                     mainAxisAlignment:
+                                                                    mainAxisAlignment:
                                                                         MainAxisAlignment
                                                                             .center,
                                                                     crossAxisAlignment:
@@ -1458,12 +1473,18 @@ class _EmpHomeState extends State<EmpHome> {
                                                                       Text(
                                                                         "Attendance",
                                                                         style: TextStyle(
-                                                                          fontSize: ratio*6,
+                                                                          fontSize:
+                                                                              ratio *
+                                                                              6,
                                                                           color:
                                                                               Colors.black,
                                                                         ),
                                                                       ),
-                                                                      SizedBox(height: ratio*3,),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            ratio *
+                                                                            3,
+                                                                      ),
                                                                       (Mainstatus !=
                                                                               "")
                                                                           ? Container(
@@ -1479,7 +1500,9 @@ class _EmpHomeState extends State<EmpHome> {
                                                                               child: Text(
                                                                                 PSatatus,
                                                                                 style: TextStyle(
-                                                                                  fontSize: ratio*6,
+                                                                                  fontSize:
+                                                                                      ratio *
+                                                                                      6,
                                                                                   color:
                                                                                       Colors.white,
                                                                                 ),
@@ -1495,7 +1518,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                 Expanded(
                                                                   flex: 1,
                                                                   child: Column(
-                                                                     mainAxisAlignment:
+                                                                    mainAxisAlignment:
                                                                         MainAxisAlignment
                                                                             .center,
                                                                     crossAxisAlignment:
@@ -1505,12 +1528,18 @@ class _EmpHomeState extends State<EmpHome> {
                                                                       Text(
                                                                         "Work Start",
                                                                         style: TextStyle(
-                                                                          fontSize: ratio*6,
+                                                                          fontSize:
+                                                                              ratio *
+                                                                              6,
                                                                           color:
                                                                               Colors.black,
                                                                         ),
                                                                       ),
-                                                                      SizedBox(height: ratio*3,),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            ratio *
+                                                                            3,
+                                                                      ),
                                                                       (punchIntime !=
                                                                               '')
                                                                           ? Container(
@@ -1526,7 +1555,9 @@ class _EmpHomeState extends State<EmpHome> {
                                                                               child: Text(
                                                                                 punchIntime,
                                                                                 style: TextStyle(
-                                                                                  fontSize: ratio*6,
+                                                                                  fontSize:
+                                                                                      ratio *
+                                                                                      6,
                                                                                   color:
                                                                                       Colors.black,
                                                                                 ),
@@ -1542,7 +1573,7 @@ class _EmpHomeState extends State<EmpHome> {
                                                                 Expanded(
                                                                   flex: 1,
                                                                   child: Column(
-                                                                     mainAxisAlignment:
+                                                                    mainAxisAlignment:
                                                                         MainAxisAlignment
                                                                             .center,
                                                                     crossAxisAlignment:
@@ -1552,12 +1583,18 @@ class _EmpHomeState extends State<EmpHome> {
                                                                       Text(
                                                                         "Work End",
                                                                         style: TextStyle(
-                                                                          fontSize: ratio*6,
+                                                                          fontSize:
+                                                                              ratio *
+                                                                              6,
                                                                           color:
                                                                               Colors.black,
                                                                         ),
                                                                       ),
-                                                                      SizedBox(height: ratio*3,),
+                                                                      SizedBox(
+                                                                        height:
+                                                                            ratio *
+                                                                            3,
+                                                                      ),
                                                                       (punchOuttime !=
                                                                               '')
                                                                           ? Container(
@@ -1573,7 +1610,9 @@ class _EmpHomeState extends State<EmpHome> {
                                                                               child: Text(
                                                                                 punchOuttime,
                                                                                 style: TextStyle(
-                                                                                  fontSize: ratio*6,
+                                                                                  fontSize:
+                                                                                      ratio *
+                                                                                      6,
                                                                                   color:
                                                                                       Colors.black,
                                                                                 ),
@@ -1597,7 +1636,6 @@ class _EmpHomeState extends State<EmpHome> {
                                         ],
                                       ),
                                     ),
-                                    SizedBox(height: 5),
                                   ],
                                 ),
                               ),
@@ -1605,12 +1643,152 @@ class _EmpHomeState extends State<EmpHome> {
                           ),
                         ],
                       ),
+                      SizedBox(height: ratio * 3),
+                      Container(
+                        width: deviceWidth * 0.9,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Total Present Box
+                            Container(
+                              width: deviceWidth * 0.27,
+                              padding: EdgeInsets.symmetric(
+                                vertical: ratio * 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(ratio * 4),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.blue.withOpacity(0.2),
+                                    blurRadius: 8,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Present',
+                                    style: TextStyle(
+                                      fontSize: ratio * 4.8,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SizedBox(height: ratio * 1.5),
+                                  CircleAvatar(
+                                    radius: ratio * 6.5,
+                                    backgroundColor: Colors.blue,
+                                    child: Text(
+                                      "$totalPresent",
+                                      style: TextStyle(
+                                        fontSize: ratio * 5,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Total Absent Box
+                            Container(
+                              width: deviceWidth * 0.27,
+                              padding: EdgeInsets.symmetric(
+                                vertical: ratio * 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(ratio * 4),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.red.withOpacity(0.2),
+                                    blurRadius: 8,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Absent',
+                                    style: TextStyle(
+                                      fontSize: ratio * 4.8,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SizedBox(height: ratio * 1.5),
+                                  CircleAvatar(
+                                    radius: ratio * 6.5,
+                                    backgroundColor: Colors.red,
+                                    child: Text(
+                                      "$totalAbsent",
+                                      style: TextStyle(
+                                        fontSize: ratio * 5,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // Total Days Box
+                            Container(
+                              width: deviceWidth * 0.27,
+                              padding: EdgeInsets.symmetric(
+                                vertical: ratio * 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(ratio * 4),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.green.withOpacity(0.2),
+                                    blurRadius: 8,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Total Days',
+                                    style: TextStyle(
+                                      fontSize: ratio * 4.8,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  SizedBox(height: ratio * 1.5),
+                                  CircleAvatar(
+                                    radius: ratio * 6.5,
+                                    backgroundColor: Colors.green,
+                                    child: Text(
+                                      "$totalDays",
+                                      style: TextStyle(
+                                        fontSize: ratio * 5,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       Container(
                         //stop
-                        padding: EdgeInsets.all(10),
+                        padding: EdgeInsets.only(top: ratio * 5, bottom: 0),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(
-                            10,
+                            ratio * 10,
                           ), // Optional: Adds rounded corners
                         ),
                         width: deviceWidth * 0.9,
@@ -1804,9 +1982,9 @@ class _EmpHomeState extends State<EmpHome> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: ratio * 2),
                       Container(
-                        padding: EdgeInsets.all(10),
+                        padding: EdgeInsets.only(top: ratio * 5, bottom: 0),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(
                             10,
@@ -2176,7 +2354,7 @@ class _EmpHomeState extends State<EmpHome> {
 
                       SizedBox(height: 10),
                       Container(
-                        padding: EdgeInsets.all(10),
+                        padding: EdgeInsets.only(top: ratio * 5, bottom: 0),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(
                             10,

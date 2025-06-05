@@ -462,9 +462,9 @@ class EmployeelistState extends State<Employeelist> {
                   final item = EmpDetail[index];
                   return Container(
                     margin: EdgeInsets.only(
-                      top: ratio * 2,
-                      left: ratio * 3,
-                      right: ratio * 3,
+                      top: ratio * 3,
+                      left: ratio * 6,
+                      right: ratio * 6,
                     ),
                     padding: EdgeInsets.all(ratio * 1),
                     decoration: BoxDecoration(
@@ -510,7 +510,7 @@ class EmployeelistState extends State<Employeelist> {
                                         ? '${(item['name'] ?? '').toString().substring(0, 10)}...'
                                         : (item['name'] ?? '').toString(),
                                     style: TextStyle(
-                                      fontSize: ratio * 7,
+                                      fontSize: ratio * 6,
                                       fontWeight: FontWeight.w600,
                                     ),
                                     overflow: TextOverflow.ellipsis,
@@ -518,61 +518,56 @@ class EmployeelistState extends State<Employeelist> {
                                 ],
                               ),
                             ),
-                            SizedBox(
-                              width:
-                                  6 * MediaQuery.of(context).devicePixelRatio,
-                            ),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Salary:-",
+                                    "Salary",
                                     style: TextStyle(
-                                      fontSize: ratio * 7,
+                                      fontSize: ratio * 6,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
                                     (item['salary'] ?? 0).toString(),
                                     style: TextStyle(
-                                      fontSize: ratio * 7,
+                                      fontSize: ratio * 6,
                                       color: Colors.black,
                                     ),
                                   ),
                                   SizedBox(height: 5),
                                   Text(
-                                    "Designation:-",
+                                    "Designation",
                                     style: TextStyle(
-                                      fontSize: ratio * 7,
+                                      fontSize: ratio * 6,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
                                     item['designation'] ?? '',
                                     style: TextStyle(
-                                      fontSize: ratio * 7,
+                                      fontSize: ratio * 6,
                                       color: Colors.black,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            SizedBox(width: ratio * 8),
                             Expanded(
                               child: Column(
                                 children: [
                                   Text(
-                                    "Mobile No.:-",
+                                    "Mobile No.",
                                     style: TextStyle(
-                                      fontSize: ratio * 7,
+                                      fontSize: ratio * 6,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
                                     (item['mobile_no'] ?? '').toString(),
                                     style: TextStyle(
-                                      fontSize: ratio * 7,
+                                      fontSize: ratio * 6,
                                       color: Colors.black,
                                     ),
                                   ),
@@ -580,7 +575,7 @@ class EmployeelistState extends State<Employeelist> {
                                   Text(
                                     "Working Hour:- ${item['hours'] ?? ''}",
                                     style: TextStyle(
-                                      fontSize: ratio * 7,
+                                      fontSize: ratio * 5,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
