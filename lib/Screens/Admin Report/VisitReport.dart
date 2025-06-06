@@ -1,6 +1,6 @@
 import 'package:employee_tracker/Screens/Admin Report/VisitRepMap.dart';
+import 'package:employee_tracker/Screens/Admin%20Report/MainVisit.dart';
 import 'package:flutter/material.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:localstorage/localstorage.dart';
@@ -8,7 +8,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
 import 'package:employee_tracker/Screens/image FullScreen/fullScreenImage.dart';
-import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
@@ -112,14 +111,14 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     }
   }
 
-  Future<void> _pickMonth(BuildContext context) async {
+  /*  Future<void> _pickMonth(BuildContext context) async {
     DateTime? selected = await showMonthPicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
 
-      /*  builder: (BuildContext context, Widget? child) {
+      builder: (BuildContext context, Widget? child) {
   return Theme(
     data: Theme.of(context).copyWith(
       dialogTheme: DialogTheme(
@@ -132,7 +131,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
       child: child!,
     ),
   );
-}, */
+}, 
     );
 
     if (selected != null) {
@@ -143,7 +142,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
       VisitDetail();
     }
   }
-
+*/
   double safeParseDouble(String input) {
     try {
       return double.parse(input.replaceAll('"', '').replaceAll("'", '').trim());
@@ -409,17 +408,17 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                     ),
                   ],
                 ),
-                SizedBox(width: deviceWidth * 0.01),
+                 /*SizedBox(width: deviceWidth * 0.01),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                   Text(
                       "Month",
                       style: TextStyle(
                         fontSize: ratio * 7,
                         color: Colors.white,
                       ),
-                    ),
+                    ), 
                     SizedBox(width: 3),
                     IconButton(
                       icon: Icon(
@@ -429,9 +428,9 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                       ),
                       onPressed: () => _pickMonth(context),
                       tooltip: "Pick Month",
-                    ),
+                    ), 
                   ],
-                ),
+                ),*/
               ],
             ),
           ),
@@ -483,7 +482,6 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                       EmpVisitDetail.add(visit);
                     }
                   }
-
                   return SingleChildScrollView(
                     child: Padding(
                       padding: EdgeInsets.all(ratio * 1),
@@ -565,7 +563,13 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                 ElevatedButton(
                                   onPressed: () {
                                     if (visits.isNotEmpty) {
-                                      showDetail(context, EmpVisitDetail);
+                                       Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) => Mainvisit(data),
+                                            ),
+                                          ); 
                                     } else {
                                       ScaffoldMessenger.of(
                                         context,

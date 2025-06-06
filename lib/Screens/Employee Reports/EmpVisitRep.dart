@@ -112,14 +112,6 @@ class EmpvisitrepState extends State<Empvisitrep> {
       final responseData = jsonDecode(response.body);
       if (responseData['success'] == true) {
         var id = responseData['data'][0];
-
-        // var punchin_loc = id['data']['punchin_loc'];
-        // var punchout_loc = id['data']['punchout_loc'];
-        print("Hanuman$id['data']['data']");
-        // print("Hanuman$punchout_loc");
-        // print("Hanuman$punchin_loc");
-        print("*******************");
-        print(id['punchin_loc']);
         setState(() {
           isLoading = false;
           attendanceData = List<Map<String, dynamic>>.from(
@@ -127,8 +119,6 @@ class EmpvisitrepState extends State<Empvisitrep> {
           );
           LocData = List<Map<String, dynamic>>.from(responseData['data']);
         });
-        print("object");
-        print(LocData);
       } else {
         setState(() {
           isLoading = false;
@@ -410,108 +400,6 @@ class EmpvisitrepState extends State<Empvisitrep> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 5),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("You Can See :-"),
-                          SizedBox(width: ratio * 7),
-                          ElevatedButton(
-                            onPressed: () {
-                              List<LatLng> allPoints = [];
-
-                              // 1. Add punch-in location (format: "lat_lng")
-                              if (item['punchin_loc'] != null) {
-                                final punchInParts = item['punchin_loc']
-                                    .toString()
-                                    .split('_');
-                                if (punchInParts.length == 2) {
-                                  allPoints.add(
-                                    LatLng(
-                                      safeParseDouble(punchInParts[0]),
-                                      safeParseDouble(punchInParts[1]),
-                                    ),
-                                  );
-                                }
-                              }
-
-                              // 2. Add all start_Location values from visits
-                              for (var visit in visits) {
-                                final startCoord =
-                                    visit['start_Location']?.split(',') ?? [];
-
-                                if (startCoord.length == 2) {
-                                  allPoints.add(
-                                    LatLng(
-                                      safeParseDouble(startCoord[0]),
-                                      safeParseDouble(startCoord[1]),
-                                    ),
-                                  );
-                                }
-                              }
-
-                              // 3. Add punch-out location (format: "lat_lng")
-                              if (item['punchout_loc'] != null) {
-                                final punchOutParts = item['punchout_loc']
-                                    .toString()
-                                    .split('_');
-                                if (punchOutParts.length == 2) {
-                                  allPoints.add(
-                                    LatLng(
-                                      safeParseDouble(punchOutParts[0]),
-                                      safeParseDouble(punchOutParts[1]),
-                                    ),
-                                  );
-                                }
-                              }
-
-                              // Navigate to map screen if valid points exist
-                              if (allPoints.isNotEmpty) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) =>
-                                            SimpleMapScreen(points: allPoints),
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'No valid location data available',
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF03a9f4),
-                              foregroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: deviceWidth * 0.06,
-                                vertical: 10,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                  deviceWidth * 0.07,
-                                ),
-                              ),
-                              elevation: 4,
-                            ),
-
-                            child: Text(
-                              "All Visits",
-                              style: TextStyle(
-                                fontSize:
-                                    ratio * 7, // Adjust font size if necessary
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 5),
                       ...visits.map((visit) {
                         return Card(
                           color: const Color.fromARGB(255, 247, 239, 230),
