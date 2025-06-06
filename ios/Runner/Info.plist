@@ -3,6 +3,9 @@
 <plist version="1.0">
 <dict>
     <!-- Location Usage (Required for live tracking) -->
+    <key>NSCameraUsageDescription</key>
+<string>This app needs camera access to scan barcodes.</string>
+
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>This app requires your location while using the app for live tracking.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

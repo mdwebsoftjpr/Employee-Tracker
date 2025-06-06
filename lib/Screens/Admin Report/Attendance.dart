@@ -26,6 +26,10 @@ class Attendance extends StatefulWidget {
   AttendanceState createState() => AttendanceState();
 }
 
+enum AttendanceFilter { total, present, absent }
+
+AttendanceFilter _currentFilter = AttendanceFilter.present;
+
 class AttendanceState extends State<Attendance> {
   String name = "key_person";
   String comName = 'Company';
@@ -33,6 +37,14 @@ class AttendanceState extends State<Attendance> {
   List<Map<String, dynamic>> attendanceData = [];
   bool isLoading = true;
   String day = '';
+  String formatDate(String inputDate) {
+    DateTime date = DateTime.parse(inputDate);
+    String formatted =
+        "${date.day.toString().padLeft(2, '0')}-"
+        "${date.month.toString().padLeft(2, '0')}-"
+        "${date.year}";
+    return formatted;
+  }
 
   @override
   void initState() {
@@ -62,7 +74,10 @@ class AttendanceState extends State<Attendance> {
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/allemployeeattendence.php',
     );
-    final Map<String, dynamic> requestBody = {"company_id": comId,"currentDate":day};
+    final Map<String, dynamic> requestBody = {
+      "company_id": comId,
+      "currentDate": day,
+    };
     print(day);
     try {
       final response = await http.post(
@@ -87,6 +102,22 @@ class AttendanceState extends State<Attendance> {
     } catch (e) {
       if (mounted) setState(() => isLoading = false);
       Alert.alert(context, 'Error: ${e.toString()}');
+    }
+  }
+
+  List<Map<String, dynamic>> getFilteredAttendance() {
+    switch (_currentFilter) {
+      case AttendanceFilter.present:
+        return attendanceData
+            .where((item) => item['attendance_status']?.toLowerCase() == 'p')
+            .toList();
+      case AttendanceFilter.absent:
+        return attendanceData
+            .where((item) => item['attendance_status']?.toLowerCase() == 'a')
+            .toList();
+      case AttendanceFilter.total:
+      default:
+        return attendanceData;
     }
   }
 
@@ -124,19 +155,10 @@ class AttendanceState extends State<Attendance> {
 
                   // Name
                   _infoRow('Name', item['empname'], ratio),
-                  _infoRow('Time In', item['time_in'], ratio),
-                  _infoRow('Time Out', item['time_out'], ratio),
-                  _infoRow('Address In', item['address'], ratio, maxLines: 2),
-                  _infoRow(
-                    'Address Out',
-                    item['address_out'],
-                    ratio,
-                    maxLines: 2,
-                  ),
-                  _infoRow('Working Hours', item['hours'].toString(), ratio),
-                  Divider(height: ratio * 4, color: Colors.grey.shade400),
-
-                  // Breaks
+                  _infoRow('Punch In', item['time_in'], ratio),
+                  _infoRow('Punch Out', item['time_out'], ratio),
+                  _infoRow('Total Hours', item['hours'].toString(), ratio),
+                  _infoRow('Total Break Time', item['breakhour'], ratio),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -145,9 +167,21 @@ class AttendanceState extends State<Attendance> {
                       _breakInfo('Break 3', item['break3hour'], ratio),
                     ],
                   ),
+                  _infoRow(
+                    'Working Hours',
+                    "${item['total_working_hours'] ?? ''}".toString(),
+                    ratio,
+                  ),
+                  Divider(height: ratio * 4, color: Colors.grey.shade400),
+                  _infoRow('Address In', item['address'], ratio, maxLines: 2),
+                  _infoRow(
+                    'Address Out',
+                    item['address_out'],
+                    ratio,
+                    maxLines: 2,
+                  ),
 
                   SizedBox(height: ratio * 2),
-                  _infoRow('Total Break Time', item['breakhour'], ratio),
 
                   SizedBox(height: ratio * 3),
                   Divider(),
@@ -211,7 +245,7 @@ class AttendanceState extends State<Attendance> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: 4,
+            flex: 5,
             child: Text(
               '$label:',
               style: TextStyle(
@@ -222,7 +256,7 @@ class AttendanceState extends State<Attendance> {
             ),
           ),
           Expanded(
-            flex: 6,
+            flex: 5,
             child: Text(
               value?.toString() ?? '',
               maxLines: maxLines,
@@ -319,9 +353,7 @@ class AttendanceState extends State<Attendance> {
 
     if (pickedDate != null) {
       setState(() {
-        day = DateFormat(
-          'yyyy-MM-dd',
-        ).format(pickedDate); 
+        day = DateFormat('yyyy-MM-dd').format(pickedDate);
         print(day);
         isLoading = true;
       });
@@ -331,25 +363,45 @@ class AttendanceState extends State<Attendance> {
     }
   }
 
-  Widget _buildSummaryTile(String label, String count, Color color,double ratio) {
-    return Column(
-      children: [
-        Text(
-          count,
-          style: TextStyle(
-            fontSize: ratio*8,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+  Widget _buildSummaryTile(
+    Widget label,
+    String count,
+    Color color,
+    double ratio,
+    VoidCallback onTap,
+    Color bgc,
+    bool selected,
+  ) {
+    return TextButton(
+      onPressed: onTap,
+      style: TextButton.styleFrom(
+        padding: EdgeInsets.symmetric(
+          vertical: ratio * 1,
+          horizontal: ratio * 1,
         ),
-        SizedBox(height: ratio*3),
-        Text(label, style: TextStyle(fontSize: ratio*7, color: Colors.grey[800])),
-      ],
+        backgroundColor: selected ? bgc : Colors.transparent,
+      ),
+      child: Column(
+        children: [
+          Text(
+            count,
+            style: TextStyle(
+              fontSize: ratio * 6,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          SizedBox(height: ratio * 3),
+          label,
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final filteredData = getFilteredAttendance();
+
     int totalPresent =
         attendanceData
             .where((item) => item['attendance_status']?.toLowerCase() == 'p')
@@ -379,17 +431,6 @@ class AttendanceState extends State<Attendance> {
             color: Colors.white,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.date_range,
-              color: Colors.white,
-              size: deviceWidth * 0.09,
-            ),
-            onPressed: _pickDate,
-            tooltip: "Pick Month",
-          ),
-        ],
       ),
       body:
           isLoading
@@ -422,9 +463,9 @@ class AttendanceState extends State<Attendance> {
                   children: [
                     Padding(
                       padding: EdgeInsets.symmetric(
-                            vertical: ratio*3,
-                            horizontal: ratio*5,
-                          ),
+                        vertical: ratio * 3,
+                        horizontal: ratio * 5,
+                      ),
                       child: Card(
                         elevation: 4,
                         shape: RoundedRectangleBorder(
@@ -432,27 +473,85 @@ class AttendanceState extends State<Attendance> {
                         ),
                         child: Padding(
                           padding: EdgeInsets.symmetric(
-                            vertical: ratio*5,
-                            horizontal: ratio*2,
+                            vertical: ratio * 5,
+                            horizontal: ratio * 2,
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               _buildSummaryTile(
-                                "Total Present",
+                                Text(
+                                  "Present",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: ratio * 6,
+                                  ),
+                                ),
                                 "$totalPresent",
                                 Colors.green,
-                                ratio
+                                ratio,
+                                () {
+                                  setState(() {
+                                    _currentFilter = AttendanceFilter.present;
+                                  });
+                                },
+                                Colors.white,
+                                _currentFilter == AttendanceFilter.present,
                               ),
                               _buildSummaryTile(
-                                "Total Absent",
+                                Text(
+                                  "Absent",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: ratio * 6,
+                                  ),
+                                ),
                                 "$totalAbsent",
-                                Colors.red,ratio
+                                Colors.red,
+                                ratio,
+                                () {
+                                  setState(() {
+                                    _currentFilter = AttendanceFilter.absent;
+                                  });
+                                },
+                                Colors.white,
+                                _currentFilter ==
+                                    AttendanceFilter
+                                        .absent, // ✅ Correct: compares value
                               ),
                               _buildSummaryTile(
-                                "Employees",
+                                Text(
+                                  "Employee",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: ratio * 6,
+                                  ),
+                                ),
                                 "${attendanceData.length}",
-                                Colors.blue,ratio
+                                Colors.blue,
+                                ratio,
+                                () {
+                                  setState(() {
+                                    _currentFilter = AttendanceFilter.total;
+                                  });
+                                },
+                                Colors.white,
+                                _currentFilter ==
+                                    AttendanceFilter
+                                        .total, // ✅ Correct: compares value
+                              ),
+                              _buildSummaryTile(
+                                Icon(
+                                  Icons.date_range,
+                                  color: Colors.black,
+                                  size: ratio * 7,
+                                ), // ✅ Corrected
+                                formatDate(day), // e.g., "03-06-2025"
+                                Colors.blue,
+                                ratio,
+                                _pickDate,
+                                Colors.white,
+                                false, // assuming this indicates selection or active state
                               ),
                             ],
                           ),
@@ -461,9 +560,9 @@ class AttendanceState extends State<Attendance> {
                     ),
                     Expanded(
                       child: ListView.builder(
-                        itemCount: attendanceData.length,
+                        itemCount: filteredData.length,
                         itemBuilder: (context, index) {
-                          final item = attendanceData[index];
+                          final item = filteredData[index];
                           final imageUrl =
                               (item['image'] != null &&
                                       item['image']
@@ -506,7 +605,29 @@ class AttendanceState extends State<Attendance> {
                                     Container(
                                       child: Row(
                                         children: [
-                                          SizedBox(width: ratio * 10),
+                                          SizedBox(width: ratio * 1),
+                                          Container(
+                                            margin: EdgeInsets.all(ratio * 2),
+                                            width: ratio * 12,
+                                            height: ratio * 12,
+
+                                            decoration: BoxDecoration(
+                                              color: Color(0xFF03a9f4),
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    ratio * 6,
+                                                  ),
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                '${(index + 1).toString().padLeft(2, '0')}',
+                                                style: TextStyle(
+                                                  fontSize: ratio * 5,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                           Container(
                                             clipBehavior: Clip.antiAlias,
                                             width: ratio * 27,
@@ -524,7 +645,7 @@ class AttendanceState extends State<Attendance> {
                                           ),
                                           SizedBox(width: ratio * 5),
                                           Container(
-                                            width: deviceWidth * .62,
+                                            width: deviceWidth * .57,
                                             child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment
@@ -540,12 +661,6 @@ class AttendanceState extends State<Attendance> {
                                                         fontSize: ratio * 5,
                                                         fontWeight:
                                                             FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      ('Full Time'),
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 5,
                                                       ),
                                                     ),
                                                   ],
@@ -593,14 +708,6 @@ class AttendanceState extends State<Attendance> {
                                                             ),
                                                           ),
                                                         ),
-                                                        Text(
-                                                          'Status',
-                                                          style: TextStyle(
-                                                            fontSize: ratio * 5,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
-                                                        ),
                                                       ],
                                                     ),
                                                     Column(
@@ -624,15 +731,6 @@ class AttendanceState extends State<Attendance> {
                                                             FontAwesomeIcons
                                                                 .circleInfo,
                                                             size: ratio * 11,
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          "More info",
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontSize:
-                                                                ratio * 4.5,
                                                           ),
                                                         ),
                                                       ],
@@ -666,38 +764,7 @@ class AttendanceState extends State<Attendance> {
                                           Column(
                                             children: [
                                               Text(
-                                                "S.r.No.",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: ratio * 5,
-                                                ),
-                                              ),
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                  vertical: ratio * 1,
-                                                  horizontal: ratio * 3,
-                                                ),
-                                                decoration: BoxDecoration(
-                                                  color: Color(0xFF03a9f4),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                        ratio * 5,
-                                                      ),
-                                                ),
-                                                child: Text(
-                                                  '${index + 1}',
-                                                  style: TextStyle(
-                                                    fontSize: ratio * 5,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Column(
-                                            children: [
-                                              Text(
-                                                "Time in",
+                                                "Punch in",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: ratio * 5,
@@ -714,7 +781,7 @@ class AttendanceState extends State<Attendance> {
                                           Column(
                                             children: [
                                               Text(
-                                                "Time Out",
+                                                "Punch Out",
                                                 style: TextStyle(
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: ratio * 5,
@@ -756,6 +823,23 @@ class AttendanceState extends State<Attendance> {
                                               ),
                                               Text(
                                                 "${item['breakhour'] ?? ''}",
+                                                style: TextStyle(
+                                                  fontSize: ratio * 5,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            children: [
+                                              Text(
+                                                "Working Hours",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: ratio * 5,
+                                                ),
+                                              ),
+                                              Text(
+                                                "${item['total_working_hours'] ?? ''}",
                                                 style: TextStyle(
                                                   fontSize: ratio * 5,
                                                 ),

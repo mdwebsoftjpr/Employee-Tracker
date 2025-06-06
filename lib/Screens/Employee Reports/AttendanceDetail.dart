@@ -134,7 +134,11 @@ class AttendanceDetailState extends State<AttendanceDetail> {
     }
   }
 
-  Future<void> more(Map<String, dynamic> item, double ratio,String image) async {
+  Future<void> more(
+    Map<String, dynamic> item,
+    double ratio,
+    String image,
+  ) async {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -165,19 +169,13 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                   ),
                   SizedBox(height: ratio * 3),
 
-                  _infoRow('Time In', item['time_in'], ratio),
-                  _infoRow('Time Out', item['time_out'], ratio),
-                  _infoRow('Address In', item['address'], ratio, maxLines: 2),
-                  _infoRow(
-                    'Address Out',
-                    item['address_out'],
-                    ratio,
-                    maxLines: 2,
-                  ),
-                  _infoRow('Working Hours', item['hours'].toString(), ratio),
-                  Divider(height: ratio * 4, color: Colors.grey.shade400),
+                  _infoRow('Punch In', item['time_in'], ratio),
+                  _infoRow('Punch Out', item['time_out'], ratio),
+                  _infoRow('Total Hours', item['hours'].toString(), ratio),
+                
+                  SizedBox(height: ratio * 2),
+                  _infoRow('Total Break Time', item['breakhour'], ratio),
 
-                  // Breaks
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -186,10 +184,20 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                       _breakInfo('Break 3', item['break3hour'], ratio),
                     ],
                   ),
-
-                  SizedBox(height: ratio * 2),
-                  _infoRow('Total Break Time', item['breakhour'], ratio),
-
+                  _infoRow(
+                    'Working Hours',
+                    item['total_working_hours'].toString(),
+                    ratio,
+                  ),
+                  
+                  Divider(height: ratio * 4, color: Colors.grey.shade400),
+                  _infoRow('Address In', item['address'], ratio, maxLines: 2),
+                  _infoRow(
+                    'Address Out',
+                    item['address_out'],
+                    ratio,
+                    maxLines: 2,
+                  ),
                   SizedBox(height: ratio * 3),
                   Divider(),
                   Row(
@@ -225,7 +233,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF03a9f4),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(ratio*10),
+                  borderRadius: BorderRadius.circular(ratio * 10),
                 ),
                 padding: EdgeInsets.symmetric(
                   horizontal: ratio * 2,
@@ -252,7 +260,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: 4,
+            flex: 5,
             child: Text(
               '$label:',
               style: TextStyle(
@@ -263,7 +271,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
             ),
           ),
           Expanded(
-            flex: 6,
+            flex: 5,
             child: Text(
               value?.toString() ?? '',
               maxLines: maxLines,
@@ -543,7 +551,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                 Column(
                                                   children: [
                                                     Text(
-                                                      "S.r.no.",
+                                                      "Sr. No.",
                                                       style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -551,29 +559,53 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                       ),
                                                     ),
                                                     Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                    vertical:
-                                                       ratio *1,
-                                                    horizontal:
-                                                        ratio *3,
-                                                  ),
-                                                  decoration: BoxDecoration(
-                                                    color:
-                                                        Color(0xFF03a9f4),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          ratio * 5,
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            vertical: ratio * 1,
+                                                            horizontal:
+                                                                ratio * 3,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color: Color(
+                                                          0xFF03a9f4,
                                                         ),
-                                                  ),
-                                                  child: Text(
-                                                      '${index + 1}',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 5,color: Colors.white
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              ratio * 5,
+                                                            ),
+                                                      ),
+                                                      child: Text(
+                                                        '${index + 1}',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 5,
+                                                          color: Colors.white,
+                                                        ),
                                                       ),
                                                     ),
-                                                ),
                                                   ],
                                                 ),
+                                                Text(
+                                                  "Punch In",
+                                                  style: TextStyle(
+                                                    fontSize: ratio * 6,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  '${data['time_in'] ?? ''}',
+                                                  style: TextStyle(
+                                                    fontSize: ratio * 6,
+                                                  ),
+                                                ),
+                                                
+                                              ],
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
                                                 Text(
                                                   "Date",
                                                   style: TextStyle(
@@ -588,27 +620,6 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                           .reversed
                                                           .join('-')
                                                       : '',
-                                                  style: TextStyle(
-                                                    fontSize: ratio * 6,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "Punch In",
-                                                  style: TextStyle(
-                                                    fontSize: ratio * 6,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  '${data['time_in'] ?? ''}',
                                                   style: TextStyle(
                                                     fontSize: ratio * 6,
                                                   ),
@@ -636,10 +647,8 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                               children: [
                                                 Container(
                                                   padding: EdgeInsets.symmetric(
-                                                    vertical:
-                                                        ratio * 1.3,
-                                                    horizontal:
-                                                        ratio*3,
+                                                    vertical: ratio * 1.3,
+                                                    horizontal: ratio * 3,
                                                   ),
                                                   decoration: BoxDecoration(
                                                     color:
@@ -651,7 +660,7 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                             : Colors.redAccent,
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                          ratio*6,
+                                                          ratio * 6,
                                                         ),
                                                   ),
                                                   child: Text(
@@ -696,10 +705,10 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                             child: Column(
                                               children: [
                                                 IconButton(
-                                                  padding:
-                                                      EdgeInsets
-                                                          .zero,
-                                                  constraints: BoxConstraints(minHeight: 0),
+                                                  padding: EdgeInsets.zero,
+                                                  constraints: BoxConstraints(
+                                                    minHeight: 0,
+                                                  ),
                                                   onPressed:
                                                       () =>
                                                           (data['attendance_status'] ==
@@ -708,7 +717,8 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                                       'P')
                                                               ? more(
                                                                 data,
-                                                                ratio,imageUrl
+                                                                ratio,
+                                                                imageUrl,
                                                               )
                                                               : Alert.alert(
                                                                 context,
@@ -717,13 +727,6 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                   icon: Icon(
                                                     FontAwesomeIcons.circleInfo,
                                                     size: ratio * 12,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  "More Info.",
-                                                  style: TextStyle(
-                                                    fontSize: ratio * 6,
-                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
                                                 Row(
@@ -738,6 +741,24 @@ class AttendanceDetailState extends State<AttendanceDetail> {
                                                     ),
                                                     Text(
                                                       "${data['hours']}",
+                                                      style: TextStyle(
+                                                        fontSize: ratio * 4,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      "working Time:",
+                                                      style: TextStyle(
+                                                        fontSize: ratio * 4,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      "${data['total_working_hours']}",
                                                       style: TextStyle(
                                                         fontSize: ratio * 4,
                                                       ),

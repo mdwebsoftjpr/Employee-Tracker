@@ -946,6 +946,52 @@ class AdminhomeState extends State<AdminHome> {
                         ),
                       ),
                     ),
+                   /*  Expanded(
+                      child: TextButton(
+                        onPressed:
+                            () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ImageMatchWithReference(),
+                              ),
+                            ),
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 2,
+                                blurRadius: 6,
+                                offset: Offset(
+                                  0,
+                                  3,
+                                ), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Emp Scanner",
+                                style: TextStyle(
+                                  fontSize: ratio * 7,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Image.asset(
+                                'assets/images/faceScanner.jpg',
+                                width: deviceWidth * 0.6,
+                                height: deviceWidth * 0.3,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ), */
                   ],
                 ),
               ),

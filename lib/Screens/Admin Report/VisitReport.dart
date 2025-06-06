@@ -1,5 +1,6 @@
 import 'package:employee_tracker/Screens/Admin Report/VisitRepMap.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:localstorage/localstorage.dart';
@@ -73,7 +74,6 @@ class AdminVisitreportState extends State<AdminVisitreport> {
       );
 
       final responseData = jsonDecode(response.body);
-
       if (responseData['success'] == true) {
         setState(() {
           isLoading = false;
@@ -86,7 +86,6 @@ class AdminVisitreportState extends State<AdminVisitreport> {
           isLoading = false;
           attendanceData.clear(); // clears the list in place
         });
-
         Alert.alert(context, responseData['message']);
       }
     } catch (e) {
@@ -153,152 +152,221 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     }
   }
 
-Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
-  double deviceWidth = MediaQuery.of(context).size.width;
-  double deviceHeight = MediaQuery.of(context).size.height;
+  Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
+    double deviceWidth = MediaQuery.of(context).size.width;
+    double deviceHeight = MediaQuery.of(context).size.height;
 
-  // Calculate ratio
-  double ratio = deviceWidth < deviceHeight
-      ? deviceHeight / deviceWidth
-      : deviceWidth / deviceHeight;
+    // Calculate ratio
+    double ratio =
+        deviceWidth < deviceHeight
+            ? deviceHeight / deviceWidth
+            : deviceWidth / deviceHeight;
 
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8 * ratio),
-        ),
-        title: Center(
-          child: Text(
-            "Visit Details",
-            style: TextStyle(
-              fontSize: ratio * 9,
-              fontWeight: FontWeight.bold,
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8 * ratio),
+          ),
+          title: Center(
+            child: Text(
+              "Visit Details",
+              style: TextStyle(
+                fontSize: ratio * 9,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-        content: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: ratio * 200, // Adjust max height if needed
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: visitList.map((visit) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(vertical: ratio * 2,horizontal: ratio*1),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (visit['imagev'] != null)
-                        Center(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8 * ratio),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => FullScreenImageViewer(
-                                      imageUrl: visit['imagev'],
-                                    ),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: ratio * 200, // Adjust max height if needed
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children:
+                    visitList.map((visit) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: ratio * 2,
+                          horizontal: ratio * 1,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (visit['imagev'] != null)
+                              Center(
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                    8 * ratio,
                                   ),
-                                );
-                              },
-                              child: Container(
-                                width: ratio * 40,
-                                height: ratio * 40,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                ),
-                                child: Image.network(
-                                  visit['imagev'],
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Icon(
-                                    Icons.broken_image,
-                                    size: 40 * ratio,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (_) => FullScreenImageViewer(
+                                                imageUrl: visit['imagev'],
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                    child: Container(
+                                      width: ratio * 40,
+                                      height: ratio * 40,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                      ),
+                                      child: Image.network(
+                                        visit['imagev'],
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Icon(
+                                                  Icons.broken_image,
+                                                  size: 40 * ratio,
+                                                ),
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
+                            SizedBox(height: 5 * ratio),
+
+                            /// Custom text fields
+                            buildTextDetail(
+                              "Organization",
+                              visit['NameOfCustomer'],
+                              context,
+                              ratio,
                             ),
-                          ),
+                            buildTextDetail(
+                              "Concerned Person",
+                              visit['concernedperson'],
+                              context,
+                              ratio,
+                            ),
+                            buildTextDetail(
+                              "Mobile No.",
+                              visit['phoneno'],
+                              context,
+                              ratio,
+                            ),
+                            buildTextDetail(
+                              "Date",
+                              visit['date'],
+                              context,
+                              ratio,
+                            ),
+                            buildTextDetail(
+                              "Start Time",
+                              visit['time'],
+                              context,
+                              ratio,
+                            ),
+                            buildTextDetail(
+                              "End Time",
+                              visit['end'],
+                              context,
+                              ratio,
+                            ),
+                            buildTextDetail(
+                              "Transport",
+                              visit['transport'],
+                              context,
+                              ratio,
+                            ),
+                            buildTextDetail(
+                              "Probability",
+                              visit['probablity'],
+                              context,
+                              ratio,
+                            ),
+                            buildTextDetail(
+                              "Prospects",
+                              visit['prospects'],
+                              context,
+                              ratio,
+                            ),
+                            buildTextDetail(
+                              "Address",
+                              visit['address'],
+                              context,
+                              ratio,
+                            ),
+                            buildTextDetail(
+                              "Location Address",
+                              visit['address2'],
+                              context,
+                              ratio,
+                            ),
+
+                            Divider(thickness: 1 * ratio, color: Colors.grey),
+                          ],
                         ),
-                      SizedBox(height: 5 * ratio),
-
-                      /// Custom text fields
-                      buildTextDetail("Organization", visit['NameOfCustomer'], context, ratio),
-                      buildTextDetail("Concerned Person", visit['concernedperson'], context, ratio),
-                      buildTextDetail("Mobile No.", visit['phoneno'], context, ratio),
-                      buildTextDetail("Date", visit['date'], context, ratio),
-                      buildTextDetail("Start Time", visit['time'], context, ratio),
-                      buildTextDetail("End Time", visit['end'], context, ratio),
-                      buildTextDetail("Transport", visit['transport'], context, ratio),
-                      buildTextDetail("Probability", visit['probablity'], context, ratio),
-                      buildTextDetail("Prospects", visit['prospects'], context, ratio),
-                      buildTextDetail("Address", visit['address'], context, ratio),
-                      buildTextDetail("Location Address", visit['address2'], context, ratio),
-
-                      Divider(thickness: 1 * ratio, color: Colors.grey),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ),
-        actions: [
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(
-                    vertical: 5 * ratio, horizontal: 8 * ratio),
-                textStyle: TextStyle(fontSize: 8 * ratio),
+                      );
+                    }).toList(),
               ),
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text("Close"),
             ),
           ),
-        ],
-      );
-    },
-  );
-}
+          actions: [
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(
+                    vertical: 5 * ratio,
+                    horizontal: 8 * ratio,
+                  ),
+                  textStyle: TextStyle(fontSize: 8 * ratio),
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text("Close"),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-
-  Widget buildTextDetail(String label, String value, BuildContext context, double ratio) {
-  return Padding(
-    padding: EdgeInsets.symmetric(vertical: 2 * ratio,horizontal: ratio*1),
-    child: RichText(
-      text: TextSpan(
-        style: TextStyle(color: Colors.black, fontSize: 7 * ratio),
-        children: [
-          TextSpan(
-            text: "$label: ",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          TextSpan(text: value),
-        ],
+  Widget buildTextDetail(
+    String label,
+    String value,
+    BuildContext context,
+    double ratio,
+  ) {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 2 * ratio, horizontal: ratio * 1),
+      child: RichText(
+        text: TextSpan(
+          style: TextStyle(color: Colors.black, fontSize: 7 * ratio),
+          children: [
+            TextSpan(
+              text: "$label: ",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            TextSpan(text: value),
+          ],
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
     var ratio;
-    if(deviceWidth<deviceHeight){
-      ratio=deviceHeight/deviceWidth;
-    }else{
-      ratio=deviceWidth/deviceHeight;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
     }
 
     return Scaffold(
@@ -308,7 +376,7 @@ Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
         title: Text(
           'Visit Report',
           style: TextStyle(
-            fontSize:  ratio*9,
+            fontSize: ratio * 9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -377,7 +445,7 @@ Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:ratio*25,
+                      radius: ratio * 25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here
@@ -392,7 +460,10 @@ Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
               ? Center(
                 child: Text(
                   'Visit Not Found',
-                  style: TextStyle(fontSize: ratio*8, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: ratio * 8,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               )
               : ListView.builder(
@@ -450,7 +521,8 @@ Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
                                   Text(
                                     (data['name'] ?? '').toString().length > 10
                                         ? '${data['name'].toString().substring(0, 10)}...'
-                                        : data['name'].toString(),style: TextStyle(fontSize: ratio*7),
+                                        : data['name'].toString(),
+                                    style: TextStyle(fontSize: ratio * 7),
                                   ),
                                 ],
                               ),
@@ -462,9 +534,7 @@ Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
                                 children: [
                                   Text(
                                     "Total Visit:- ",
-                                    style: TextStyle(
-                                      fontSize: ratio * 6,
-                                    ),
+                                    style: TextStyle(fontSize: ratio * 6),
                                   ),
                                   Container(
                                     padding: EdgeInsets.symmetric(
@@ -513,7 +583,7 @@ Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
                                     foregroundColor: Colors.white,
                                     padding: EdgeInsets.symmetric(
                                       horizontal: deviceWidth * 0.06,
-                                      vertical: deviceHeight*0.006,
+                                      vertical: deviceHeight * 0.006,
                                     ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(
@@ -527,49 +597,69 @@ Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
                                 SizedBox(height: ratio * 2),
                                 IconButton(
                                   onPressed: () {
-                                    if (startLoc.isNotEmpty &&
-                                        endLoc.isNotEmpty) {
+                                    if ((startLoc.isNotEmpty) ||
+                                        data["punchin_loc"] != null ||
+                                        data["punchout_loc"] != null) {
                                       try {
                                         List<LatLng> points = [];
 
-                                        for (
-                                          int i = 0;
-                                          i < startLoc.length;
-                                          i++
-                                        ) {
-                                          final coord =
-                                              startLoc[i]
-                                                  .split(',')
-                                                  .map((e) => e.trim())
-                                                  .toList();
-                                          if (coord.length == 2) {
-                                            points.add(
-                                              LatLng(
-                                                safeParseDouble(coord[0]),
-                                                safeParseDouble(coord[1]),
-                                              ),
-                                            );
-                                          }
+                                        String cleanCoordStr(String input) {
+                                          return input.replaceAll('_', ',');
                                         }
 
-                                        for (
-                                          int i = 0;
-                                          i < endLoc.length;
-                                          i++
-                                        ) {
+                                        LatLng? parseCoord(String coordStr) {
+                                          final coordStrCleaned = cleanCoordStr(
+                                            coordStr,
+                                          );
                                           final coord =
-                                              endLoc[i]
+                                              coordStrCleaned
                                                   .split(',')
                                                   .map((e) => e.trim())
                                                   .toList();
                                           if (coord.length == 2) {
-                                            points.add(
-                                              LatLng(
-                                                safeParseDouble(coord[0]),
-                                                safeParseDouble(coord[1]),
-                                              ),
+                                            final lat = safeParseDouble(
+                                              coord[0],
                                             );
+                                            final lng = safeParseDouble(
+                                              coord[1],
+                                            );
+                                            if (lat != null && lng != null) {
+                                              return LatLng(lat, lng);
+                                            }
                                           }
+                                          return null;
+                                        }
+
+                                        // Add punchin_loc first
+                                        if (data["punchin_loc"] != null &&
+                                            data["punchin_loc"]
+                                                .toString()
+                                                .isNotEmpty) {
+                                          final punchin = parseCoord(
+                                            data["punchin_loc"],
+                                          );
+                                          if (punchin != null)
+                                            points.add(punchin);
+                                        }
+
+                                        // Add startLoc points
+                                        for (var loc in startLoc) {
+                                          final point = parseCoord(loc);
+                                          if (point != null) points.add(point);
+                                        }
+
+                                        // NO endLoc points added here (removed)
+
+                                        // Add punchout_loc last
+                                        if (data["punchout_loc"] != null &&
+                                            data["punchout_loc"]
+                                                .toString()
+                                                .isNotEmpty) {
+                                          final punchout = parseCoord(
+                                            data["punchout_loc"],
+                                          );
+                                          if (punchout != null)
+                                            points.add(punchout);
                                         }
 
                                         if (points.isNotEmpty) {
@@ -616,6 +706,7 @@ Future<void> showDetail(BuildContext context, List<dynamic> visitList) async {
                                       );
                                     }
                                   },
+
                                   icon: Icon(
                                     FontAwesomeIcons.mapLocationDot,
                                     color: Color(0xFF03a9f4),

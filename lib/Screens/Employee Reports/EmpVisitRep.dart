@@ -34,6 +34,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
   List<String> StartLoc = [];
   List<String> EndLoc = [];
   bool isLoading = true;
+  List<Map<String, dynamic>> LocData = [];
 
   @override
   void initState() {
@@ -109,14 +110,25 @@ class EmpvisitrepState extends State<Empvisitrep> {
       );
 
       final responseData = jsonDecode(response.body);
-
       if (responseData['success'] == true) {
+        var id = responseData['data'][0];
+
+        // var punchin_loc = id['data']['punchin_loc'];
+        // var punchout_loc = id['data']['punchout_loc'];
+        print("Hanuman$id['data']['data']");
+        // print("Hanuman$punchout_loc");
+        // print("Hanuman$punchin_loc");
+        print("*******************");
+        print(id['punchin_loc']);
         setState(() {
           isLoading = false;
           attendanceData = List<Map<String, dynamic>>.from(
             responseData['data'],
           );
+          LocData = List<Map<String, dynamic>>.from(responseData['data']);
         });
+        print("object");
+        print(LocData);
       } else {
         setState(() {
           isLoading = false;
@@ -364,7 +376,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:ratio*25,
+                      radius: ratio * 25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here
@@ -389,7 +401,6 @@ class EmpvisitrepState extends State<Empvisitrep> {
                   final List<dynamic> visits = item['data'] ?? [];
                   List<String> startLoc = [];
                   List<String> endLoc = [];
-
                   if (visits.isNotEmpty) {
                     for (var visit in visits) {
                       startLoc.add(visit['start_Location'] ?? '0.0, 0.0');
@@ -409,37 +420,52 @@ class EmpvisitrepState extends State<Empvisitrep> {
                             onPressed: () {
                               List<LatLng> allPoints = [];
 
+                              // 1. Add punch-in location (format: "lat_lng")
+                              if (item['punchin_loc'] != null) {
+                                final punchInParts = item['punchin_loc']
+                                    .toString()
+                                    .split('_');
+                                if (punchInParts.length == 2) {
+                                  allPoints.add(
+                                    LatLng(
+                                      safeParseDouble(punchInParts[0]),
+                                      safeParseDouble(punchInParts[1]),
+                                    ),
+                                  );
+                                }
+                              }
+
+                              // 2. Add all start_Location values from visits
                               for (var visit in visits) {
                                 final startCoord =
                                     visit['start_Location']?.split(',') ?? [];
-                                final endCoord =
-                                    visit['end_Location']?.split(',') ?? [];
 
-                                if (startCoord.length == 2 &&
-                                    endCoord.length == 2) {
+                                if (startCoord.length == 2) {
                                   allPoints.add(
                                     LatLng(
                                       safeParseDouble(startCoord[0]),
                                       safeParseDouble(startCoord[1]),
                                     ),
                                   );
+                                }
+                              }
+
+                              // 3. Add punch-out location (format: "lat_lng")
+                              if (item['punchout_loc'] != null) {
+                                final punchOutParts = item['punchout_loc']
+                                    .toString()
+                                    .split('_');
+                                if (punchOutParts.length == 2) {
                                   allPoints.add(
                                     LatLng(
-                                      safeParseDouble(endCoord[0]),
-                                      safeParseDouble(endCoord[1]),
-                                    ),
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Invalid coordinate format for a visit',
-                                      ),
+                                      safeParseDouble(punchOutParts[0]),
+                                      safeParseDouble(punchOutParts[1]),
                                     ),
                                   );
                                 }
                               }
 
+                              // Navigate to map screen if valid points exist
                               if (allPoints.isNotEmpty) {
                                 Navigator.push(
                                   context,
@@ -473,6 +499,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                               ),
                               elevation: 4,
                             ),
+
                             child: Text(
                               "All Visits",
                               style: TextStyle(
@@ -506,7 +533,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
                             ),
                             title: Text(
                               visit['NameOfCustomer'] ?? 'No Customer Name',
-                              style: TextStyle(fontSize: ratio *7),
+                              style: TextStyle(fontSize: ratio * 7),
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -515,7 +542,10 @@ class EmpvisitrepState extends State<Empvisitrep> {
                                   children: [
                                     Text(
                                       "Start:",
-                                      style: TextStyle(fontSize: ratio * 6,fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                        fontSize: ratio * 6,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                     Text(
                                       "${visit['end'] ?? 'N/A'}",
@@ -582,41 +612,35 @@ class EmpvisitrepState extends State<Empvisitrep> {
                                     onPressed: () {
                                       List<LatLng> points = [];
 
-                                      if (visit['start_Location'] != null &&
-                                          visit['end_Location'] != null) {
+                                      // 1. Add punchin_loc
+                                      if (item['punchin_loc'] != null) {
+                                        final punchInParts = item['punchin_loc']
+                                            .toString()
+                                            .split('_');
+                                        if (punchInParts.length == 2) {
+                                          points.add(
+                                            LatLng(
+                                              safeParseDouble(punchInParts[0]),
+                                              safeParseDouble(punchInParts[1]),
+                                            ),
+                                          );
+                                        }
+                                      }
+
+                                      // 2. Add visit start_Location
+                                      if (visit['start_Location'] != null) {
                                         final startCoord =
                                             visit['start_Location']
-                                                .split(',')
-                                                .map((e) => e.trim())
-                                                .toList();
-                                        final endCoord =
-                                            visit['end_Location']
+                                                .toString()
                                                 .split(',')
                                                 .map((e) => e.trim())
                                                 .toList();
 
-                                        if (startCoord.length == 2 &&
-                                            endCoord.length == 2) {
+                                        if (startCoord.length == 2) {
                                           points.add(
                                             LatLng(
                                               safeParseDouble(startCoord[0]),
                                               safeParseDouble(startCoord[1]),
-                                            ),
-                                          );
-                                          points.add(
-                                            LatLng(
-                                              safeParseDouble(endCoord[0]),
-                                              safeParseDouble(endCoord[1]),
-                                            ),
-                                          );
-
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (context) => SimpleMapScreen(
-                                                    points: points,
-                                                  ),
                                             ),
                                           );
                                         } else {
@@ -625,18 +649,47 @@ class EmpvisitrepState extends State<Empvisitrep> {
                                           ).showSnackBar(
                                             SnackBar(
                                               content: Text(
-                                                'Invalid coordinate format',
+                                                'Invalid start location format',
                                               ),
                                             ),
                                           );
                                         }
+                                      }
+
+                                      // 3. Add punchout_loc
+                                      if (item['punchout_loc'] != null) {
+                                        final punchOutParts =
+                                            item['punchout_loc']
+                                                .toString()
+                                                .split('_');
+                                        if (punchOutParts.length == 2) {
+                                          points.add(
+                                            LatLng(
+                                              safeParseDouble(punchOutParts[0]),
+                                              safeParseDouble(punchOutParts[1]),
+                                            ),
+                                          );
+                                        }
+                                      }
+
+                                      // Navigate to map if there are valid points
+                                      if (points.isNotEmpty) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => SimpleMapScreen(
+                                                  points: points,
+                                                ),
+                                          ),
+                                        );
                                       } else {
                                         ScaffoldMessenger.of(
                                           context,
                                         ).showSnackBar(
                                           SnackBar(
                                             content: Text(
-                                              'Location data is missing',
+                                              'No valid location data available',
                                             ),
                                           ),
                                         );

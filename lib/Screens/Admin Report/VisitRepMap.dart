@@ -79,13 +79,13 @@ class SimpleMapScreen extends StatelessWidget {
 
                               if (index == 0) {
                                 markerColor = Colors.green;
-                                label = 'Start';
-                              } else if (index == 1) {
+                                label = 'S';
+                              } else if (index == points.length - 1) {
                                 markerColor = Colors.red;
-                                label = 'End';
+                                label = 'E';
                               } else {
                                 markerColor = Colors.orange;
-                                label = 'V${index + 1}';
+                                label = 'V${index}';
                               }
 
                               return Marker(

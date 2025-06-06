@@ -155,19 +155,12 @@ class EmpattdetailState extends State<EmpAttdetail> {
               padding: EdgeInsets.all(ratio * 2.5),
               child: Column(
                 children: [
-                  _infoRow('Time In', item['time_in'], ratio),
-                  _infoRow('Time Out', item['time_out'], ratio),
-                  _infoRow('Address In', item['address'], ratio, maxLines: 2),
-                  _infoRow(
-                    'Address Out',
-                    item['address_out'],
-                    ratio,
-                    maxLines: 2,
-                  ),
-                  _infoRow('Working Hours', item['hours'].toString(), ratio),
-                  Divider(height: ratio * 4, color: Colors.grey.shade400),
-
-                  // Breaks
+                  _infoRow('Punch In', item['time_in'], ratio),
+                  _infoRow('Punch Out', item['time_out'], ratio),
+                  _infoRow('Total Hours', item['hours'].toString(), ratio),
+                  
+                   _infoRow('Total Break Time', item['breakhour'], ratio),
+                   // Breaks
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -176,10 +169,19 @@ class EmpattdetailState extends State<EmpAttdetail> {
                       _breakInfo('Break 3', item['break3hour'], ratio),
                     ],
                   ),
-
-                  SizedBox(height: ratio * 2),
-                  _infoRow('Total Break Time', item['breakhour'], ratio),
-
+                  _infoRow(
+                    'Working Hours',
+                    item['total_working_hours'].toString(),
+                    ratio,
+                  ),
+                  Divider(height: ratio * 4, color: Colors.grey.shade400),
+                   _infoRow('Address In', item['address'], ratio, maxLines: 2),
+                  _infoRow(
+                    'Address Out',
+                    item['address_out'],
+                    ratio,
+                    maxLines: 2,
+                  ),
                   SizedBox(height: ratio * 3),
                   Divider(),
                   Row(
@@ -242,7 +244,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: 4,
+            flex: 5,
             child: Text(
               '$label:',
               style: TextStyle(
@@ -253,7 +255,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
             ),
           ),
           Expanded(
-            flex: 6,
+            flex: 5,
             child: Text(
               value?.toString() ?? '',
               maxLines: maxLines,
@@ -404,7 +406,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                         left: ratio * 5,
                         right: ratio * 5,
                       ),
-                      padding: EdgeInsets.all(ratio * 1),
+                      padding: EdgeInsets.all(ratio * 2),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(deviceWidth * 0.03),
                         color: const Color.fromARGB(255, 247, 239, 230),
@@ -420,34 +422,63 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                   children: [
                                     Row(
                                       children: [
+                                        Container(
+                                          margin: EdgeInsets.all(ratio * 2),
+                                          width: ratio * 14,
+                                          height: ratio * 14,
+
+                                          decoration: BoxDecoration(
+                                            color: Color(0xFF03a9f4),
+                                            borderRadius: BorderRadius.circular(
+                                              ratio * 7,
+                                            ),
+                                          ),
+                                          child: Center(
+                                            child: Text(
+                                              '${(index + 1).toString().padLeft(2, '0')}',
+                                              style: TextStyle(
+                                                fontSize: ratio * 6,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),Text(
+                                      "Punch In",
+                                      style: TextStyle(
+                                        fontSize: ratio * 6,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      data['time_in'] ?? '',
+                                      style: TextStyle(fontSize: ratio * 6),
+                                    ),
+                                    
+                                    
                                         Text(
-                                          "S.r.No.",
+                                          "Total Hours:",
                                           style: TextStyle(
                                             fontSize: ratio * 6,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                            vertical: ratio * 1,
-                                            horizontal: ratio * 3,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: Color(0xFF03a9f4),
-                                            borderRadius: BorderRadius.circular(
-                                              ratio * 5,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            '${index + 1}',
-                                            style: TextStyle(
-                                              fontSize: ratio * 5,
-                                              color: Colors.white,
-                                            ),
-                                          ),
+                                        Text(
+                                          "${data['hours'] ?? 0}",
+                                          style: TextStyle(fontSize: ratio * 6),
                                         ),
-                                      ],
-                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(width: ratio * 1),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+
+                                  children: [
+                                    
                                     Text(
                                       "Date",
                                       style: TextStyle(
@@ -464,8 +495,17 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                           : '',
                                       style: TextStyle(fontSize: ratio * 6),
                                     ),
-                                    Column(
-                                      children: [
+                                    Text(
+                                      "Punch Out:",
+                                      style: TextStyle(
+                                        fontSize: ratio * 6,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      data['time_out'] ?? '',
+                                      style: TextStyle(fontSize: ratio * 6),
+                                    ),
                                         Text(
                                           "Break Time",
                                           style: TextStyle(
@@ -480,40 +520,6 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                             color: Colors.black,
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(width: ratio * 1),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-
-                                  children: [
-                                    Text(
-                                      "Punch In",
-                                      style: TextStyle(
-                                        fontSize: ratio * 6,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      data['time_in'] ?? '',
-                                      style: TextStyle(fontSize: ratio * 6),
-                                    ),
-                                    Text(
-                                      "Punch Out:",
-                                      style: TextStyle(
-                                        fontSize: ratio * 6,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      data['time_out'] ?? '',
-                                      style: TextStyle(fontSize: ratio * 6),
-                                    ),
                                   ],
                                 ),
                               ),
@@ -600,21 +606,21 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                       ],
                                     ),
                                     SizedBox(height: deviceHeight * 0.005),
-                                    Row(
+                                    Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          "Total Hours:",
-                                          style: TextStyle(
-                                            fontSize: ratio * 5,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          "${data['hours'] ?? 0}",
-                                          style: TextStyle(fontSize: ratio * 5),
-                                        ),
+                                      children: [                                        
+                                    Text(
+                                      "Working Hours:",
+                                      style: TextStyle(
+                                        fontSize: ratio * 6,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      data['total_working_hours'] ?? '',
+                                      style: TextStyle(fontSize: ratio * 6),
+                                    ),
                                       ],
                                     ),
                                   ],

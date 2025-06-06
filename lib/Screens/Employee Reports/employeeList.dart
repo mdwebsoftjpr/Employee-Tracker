@@ -485,10 +485,13 @@ class EmployeelistState extends State<Employeelist> {
                               height: ratio * 10,
                               child: Center(
                                 child: Text(
-                                '${index + 1}',
-                                style: TextStyle(fontSize: ratio * 7,color: Colors.white),
+                                  '${index + 1}',
+                                  style: TextStyle(
+                                    fontSize: ratio * 7,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
-                              )
                             ),
                             Expanded(
                               child: Column(
@@ -664,18 +667,30 @@ class EmployeelistState extends State<Employeelist> {
                             ),
 
                             Transform.scale(
-                              scale: .7, // Increase or decrease the size
+                              scale: 0.7,
                               child: Switch(
-                                value: isSwitchedList[index],
-                                onChanged: (bool value) {
-                                  setState(() {
-                                    isSwitchedList[index] = value;
-                                  });
+                                value: item['active'] == 'yes',
+                                onChanged: (bool value) async {
+                                  final empId = item['id'];
+                                  bool success = await updateEmployeeStatus(
+                                    empId,
+                                    value,
+                                  );
+                                  if (success) {
+                                    setState(() {
+                                      item['active'] = value ? 'yes' : 'no';
+                                      isSwitchedList[index] = value;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      isSwitchedList[index] = !value;
+                                    });
+                                  }
                                 },
                                 activeColor: Colors.white,
-                                activeTrackColor: Colors.red,
+                                activeTrackColor: Colors.green,
                                 inactiveThumbColor: Colors.white,
-                                inactiveTrackColor: Colors.green,
+                                inactiveTrackColor: Colors.red,
                               ),
                             ),
                           ],
@@ -686,5 +701,42 @@ class EmployeelistState extends State<Employeelist> {
                 },
               ),
     );
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
+
+  Future<bool> updateEmployeeStatus(int empId, bool isActive) async {
+    final url = Uri.parse(
+      'https://testapi.rabadtechnology.com/getcompanystatus.php',
+    );
+    final status = isActive ? 'yes' : 'no';
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'empid': empId, 'active': status}),
+      );
+
+      if (response.statusCode == 200) {
+        final resData = jsonDecode(response.body);
+        if (resData['success'] == true) {
+          return true; // Successfully updated
+        } else {
+          _showError(resData['message'] ?? 'Failed to update status');
+          return false;
+        }
+      } else {
+        _showError("Server error: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      _showError("Network error: $e");
+      return false;
+    }
   }
 }
