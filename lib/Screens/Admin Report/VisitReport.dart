@@ -357,6 +357,21 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     );
   }
 
+  String formatDateSimple(String? dateStr) {
+  if (dateStr == null || dateStr.isEmpty) return 'N/A';
+
+  try {
+    DateTime parsedDate = DateTime.parse(dateStr);
+    String day = parsedDate.day.toString().padLeft(2, '0');
+    String month = parsedDate.month.toString().padLeft(2, '0');
+    String year = parsedDate.year.toString();
+    return "$day $month $year";
+  } catch (e) {
+    return dateStr; // fallback to original if parsing fails
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
@@ -390,7 +405,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Date",
+                      formatDateSimple(day),
                       style: TextStyle(
                         fontSize: ratio * 7,
                         color: Colors.white,
@@ -516,25 +531,26 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                               Icon(Icons.error),
                                     ),
                                   ),
-                                  Text(
-                                    (data['name'] ?? '').toString().length > 10
-                                        ? '${data['name'].toString().substring(0, 10)}...'
-                                        : data['name'].toString(),
-                                    style: TextStyle(fontSize: ratio * 7),
-                                  ),
                                 ],
                               ),
                             ),
                             SizedBox(width: ratio * 3),
-                            // Visit count
                             Expanded(
-                              child: Row(
+                              child: Column(
                                 children: [
+                                  
+                                  Text(
+                                    data['name'] ?? '',
+                                    style: TextStyle(fontSize: ratio * 7),
+                                  ),
+                                  Row(
+                                    children: [
+                                      
                                   Text(
                                     "Total Visit:- ",
                                     style: TextStyle(fontSize: ratio * 6),
                                   ),
-                                  Container(
+                                      Container(
                                     padding: EdgeInsets.symmetric(
                                       horizontal: ratio * 4.5,
                                       vertical: ratio * 1.8,
@@ -553,6 +569,8 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                       ),
                                     ),
                                   ),
+                                    ],
+                                  )
                                 ],
                               ),
                             ),

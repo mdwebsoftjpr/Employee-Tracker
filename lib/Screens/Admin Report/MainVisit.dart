@@ -2,16 +2,7 @@ import 'package:employee_tracker/Screens/image%20FullScreen/fullScreenImage.dart
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:employee_tracker/Screens/Admin Report/VisitRepMap.dart';
-import 'package:employee_tracker/Screens/Admin%20Report/MainVisit.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:localstorage/localstorage.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:intl/intl.dart';
-import 'package:employee_tracker/Screens/image FullScreen/fullScreenImage.dart';
-import 'package:employee_tracker/Screens/Components/Alert.dart';
 
 class Mainvisit extends StatefulWidget {
   final dynamic visits; // Replace 'dynamic' with proper type if possible
@@ -124,7 +115,7 @@ class MainvisitState extends State<Mainvisit> {
                         ),
                         buildTextDetail(
                           "Date",
-                          visitList['date'],
+                          formatDateSimple(visitList['date']),
                           context,
                           ratio,
                         ),
@@ -201,6 +192,22 @@ class MainvisitState extends State<Mainvisit> {
     );
   }
 
+String formatDateSimple(String? dateStr) {
+  if (dateStr == null || dateStr.isEmpty) return 'N/A';
+
+  try {
+    DateTime parsedDate = DateTime.parse(dateStr);
+    String day = parsedDate.day.toString().padLeft(2, '0');
+    String month = parsedDate.month.toString().padLeft(2, '0');
+    String year = parsedDate.year.toString();
+    return "$day $month $year";
+  } catch (e) {
+    return dateStr; // fallback to original if parsing fails
+  }
+}
+
+
+
   Widget buildTextDetail(
     String label,
     String value,
@@ -228,7 +235,6 @@ class MainvisitState extends State<Mainvisit> {
   @override
   Widget build(BuildContext context) {
     final data = widget.visits['data'];
-    print(data);
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
     var ratio;
