@@ -365,7 +365,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     String day = parsedDate.day.toString().padLeft(2, '0');
     String month = parsedDate.month.toString().padLeft(2, '0');
     String year = parsedDate.year.toString();
-    return "$day $month $year";
+    return "$day-$month-$year";
   } catch (e) {
     return dateStr; // fallback to original if parsing fails
   }

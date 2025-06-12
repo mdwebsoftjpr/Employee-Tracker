@@ -8,6 +8,7 @@ import 'package:employee_tracker/Screens/Employee%20Reports/AttendanceDetail.dar
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
@@ -57,7 +58,6 @@ class AttendanceState extends State<Attendance> {
     final DateTime now = DateTime.now();
     day = DateFormat('yyyy-MM-dd').format(now);
     _loadUser().then((_) => ShowMaster());
-    
   }
 
   Future<void> _loadUser() async {
@@ -178,7 +178,7 @@ class AttendanceState extends State<Attendance> {
                   ),
                   _infoRow(
                     'Working Hours',
-                    "${item['total_working_hours'] ?? ''}".toString(),
+                    "${item['working hours'] ?? ''}".toString(),
                     ratio,
                   ),
                   Divider(height: ratio * 4, color: Colors.grey.shade400),
@@ -825,54 +825,49 @@ class AttendanceState extends State<Attendance> {
                                                 Column(
                                                   children: [
                                                     Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.center,
-                                                  children: [
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Text(
+                                                          "Break Time",
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: ratio * 6,
+                                                          ),
+                                                        ),
+                                                        if ((item['break1'] ??
+                                                                    '') ==
+                                                                'open' ||
+                                                            (item['break2'] ??
+                                                                    '') ==
+                                                                'open' ||
+                                                            (item['break3'] ??
+                                                                    '') ==
+                                                                'open') ...[
+                                                          SizedBox(
+                                                            width: ratio * 2,
+                                                          ), // spacing between text and dot
+                                                          Center(
+                                                            child: Lottie.asset(
+                                                              'assets/RedDot.json',width: ratio*5,height: ratio*5
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ],
+                                                    ),
+
+                                                    SizedBox(
+                                                      height: ratio * 1.5,
+                                                    ), // spacing
+
                                                     Text(
-                                                      "Break Time",
+                                                      "${item['breakhour'] ?? ''}",
                                                       style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
                                                         fontSize: ratio * 6,
                                                       ),
                                                     ),
-                                                    if ((item['break1'] ??
-                                                                '') ==
-                                                            'open' ||
-                                                        (item['break2'] ??
-                                                                '') ==
-                                                            'open' ||
-                                                        (item['break3'] ??
-                                                                '') ==
-                                                            'open') ...[
-                                                      SizedBox(
-                                                        width: ratio * 2,
-                                                      ), // spacing between text and dot
-                                                      Container(
-                                                        width: ratio * 2,
-                                                        height: ratio * 2,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                              color: Colors.red,
-                                                              shape:
-                                                                  BoxShape
-                                                                      .circle,
-                                                            ),
-                                                      ),
-                                                    ],
-                                                  ],
-                                                ),
-
-                                                SizedBox(
-                                                  height: ratio * 1.5,
-                                                ), // spacing
-
-                                                Text(
-                                                  "${item['breakhour'] ?? ''}",
-                                                  style: TextStyle(
-                                                    fontSize: ratio * 6,
-                                                  ),
-                                                ),
                                                   ],
                                                 ),
                                                 Column(
@@ -886,7 +881,7 @@ class AttendanceState extends State<Attendance> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      "${item['total_working_hours'] ?? ''}",
+                                                      "${item['working hours'] ?? ''}",
                                                       style: TextStyle(
                                                         fontSize: ratio * 6,
                                                       ),
