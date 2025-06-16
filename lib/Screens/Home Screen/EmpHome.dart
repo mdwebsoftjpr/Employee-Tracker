@@ -51,7 +51,6 @@ class _EmpHomeState extends State<EmpHome> {
     await getApi();
     await getVisit();
     await getDeviceId();
-    /*   checkAutoPunchOut(); */
   }
 
   int _selectedIndex = 0;
@@ -215,19 +214,7 @@ class _EmpHomeState extends State<EmpHome> {
     } catch (e) {}
   }
 
-  /*   void checkAutoPunchOut() {
-    final now = DateTime.now();
-    final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
 
-    if (now.isAfter(endOfDay)) {
-      // Auto punch out
-      punchOut();
-      setState(() {
-        PSatatus = 'Not Marke';
-        bcount = 0;
-      });
-    }
-  } */
 
   Future<File?> compressImage(XFile xFile) async {
     setState(() {
