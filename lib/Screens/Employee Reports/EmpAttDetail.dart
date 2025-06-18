@@ -7,6 +7,11 @@ import 'dart:convert';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:open_file/open_file.dart';
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 void main() async {
@@ -109,6 +114,48 @@ class EmpattdetailState extends State<EmpAttdetail> {
     }
   }
 
+  Future<void> downloadAndOpenPDF(String url, String fileName) async {
+    try {
+      if (Platform.isAndroid) {
+        var status = await Permission.storage.request();
+        if (!status.isGranted) {
+          print('Storage permission denied');
+          return;
+        }
+      }
+
+      Directory dir;
+
+      if (Platform.isAndroid) {
+        dir = (await getExternalStorageDirectory())!;
+      } else {
+        dir = await getApplicationDocumentsDirectory();
+      }
+
+      String fullPath = '${dir.path}/$fileName';
+
+      Dio dio = Dio();
+
+      await dio.download(
+        url,
+        fullPath,
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            print(
+              'Downloading: ${(received / total * 100).toStringAsFixed(0)}%',
+            );
+          }
+        },
+      );
+
+      print('Downloaded file path: $fullPath');
+
+      await OpenFile.open(fullPath);
+    } catch (e) {
+      print('Error downloading file: $e');
+    }
+  }
+
   void _pickMonth() {
     showMonthPicker(context: context, initialDate: DateTime.now()).then((date) {
       if (date != null) {
@@ -158,9 +205,9 @@ class EmpattdetailState extends State<EmpAttdetail> {
                   _infoRow('Punch In', item['time_in'], ratio),
                   _infoRow('Punch Out', item['time_out'], ratio),
                   _infoRow('Total Hours', item['hours'].toString(), ratio),
-                  
-                   _infoRow('Total Break Time', item['breakhour'], ratio),
-                   // Breaks
+
+                  _infoRow('Total Break Time', item['breakhour'], ratio),
+                  // Breaks
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -175,7 +222,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                     ratio,
                   ),
                   Divider(height: ratio * 4, color: Colors.grey.shade400),
-                   _infoRow('Address In', item['address'], ratio, maxLines: 2),
+                  _infoRow('Address In', item['address'], ratio, maxLines: 2),
                   _infoRow(
                     'Address Out',
                     item['address_out'],
@@ -394,245 +441,326 @@ class EmpattdetailState extends State<EmpAttdetail> {
                   style: TextStyle(fontSize: ratio * 6),
                 ),
               )
-              : ListView.builder(
-                itemCount: attendanceData.length,
-                itemBuilder: (context, index) {
-                  final data = attendanceData[index];
-                  return Padding(
-                    padding: EdgeInsets.all(ratio * .5),
-                    child: Container(
-                      margin: EdgeInsets.only(
-                        top: ratio * 2,
-                        left: ratio * 5,
-                        right: ratio * 5,
-                      ),
-                      padding: EdgeInsets.all(ratio * 2),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(deviceWidth * 0.03),
-                        color: const Color.fromARGB(255, 247, 239, 230),
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+              : Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.symmetric(
+                      horizontal: ratio * 10,
+                    ), // margin around the row
+                    padding: EdgeInsets.all(
+                      ratio*3,
+                    ), // padding inside the container around the row content
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "Attendance Details:-",
+                            style: TextStyle(
+                              fontSize: ratio * 7,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF03a9f4),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: ratio * 7,
+                              vertical: ratio * 4,
+                            ), // button padding
+                          ),
+                          onPressed: () {
+                            downloadAndOpenPDF(
+                              'https://www.example.com/sample.pdf',
+                              'AttendanceDetail.pdf',
+                            );
+                          },
+                          child: Row(
                             children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Container(
-                                          margin: EdgeInsets.all(ratio * 2),
-                                          width: ratio * 14,
-                                          height: ratio * 14,
-
-                                          decoration: BoxDecoration(
-                                            color: Color(0xFF03a9f4),
-                                            borderRadius: BorderRadius.circular(
-                                              ratio * 7,
-                                            ),
-                                          ),
-                                          child: Center(
-                                            child: Text(
-                                              '${(index + 1).toString().padLeft(2, '0')}',
-                                              style: TextStyle(
-                                                fontSize: ratio * 6,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),Text(
-                                      "Punch In",
-                                      style: TextStyle(
-                                        fontSize: ratio * 6,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      data['time_in'] ?? '',
-                                      style: TextStyle(fontSize: ratio * 6),
-                                    ),
-                                    
-                                    
-                                        Text(
-                                          "Total Hours:",
-                                          style: TextStyle(
-                                            fontSize: ratio * 6,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          "${data['hours'] ?? 0}",
-                                          style: TextStyle(fontSize: ratio * 6),
-                                        ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(width: ratio * 1),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-
-                                  children: [
-                                    
-                                    Text(
-                                      "Date",
-                                      style: TextStyle(
-                                        fontSize: ratio * 6,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      data['date'] != null
-                                          ? data['date']
-                                              .split('-')
-                                              .reversed
-                                              .join('-')
-                                          : '',
-                                      style: TextStyle(fontSize: ratio * 6),
-                                    ),
-                                    Text(
-                                      "Punch Out:",
-                                      style: TextStyle(
-                                        fontSize: ratio * 6,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      data['time_out'] ?? '',
-                                      style: TextStyle(fontSize: ratio * 6),
-                                    ),
-                                        Text(
-                                          "Break Time",
-                                          style: TextStyle(
-                                            fontSize: ratio * 6,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(
-                                          data['breakhour'] ?? '',
-                                          style: TextStyle(
-                                            fontSize: ratio * 6,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(width: ratio * 1),
-                              Expanded(
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Column(
-                                          children: [
-                                            SizedBox(height: ratio * 4),
-                                            Container(
-                                              width: ratio * 13,
-                                              height: ratio * 13,
-                                              alignment: Alignment.center,
-                                              decoration: BoxDecoration(
-                                                color:
-                                                    (data['attendance_status'] ==
-                                                                'P' ||
-                                                            data['attendance_status'] ==
-                                                                'p')
-                                                        ? Color(0xFF03a9f4)
-                                                        : Colors.redAccent,
-                                                borderRadius:
-                                                    BorderRadius.circular(
-                                                      deviceWidth * 0.044,
-                                                    ),
-                                              ),
-                                              child: Text(
-                                                "${data['attendance_status'] ?? ''}",
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: ratio * 6,
-                                                ),
-                                              ),
-                                            ),
-
-                                            SizedBox(height: ratio * 3),
-                                            Text(
-                                              "Status",
-                                              style: TextStyle(
-                                                fontSize: ratio * 5,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(width: ratio * 5),
-                                        Column(
-                                          children: [
-                                            IconButton(
-                                              padding: EdgeInsets.zero,
-                                              constraints: BoxConstraints(
-                                                minHeight: 0,
-                                              ),
-                                              onPressed:
-                                                  () =>
-                                                      (data['attendance_status'] ==
-                                                                  'p' ||
-                                                              data['attendance_status'] ==
-                                                                  'P')
-                                                          ? more(data, ratio)
-                                                          : Alert.alert(
-                                                            context,
-                                                            "Attendance Not Marked",
-                                                          ),
-                                              icon: Icon(
-                                                FontAwesomeIcons.circleInfo,
-                                                size: ratio * 12,
-                                              ),
-                                            ),
-                                            Text(
-                                              "More Info.",
-                                              style: TextStyle(
-                                                fontSize: ratio * 5,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(height: deviceHeight * 0.005),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [                                        
-                                    Text(
-                                      "Working Hours:",
-                                      style: TextStyle(
-                                        fontSize: ratio * 6,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(
-                                      data['total_working_hours'] ?? '',
-                                      style: TextStyle(fontSize: ratio * 6),
-                                    ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                              Icon(Icons.download, color: Colors.white),
+                              SizedBox(width: 5),
+                              Text(
+                                'Download',
+                                style: TextStyle(color: Colors.white),
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  );
-                },
+                  ),
+
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: attendanceData.length,
+                      itemBuilder: (context, index) {
+                        final data = attendanceData[index];
+                        return Padding(
+                          padding: EdgeInsets.all(ratio * 0.5),
+                          child: Container(
+                            margin: EdgeInsets.only(
+                              top: ratio * 2,
+                              left: ratio * 5,
+                              right: ratio * 5,
+                            ),
+                            padding: EdgeInsets.all(ratio * 2),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                deviceWidth * 0.03,
+                              ),
+                              color: const Color.fromARGB(255, 247, 239, 230),
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Container(
+                                                margin: EdgeInsets.all(
+                                                  ratio * 2,
+                                                ),
+                                                width: ratio * 14,
+                                                height: ratio * 14,
+                                                decoration: BoxDecoration(
+                                                  color: Color(0xFF03a9f4),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        ratio * 7,
+                                                      ),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    '${(index + 1).toString().padLeft(2, '0')}',
+                                                    style: TextStyle(
+                                                      fontSize: ratio * 6,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Text(
+                                            "Punch In",
+                                            style: TextStyle(
+                                              fontSize: ratio * 6,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            data['time_in'] ?? '',
+                                            style: TextStyle(
+                                              fontSize: ratio * 6,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Total Hours:",
+                                            style: TextStyle(
+                                              fontSize: ratio * 6,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            "${data['hours'] ?? 0}",
+                                            style: TextStyle(
+                                              fontSize: ratio * 6,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: ratio * 1),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            "Date",
+                                            style: TextStyle(
+                                              fontSize: ratio * 6,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            data['date'] != null
+                                                ? data['date']
+                                                    .split('-')
+                                                    .reversed
+                                                    .join('-')
+                                                : '',
+                                            style: TextStyle(
+                                              fontSize: ratio * 6,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Punch Out:",
+                                            style: TextStyle(
+                                              fontSize: ratio * 6,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            data['time_out'] ?? '',
+                                            style: TextStyle(
+                                              fontSize: ratio * 6,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Break Time",
+                                            style: TextStyle(
+                                              fontSize: ratio * 6,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            data['breakhour'] ?? '',
+                                            style: TextStyle(
+                                              fontSize: ratio * 6,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(width: ratio * 1),
+                                    Expanded(
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              Column(
+                                                children: [
+                                                  SizedBox(height: ratio * 4),
+                                                  Container(
+                                                    width: ratio * 13,
+                                                    height: ratio * 13,
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          (data['attendance_status'] ==
+                                                                      'P' ||
+                                                                  data['attendance_status'] ==
+                                                                      'p')
+                                                              ? Color(
+                                                                0xFF03a9f4,
+                                                              )
+                                                              : Colors
+                                                                  .redAccent,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            deviceWidth * 0.044,
+                                                          ),
+                                                    ),
+                                                    child: Text(
+                                                      "${data['attendance_status'] ?? ''}",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: ratio * 6,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: ratio * 3),
+                                                  Text(
+                                                    "Status",
+                                                    style: TextStyle(
+                                                      fontSize: ratio * 5,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(width: ratio * 5),
+                                              Column(
+                                                children: [
+                                                  IconButton(
+                                                    padding: EdgeInsets.zero,
+                                                    constraints: BoxConstraints(
+                                                      minHeight: 0,
+                                                    ),
+                                                    onPressed:
+                                                        () =>
+                                                            (data['attendance_status'] ==
+                                                                        'p' ||
+                                                                    data['attendance_status'] ==
+                                                                        'P')
+                                                                ? more(
+                                                                  data,
+                                                                  ratio,
+                                                                )
+                                                                : Alert.alert(
+                                                                  context,
+                                                                  "Attendance Not Marked",
+                                                                ),
+                                                    icon: Icon(
+                                                      FontAwesomeIcons
+                                                          .circleInfo,
+                                                      size: ratio * 12,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "More Info.",
+                                                    style: TextStyle(
+                                                      fontSize: ratio * 5,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: deviceHeight * 0.005,
+                                          ),
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                "Working Hours:",
+                                                style: TextStyle(
+                                                  fontSize: ratio * 6,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                data['total_working_hours'] ??
+                                                    '',
+                                                style: TextStyle(
+                                                  fontSize: ratio * 6,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
     );
   }
