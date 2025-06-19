@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:employee_tracker/Api/firebase.dart';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/AdminHome.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'Screens/Create Company/CreateCom.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -12,12 +14,14 @@ import 'SpleshScreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await FirebaseService().initNotification();
   await _initializeLocalStorage();
 
   String? user = localStorage.getItem("user");
   String? role = localStorage.getItem("role");
 
-  role = role?.toString().replaceAll('"', '').trim().toLowerCase();
+  role = role?.replaceAll('"', '').trim().toLowerCase();
 
   Widget homeScreen;
 
@@ -27,14 +31,15 @@ void main() async {
     } else if (role == 'employee') {
       homeScreen = EmpHome();
     } else {
-      homeScreen = CreateScreen(); // fallback if role is unknown
+      homeScreen = CreateScreen();
     }
   } else {
-    homeScreen = CreateScreen(); // if user is not found
+    homeScreen = CreateScreen();
   }
 
   runApp(MaterialApp(debugShowCheckedModeBanner: false, home: SplashScreen()));
 }
+
 
 Future<void> _initializeLocalStorage() async {
   await localStorage.ready;

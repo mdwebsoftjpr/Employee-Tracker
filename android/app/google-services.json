@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "861463887023",
+    "project_id": "empattend-da378",
+    "storage_bucket": "empattend-da378.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861463887023:android:3c458469d37202c956685a",
+        "android_client_info": {
+          "package_name": "com.employee_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmDZKjSFdRcoUfwgtoH5th02OSuP2gJiw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

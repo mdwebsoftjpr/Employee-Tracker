@@ -1,23 +1,22 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // Must be last
+    id("com.google.gms.google-services")  // Firebase plugin
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
     namespace = "com.employee_tracker"
 
-    // ✅ Use Flutter-defined compile SDK version
+    // Use Flutter-defined compile SDK version
     compileSdk = flutter.compileSdkVersion
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.employee_tracker"
         minSdk = flutter.minSdkVersion
-        targetSdk = 34 // ✅ Updated to meet Google Play's latest requirements
+        targetSdk = 34 // Updated for Google Play requirements
         versionName = "0.1.0"
-
         versionCode = 5
         multiDexEnabled = true
     }
@@ -28,12 +27,12 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = "11"
     }
 
     buildTypes {
         release {
-            // 🔐 Replace with your real signing config for Play Store
+            // Replace with your real signing config for Play Store
             signingConfig = signingConfigs.getByName("debug")
             isShrinkResources = false
             isMinifyEnabled = false
@@ -46,22 +45,36 @@ android {
 
     packagingOptions {
         resources {
-            excludes += setOf(
-                "META-INF/DEPENDENCIES",
-                "META-INF/LICENSE",
-                "META-INF/LICENSE.txt",
-                "META-INF/NOTICE",
-                "META-INF/NOTICE.txt"
+            excludes.addAll(
+                listOf(
+                    "META-INF/DEPENDENCIES",
+                    "META-INF/LICENSE",
+                    "META-INF/LICENSE.txt",
+                    "META-INF/NOTICE",
+                    "META-INF/NOTICE.txt"
+                )
             )
         }
     }
 
     lint {
         checkReleaseBuilds = true
-        // Optional: baseline = file("lint-baseline.xml")
+        // baseline = file("lint-baseline.xml") // Uncomment if you have a baseline file
     }
 }
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Firebase BoM for consistent versions
+    implementation(platform("com.google.firebase:firebase-bom:33.15.0"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.10")
+    // Firebase Analytics (version managed by BoM)
+    implementation("com.google.firebase:firebase-analytics")
+
+    // Add other Firebase dependencies here if needed
+    // implementation("com.google.firebase:firebase-auth")
+    // implementation("com.google.firebase:firebase-firestore")
 }
