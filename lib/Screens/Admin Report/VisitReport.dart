@@ -9,6 +9,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
 import 'package:employee_tracker/Screens/image FullScreen/fullScreenImage.dart';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
+
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
@@ -111,27 +113,12 @@ class AdminVisitreportState extends State<AdminVisitreport> {
     }
   }
 
-  /*  Future<void> _pickMonth(BuildContext context) async {
+  Future<void> _pickMonth(BuildContext context) async {
     DateTime? selected = await showMonthPicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
-
-      builder: (BuildContext context, Widget? child) {
-  return Theme(
-    data: Theme.of(context).copyWith(
-      dialogTheme: DialogTheme(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-      ),
-    ),
-    child: SingleChildScrollView( // 👈 add scroll
-      child: child!,
-    ),
-  );
-}, 
     );
 
     if (selected != null) {
@@ -142,7 +129,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
       VisitDetail();
     }
   }
-*/
+
   double safeParseDouble(String input) {
     try {
       return double.parse(input.replaceAll('"', '').replaceAll("'", '').trim());
@@ -358,19 +345,18 @@ class AdminVisitreportState extends State<AdminVisitreport> {
   }
 
   String formatDateSimple(String? dateStr) {
-  if (dateStr == null || dateStr.isEmpty) return 'N/A';
+    if (dateStr == null || dateStr.isEmpty) return 'N/A';
 
-  try {
-    DateTime parsedDate = DateTime.parse(dateStr);
-    String day = parsedDate.day.toString().padLeft(2, '0');
-    String month = parsedDate.month.toString().padLeft(2, '0');
-    String year = parsedDate.year.toString();
-    return "$day-$month-$year";
-  } catch (e) {
-    return dateStr; // fallback to original if parsing fails
+    try {
+      DateTime parsedDate = DateTime.parse(dateStr);
+      String day = parsedDate.day.toString().padLeft(2, '0');
+      String month = parsedDate.month.toString().padLeft(2, '0');
+      String year = parsedDate.year.toString();
+      return "$day-$month-$year";
+    } catch (e) {
+      return dateStr; // fallback to original if parsing fails
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -405,7 +391,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      formatDateSimple(day),
+                      (day!='' && day.isNotEmpty)?formatDateSimple(day):'Date',
                       style: TextStyle(
                         fontSize: ratio * 7,
                         color: Colors.white,
@@ -423,7 +409,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                     ),
                   ],
                 ),
-                 /*SizedBox(width: deviceWidth * 0.01),
+                SizedBox(width: deviceWidth * 0.01),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -445,7 +431,7 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                       tooltip: "Pick Month",
                     ), 
                   ],
-                ),*/
+                ),
               ],
             ),
           ),
@@ -480,7 +466,8 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                   ),
                 ),
               )
-              : ListView.builder(
+              : (day != '' && day.isNotEmpty)
+              ? ListView.builder(
                 itemCount: attendanceData.length,
                 itemBuilder: (context, index) {
                   final data = attendanceData[index];
@@ -538,39 +525,37 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                             Expanded(
                               child: Column(
                                 children: [
-                                  
                                   Text(
                                     data['name'] ?? '',
                                     style: TextStyle(fontSize: ratio * 7),
                                   ),
                                   Row(
                                     children: [
-                                      
-                                  Text(
-                                    "Total Visit:- ",
-                                    style: TextStyle(fontSize: ratio * 6),
-                                  ),
+                                      Text(
+                                        "Total Visit:- ",
+                                        style: TextStyle(fontSize: ratio * 6),
+                                      ),
                                       Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: ratio * 4.5,
-                                      vertical: ratio * 1.8,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF03a9f4),
-                                      borderRadius: BorderRadius.circular(
-                                        ratio * 6,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: ratio * 4.5,
+                                          vertical: ratio * 1.8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFF03a9f4),
+                                          borderRadius: BorderRadius.circular(
+                                            ratio * 6,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          "${data['total_visit'] ?? 0}",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                    child: Text(
-                                      "${data['total_visit'] ?? 0}",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
                                     ],
-                                  )
+                                  ),
                                 ],
                               ),
                             ),
@@ -581,13 +566,12 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                 ElevatedButton(
                                   onPressed: () {
                                     if (visits.isNotEmpty) {
-                                       Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (context) => Mainvisit(data),
-                                            ),
-                                          ); 
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Mainvisit(data),
+                                        ),
+                                      );
                                     } else {
                                       ScaffoldMessenger.of(
                                         context,
@@ -734,6 +718,148 @@ class AdminVisitreportState extends State<AdminVisitreport> {
                                     color: Color(0xFF03a9f4),
                                     size: ratio * 10,
                                   ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              )
+              : ListView.builder(
+                itemCount: attendanceData.length,
+                itemBuilder: (context, index) {
+                  final data = attendanceData[index];
+
+                  List<String> startLoc = [];
+                  List<String> endLoc = [];
+                  List<dynamic> EmpVisitDetail = [];
+                  List<dynamic> visits = data['data'] ?? [];
+
+                  if (visits.isNotEmpty) {
+                    for (var visit in visits) {
+                      startLoc.add(visit['start_Location']);
+                      endLoc.add(visit['end_Location']);
+                      EmpVisitDetail.add(visit);
+                    }
+                  }
+                  return SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.all(ratio * 1),
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                          vertical: ratio * 1,
+                          horizontal: ratio * 4,
+                        ),
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            deviceWidth * 0.03,
+                          ),
+                          color: const Color.fromARGB(255, 247, 239, 230),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Image and Name
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Image.network(
+                                      data['image'] ?? '',
+                                      width: ratio * 32,
+                                      height: ratio * 32,
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Icon(Icons.error),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: ratio * 3),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  Text(
+                                    data['name'] ?? '',
+                                    style: TextStyle(fontSize: ratio * 7),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Total Visit:- ",
+                                        style: TextStyle(fontSize: ratio * 6),
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: ratio * 4.5,
+                                          vertical: ratio * 1.8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFF03a9f4),
+                                          borderRadius: BorderRadius.circular(
+                                            ratio * 6,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          "${data['total_visit'] ?? 0}",
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: ratio * 3),
+                            // Buttons
+                            Column(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (visits.isNotEmpty) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Mainvisit(data),
+                                        ),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            "No detailed data available",
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color(0xFF03a9f4),
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: deviceWidth * 0.06,
+                                      vertical: deviceHeight * 0.006,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        deviceWidth * 0.07,
+                                      ),
+                                    ),
+                                    elevation: 4,
+                                  ),
+                                  child: Text("More"),
                                 ),
                               ],
                             ),

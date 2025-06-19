@@ -192,21 +192,19 @@ class MainvisitState extends State<Mainvisit> {
     );
   }
 
-String formatDateSimple(String? dateStr) {
-  if (dateStr == null || dateStr.isEmpty) return 'N/A';
+  String formatDateSimple(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return 'N/A';
 
-  try {
-    DateTime parsedDate = DateTime.parse(dateStr);
-    String day = parsedDate.day.toString().padLeft(2, '0');
-    String month = parsedDate.month.toString().padLeft(2, '0');
-    String year = parsedDate.year.toString();
-    return "$day $month $year";
-  } catch (e) {
-    return dateStr; // fallback to original if parsing fails
+    try {
+      DateTime parsedDate = DateTime.parse(dateStr);
+      String day = parsedDate.day.toString().padLeft(2, '0');
+      String month = parsedDate.month.toString().padLeft(2, '0');
+      String year = parsedDate.year.toString();
+      return "$day $month $year";
+    } catch (e) {
+      return dateStr; // fallback to original if parsing fails
+    }
   }
-}
-
-
 
   Widget buildTextDetail(
     String label,
@@ -230,7 +228,6 @@ String formatDateSimple(String? dateStr) {
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -261,18 +258,45 @@ String formatDateSimple(String? dateStr) {
           itemCount: data.length,
           itemBuilder: (context, index) {
             final visit = data[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: ListTile(
-                subtitle: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: SizedBox(
-                        width: ratio * 30,
-                        height: ratio * 35,
-                        child: Image.network(
+            return Container(
+              margin: EdgeInsets.symmetric(vertical: ratio*2, horizontal: ratio*7),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 247, 239, 230),
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: ratio * 12,
+                    height: ratio * 12,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(ratio * 10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${index + 1}',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Column(
+                      children: [
+                        Image.network(
                           visit['image'] ?? '',
                           fit: BoxFit.cover,
                           errorBuilder:
@@ -281,9 +305,16 @@ String formatDateSimple(String? dateStr) {
                           cacheWidth: (ratio * 25).toInt(),
                           cacheHeight: (ratio * 30).toInt(),
                         ),
-                      ),
+                        Text(
+                          formatDateSimple(visit['date']),
+                          style: TextStyle(fontSize: ratio * 6),
+                        ),
+                      ],
                     ),
-                    Column(
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
@@ -300,9 +331,7 @@ String formatDateSimple(String? dateStr) {
                                   20
                               ? '${visit['concernedperson'].toString().substring(0, 20)}...'
                               : visit['concernedperson'] ?? 'No Name',
-                          style: TextStyle(
-                            fontSize: ratio * 6,
-                          ),
+                          style: TextStyle(fontSize: ratio * 6),
                         ),
                         Text(
                           'Name Of Customer',
@@ -318,100 +347,108 @@ String formatDateSimple(String? dateStr) {
                                   20
                               ? '${visit['NameOfCustomer'].toString().substring(0, 20)}...'
                               : visit['NameOfCustomer'] ?? 'No Name',
-                          style: TextStyle(
-                            fontSize: ratio * 6,
-                          ),
+                          style: TextStyle(fontSize: ratio * 6),
                         ),
-                        Row(children: [
-                          Text('Phone:',
-                          style: TextStyle(
-                            fontSize: ratio * 6,
-                            fontWeight: FontWeight.bold,
-                          ),),
-                          Text('${visit['phoneno'] ?? 'N/A'}',
-                          style: TextStyle(
-                            fontSize: ratio * 6,
-                          ),),
-                        ],)
+                        Row(
+                          children: [
+                            Text(
+                              'Phone:',
+                              style: TextStyle(
+                                fontSize: ratio * 6,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              '${visit['phoneno'] ?? 'N/A'}',
+                              style: TextStyle(fontSize: ratio * 6),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
-                    Column(
-                      children: [
-                        ElevatedButton(
-                      onPressed: () => showDetail(context, visit),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF03a9f4),
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: MediaQuery.of(context).size.width * 0.06,
-                          vertical: MediaQuery.of(context).size.height * 0.006,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                            MediaQuery.of(context).size.width * 0.07,
+                  ),
+                  Column(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => showDetail(context, visit),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF03a9f4),
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            horizontal:
+                                MediaQuery.of(context).size.width * 0.06,
+                            vertical:
+                                MediaQuery.of(context).size.height * 0.006,
                           ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              MediaQuery.of(context).size.width * 0.07,
+                            ),
+                          ),
+                          elevation: 4,
                         ),
-                        elevation: 4,
+                        child: Text("More"),
                       ),
-                      child: Text("More"),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        final startLocationRaw = visit['start_Location']
-                            ?.toString()
-                            .replaceAll('"', '');
-                        final endLocationRaw = visit['end_Location']
-                            ?.toString()
-                            .replaceAll('"', '');
+                      IconButton(
+                        onPressed: () {
+                          final startLocationRaw = visit['start_Location']
+                              ?.toString()
+                              .replaceAll('"', '');
+                          final endLocationRaw = visit['end_Location']
+                              ?.toString()
+                              .replaceAll('"', '');
 
-                        LatLng? parseCoord(String? coordStr) {
-                          if (coordStr == null || coordStr.isEmpty) return null;
-                          final parts =
-                              coordStr.split(',').map((e) => e.trim()).toList();
-                          if (parts.length == 2) {
-                            final lat = double.tryParse(parts[0]);
-                            final lng = double.tryParse(parts[1]);
-                            if (lat != null && lng != null)
-                              return LatLng(lat, lng);
+                          LatLng? parseCoord(String? coordStr) {
+                            if (coordStr == null || coordStr.isEmpty)
+                              return null;
+                            final parts =
+                                coordStr
+                                    .split(',')
+                                    .map((e) => e.trim())
+                                    .toList();
+                            if (parts.length == 2) {
+                              final lat = double.tryParse(parts[0]);
+                              final lng = double.tryParse(parts[1]);
+                              if (lat != null && lng != null)
+                                return LatLng(lat, lng);
+                            }
+                            return null;
                           }
-                          return null;
-                        }
 
-                        final startLatLng = parseCoord(startLocationRaw);
-                        final endLatLng = parseCoord(endLocationRaw);
+                          final startLatLng = parseCoord(startLocationRaw);
+                          final endLatLng = parseCoord(endLocationRaw);
 
-                        List<LatLng> points = [];
+                          List<LatLng> points = [];
 
-                        if (startLatLng != null) points.add(startLatLng);
-                        if (endLatLng != null) points.add(endLatLng);
+                          if (startLatLng != null) points.add(startLatLng);
+                          if (endLatLng != null) points.add(endLatLng);
 
-                        if (points.isNotEmpty) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => SimpleMapScreen(points: points),
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('No valid coordinates found'),
-                            ),
-                          );
-                        }
-                      },
-                      icon: Icon(
-                        FontAwesomeIcons.mapLocationDot,
-                        color: Color(0xFF03a9f4),
-                        size: ratio * 10,
+                          if (points.isNotEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        SimpleMapScreen(points: points),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('No valid coordinates found'),
+                              ),
+                            );
+                          }
+                        },
+                        icon: Icon(
+                          FontAwesomeIcons.mapLocationDot,
+                          color: Color(0xFF03a9f4),
+                          size: ratio * 10,
+                        ),
                       ),
-                    ),
-                      ],
-                    )
-                  ],
-                ),
-                isThreeLine: true,
+                    ],
+                  ),
+                ],
               ),
             );
           },
