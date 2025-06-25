@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:employee_tracker/Screens/Admin%20Report/Attendance.dart';
 import 'package:employee_tracker/Screens/Admin%20Report/VisitReport.dart';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
+import 'package:employee_tracker/Screens/Components/GridItem.dart';
 import 'package:employee_tracker/Screens/Employee%20Reports/employeeList.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
 import 'package:employee_tracker/Screens/create%20employee/Master.dart';
@@ -132,8 +133,7 @@ class AdminhomeState extends State<AdminHome> {
         MaterialPageRoute(builder: (context) => CreateScreen()),
         (route) => false,
       );
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   void dropUp() {
@@ -267,7 +267,14 @@ class AdminhomeState extends State<AdminHome> {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            IconButton(onPressed: ()=>Alert.alert(context, "Comming Soon..."), icon: Icon(Icons.notifications,size: ratio*15,color: Colors.white,)),
+            IconButton(
+              onPressed: () => Alert.alert(context, "Comming Soon..."),
+              icon: Icon(
+                Icons.notifications,
+                size: ratio * 15,
+                color: Colors.white,
+              ),
+            ),
             GestureDetector(
               onTapDown: _openDropdown,
               child: Container(
@@ -282,8 +289,8 @@ class AdminhomeState extends State<AdminHome> {
                       (image != null && image.isNotEmpty)
                           ? Image.network(
                             'https://testapi.rabadtechnology.com/$image',
-                           width: ratio * 18,
-                            height:  ratio * 18,
+                            width: ratio * 18,
+                            height: ratio * 18,
                             fit: BoxFit.cover,
                           )
                           : Icon(
@@ -307,7 +314,7 @@ class AdminhomeState extends State<AdminHome> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: ratio*85,
+                    height: ratio * 85,
                     decoration: BoxDecoration(color: Color(0xFF03a9f4)),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -384,7 +391,7 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
-                  SizedBox(height: ratio*1),
+                  SizedBox(height: ratio * 1),
                   ListTile(
                     leading: Icon(Icons.people_alt, size: ratio * 10),
                     title: Text(
@@ -577,427 +584,176 @@ class AdminhomeState extends State<AdminHome> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(5),
-          child: Column(
-            children: <Widget>[
-              Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(
-                      top: 0,
-                      bottom: ratio * 1,
-                      right: ratio * 5,
-                      left: ratio * 5,
+      body: Padding(
+        padding: const EdgeInsets.all(5),
+        child: Column(
+          children: <Widget>[
+            Column(
+              children: [
+                Container(
+                  margin: EdgeInsets.only(
+                    top: 0,
+                    bottom: ratio * 1,
+                    right: ratio * 5,
+                    left: ratio * 5,
+                  ),
+                  width: double.infinity,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 6,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
                     ),
-                    width: double.infinity,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 6,
-                            offset: Offset(0, 3), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      width: deviceWidth * 0.9,
-                      child: Column(
-                        children: [
-                          Column(
-                            children: [
-                              SizedBox(height: 10),
-                              Row(
-                                children: [
-                                  SizedBox(width: deviceWidth * 0.03),
-                                  Container(
-                                    width: ratio * 50,
-                                    height: ratio * 30,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                        ratio * 5,
+                    width: deviceWidth * 0.9,
+                    child: Column(
+                      children: [
+                        Column(
+                          children: [
+                            SizedBox(height: 10),
+                            Row(
+                              children: [
+                                SizedBox(width: deviceWidth * 0.03),
+                                Container(
+                                  width: ratio * 50,
+                                  height: ratio * 30,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(
+                                      ratio * 5,
+                                    ),
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                        'https://testapi.rabadtechnology.com/$image',
                                       ),
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                          'https://testapi.rabadtechnology.com/$image',
-                                        ),
-                                        fit: BoxFit.cover,
-                                      ),
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
-                                  SizedBox(width: 10),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        comName,
-                                        style: TextStyle(
-                                          fontSize: ratio * 7,
-                                          fontWeight: FontWeight.w600,
-                                          color: Colors.black,
-                                        ),
-                                        softWrap: true,
-                                        overflow:
-                                            TextOverflow
-                                                .visible, // or TextOverflow.ellipsis
-                                        maxLines: null, // allow multiple lines
+                                ),
+                                SizedBox(width: 10),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      comName,
+                                      style: TextStyle(
+                                        fontSize: ratio * 7,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black,
                                       ),
-                                      Text(
-                                        key_person,
-                                        style: TextStyle(
-                                          fontSize: ratio * 7,
-                                          fontWeight: FontWeight.w400,
-                                        ),
+                                      softWrap: true,
+                                      overflow:
+                                          TextOverflow
+                                              .visible, // or TextOverflow.ellipsis
+                                      maxLines: null, // allow multiple lines
+                                    ),
+                                    Text(
+                                      key_person,
+                                      style: TextStyle(
+                                        fontSize: ratio * 7,
+                                        fontWeight: FontWeight.w400,
                                       ),
-                                      Text(
-                                        email,
-                                        style: TextStyle(
-                                          fontSize: ratio * 6,
-                                          fontWeight: FontWeight.w400,
-                                        ),
+                                    ),
+                                    Text(
+                                      email,
+                                      style: TextStyle(
+                                        fontSize: ratio * 6,
+                                        fontWeight: FontWeight.w400,
                                       ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                        ],
-                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                      ],
                     ),
+                  ),
+                ),
+              ],
+            ),
+
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: ratio * 5,
+                mainAxisSpacing: ratio * 8,
+                physics: AlwaysScrollableScrollPhysics(), // ENABLE SCROLLING
+                padding: EdgeInsets.all(ratio * 4),
+                children: [
+                  DashboardTile(
+                    title: "Att. Report",
+                    imagePath: 'assets/images/Att  Report.png',
+                    deviceWidth: deviceWidth,
+                    ratio: ratio,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => Attendance()),
+                      );
+                    },
+                  ),
+                  DashboardTile(
+                    title: "Visit Report",
+                    imagePath: 'assets/images/visit_report.png',
+                    deviceWidth: deviceWidth,
+                    ratio: ratio,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => AdminVisitreport()),
+                      );
+                    },
+                  ),
+                  DashboardTile(
+                    title: "Add Employee",
+                    imagePath: 'assets/images/addEmp.png',
+                    deviceWidth: deviceWidth,
+                    ratio: ratio,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => CreateEmployee()),
+                      );
+                    },
+                  ),
+                  DashboardTile(
+                    title: "Designation",
+                    imagePath: 'assets/images/Designation.png',
+                    deviceWidth: deviceWidth,
+                    ratio: ratio,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => Master()),
+                      );
+                    },
+                  ),
+                  DashboardTile(
+                    title: "View Employee",
+                    imagePath: 'assets/images/empList.png',
+                    deviceWidth: deviceWidth,
+                    ratio: ratio,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => Employeelist()),
+                      );
+                    },
                   ),
                 ],
               ),
+            ),
 
-              SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                width: deviceWidth * 0.9,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed:
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Attendance(),
-                              ),
-                            ),
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 6,
-                                offset: Offset(
-                                  0,
-                                  3,
-                                ), // changes position of shadow
-                              ),
-                            ],
-                          ),
-
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Att. Report",
-                                style: TextStyle(
-                                  fontSize: ratio * 7,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Image.asset(
-                                'assets/images/Att  Report.png',
-                                width: deviceWidth * 0.4,
-                                height: deviceWidth * 0.3,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: TextButton(
-                        onPressed:
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AdminVisitreport(),
-                              ),
-                            ),
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 6,
-                                offset: Offset(
-                                  0,
-                                  3,
-                                ), // changes position of shadow
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Visit Report",
-                                style: TextStyle(
-                                  fontSize: ratio * 7,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Image.asset(
-                                'assets/images/visit_report.png',
-                                width: deviceWidth * 0.6,
-                                height: deviceWidth * 0.3,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                    10,
-                  ), // Optional: Adds rounded corners
-                ),
-                width: deviceWidth * 0.9,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed:
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => CreateEmployee(),
-                              ),
-                            ),
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 6,
-                                offset: Offset(
-                                  0,
-                                  3,
-                                ), // changes position of shadow
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Add Employee",
-                                style: TextStyle(
-                                  fontSize: ratio * 7,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Image.asset(
-                                'assets/images/addEmp.png',
-                                width: deviceWidth * 0.6,
-                                height: deviceWidth * 0.3,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: TextButton(
-                        onPressed:
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Master()),
-                            ),
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 6,
-                                offset: Offset(
-                                  0,
-                                  3,
-                                ), // changes position of shadow
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Designation",
-                                style: TextStyle(
-                                  fontSize: ratio * 7,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Image.asset(
-                                'assets/images/Designation.png',
-                                width: deviceWidth * 0.6,
-                                height: deviceWidth * 0.3,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(
-                    10,
-                  ), // Optional: Adds rounded corners
-                ),
-                width: deviceWidth * 0.9,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed:
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => Employeelist(),
-                              ),
-                            ),
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 6,
-                                offset: Offset(
-                                  0,
-                                  3,
-                                ), // changes position of shadow
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "View Employee",
-                                style: TextStyle(
-                                  fontSize: ratio * 7,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Image.asset(
-                                'assets/images/empList.png',
-                                width: deviceWidth * 0.6,
-                                height: deviceWidth * 0.3,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                   /*  Expanded(
-                      child: TextButton(
-                        onPressed:
-                            () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ImageMatchWithReference(),
-                              ),
-                            ),
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.withOpacity(0.5),
-                                spreadRadius: 2,
-                                blurRadius: 6,
-                                offset: Offset(
-                                  0,
-                                  3,
-                                ), // changes position of shadow
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "Emp Scanner",
-                                style: TextStyle(
-                                  fontSize: ratio * 7,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Image.asset(
-                                'assets/images/faceScanner.jpg',
-                                width: deviceWidth * 0.6,
-                                height: deviceWidth * 0.3,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ), */
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
-            ],
-          ),
+            SizedBox(height: 10),
+          ],
         ),
       ),
     );
