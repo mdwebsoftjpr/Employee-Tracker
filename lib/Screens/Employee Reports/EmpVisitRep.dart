@@ -83,7 +83,6 @@ class EmpvisitrepState extends State<Empvisitrep> {
 
     if (selected != null) {
       setState(() {
-        // Format month as yyyy-MM
         month = DateFormat('MM').format(selected);
         day = '';
       });
