@@ -9,6 +9,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
+import 'package:open_file/open_file.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 
 final LocalStorage localStorage = LocalStorage('employee_tracker');
 
@@ -43,6 +48,8 @@ class AttendanceState extends State<Attendance> {
   List<Map<String, dynamic>> attendanceData = [];
   bool isLoading = true;
   String day = '';
+  DateTime? startDate;
+  DateTime? endDate;
   String formatDate(String inputDate) {
     DateTime date = DateTime.parse(inputDate);
     String formatted =
@@ -111,6 +118,224 @@ class AttendanceState extends State<Attendance> {
     } catch (e) {
       if (mounted) setState(() => isLoading = false);
       Alert.alert(context, 'Error: ${e.toString()}');
+    }
+  }
+
+  void DownlodData() async {
+    if (comId == null) return;
+    print("$startDate $endDate");
+    final url = Uri.parse(
+      'https://testapi.rabadtechnology.com/allemployeeattendence.php',
+    );
+    final Map<String, dynamic> requestBody = {
+      "company_id": comId,
+      "currentDate": day,
+    };
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(requestBody),
+      );
+      final responseData = jsonDecode(response.body);
+      if (responseData['success'] && responseData['data'] != null) {
+        if (mounted) {
+          exportJsonToExcel(
+            List<Map<String, dynamic>>.from(responseData['data']),
+          );
+           isLoading = false;
+        }
+      } else {
+        if (mounted) setState(() => isLoading = false);
+        Alert.alert(context, responseData['message']);
+        setState(() {
+          attendanceData = [];
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => isLoading = false);
+      Alert.alert(context, 'Error: ${e.toString()}');
+    }
+  }
+
+Future<void> _showDateRangePickerDialog(double ratio) async {
+  DateTime? tempStart = DateTime.now();
+  DateTime? tempEnd = DateTime.now();
+
+  await showDialog(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            backgroundColor: Colors.white,
+            title: Row(
+              children: [
+                Icon(Icons.date_range, color: Colors.blue),
+                SizedBox(width: 8),
+                Text(
+                  "Select Date Range",
+                  style: TextStyle(
+                    fontSize: ratio * 7.5,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  tileColor: Colors.grey[100],
+                  leading: Icon(Icons.calendar_today, color: Colors.blue),
+                  title: Text(
+                    "Start Date: ${DateFormat('dd-MM-yyyy').format(tempStart!)}",
+                    style: TextStyle(fontSize: ratio * 6.5),
+                  ),
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: tempStart!,
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime(2100),
+                    );
+                    if (picked != null) {
+                      setState(() {
+                        tempStart = picked;
+                        startDate = picked;
+                      });
+                    }
+                  },
+                ),
+                SizedBox(height: 12),
+                ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  tileColor: Colors.grey[100],
+                  leading: Icon(Icons.calendar_month, color: Colors.green),
+                  title: Text(
+                    "End Date: ${DateFormat('dd-MM-yyyy').format(tempEnd!)}",
+                    style: TextStyle(fontSize: ratio * 6.5),
+                  ),
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: context,
+                      initialDate: tempEnd!,
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime(2100),
+                    );
+                    if (picked != null) {
+                      setState(() {
+                        tempEnd = picked;
+                        endDate = picked;
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
+            actionsPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            actionsAlignment: MainAxisAlignment.spaceBetween,
+            actions: [
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  DownlodData();
+                },
+                icon: Icon(Icons.download, size: ratio * 8),
+                label: Text(
+                  "Download",
+                  style: TextStyle(fontSize: ratio * 6.5),
+                ),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blueAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(
+                    fontSize: ratio * 6.5,
+                    color: Colors.red,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              )
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+
+  Future<void> exportJsonToExcel(List<Map<String, dynamic>> data) async {
+    final workbook = xlsio.Workbook();
+    final sheet = workbook.worksheets[0];
+
+    if (data.isEmpty) {
+      print("No data to export.");
+      return;
+    }
+
+    final headers = data.first.keys.toList();
+
+    // Write headers
+    for (int col = 0; col < headers.length; col++) {
+      sheet.getRangeByIndex(1, col + 1).setText(headers[col]);
+    }
+
+    // Write rows
+    for (int row = 0; row < data.length; row++) {
+      final rowData = data[row];
+      for (int col = 0; col < headers.length; col++) {
+        final value = rowData[headers[col]];
+        sheet
+            .getRangeByIndex(row + 2, col + 1)
+            .setText(value?.toString() ?? '');
+      }
+    }
+
+    final bytes = workbook.saveAsStream();
+    workbook.dispose();
+
+    final tempDir = await getTemporaryDirectory();
+    final tempFile = File('${tempDir.path}/attendance_export.xlsx');
+    await tempFile.writeAsBytes(bytes);
+
+    
+    final params = SaveFileDialogParams(
+      sourceFilePath: tempFile.path,
+      fileName: 'attendance__${formatDate(day.toString())}.xlsx',
+    );
+
+    final savedPath = await FlutterFileDialog.saveFile(params: params);
+
+    if (savedPath != null) {
+      print("✅ File saved to: $savedPath");
+
+      // Optionally open the file
+      await OpenFile.open(savedPath);
+    } else {
+      print("❌ File save cancelled or failed.");
     }
   }
 
@@ -365,8 +590,6 @@ class AttendanceState extends State<Attendance> {
         day = DateFormat('yyyy-MM-dd').format(pickedDate);
         isLoading = true;
       });
-
-      // Fetch attendance for the selected date
       ShowMaster();
     }
   }
@@ -440,13 +663,37 @@ class AttendanceState extends State<Attendance> {
         backgroundColor: Color(0xFF03a9f4),
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
-          'Daily Attendance Detail',
+          'Employee Attendance',
           style: TextStyle(
             fontSize: ratio * 9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Column(
+              children: [
+                Icon(Icons.sim_card_download, size: ratio * 9),
+                Text(
+                  'Downlod Att.',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: ratio * 5,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            onPressed: () async {
+              if (attendanceData.isNotEmpty) {
+                _showDateRangePickerDialog(ratio);
+              } else {
+                Alert.alert(context, "No data to export");
+              }
+            },
+          ),
+        ],
       ),
       body:
           isLoading
@@ -851,7 +1098,9 @@ class AttendanceState extends State<Attendance> {
                                                           ), // spacing between text and dot
                                                           Center(
                                                             child: Lottie.asset(
-                                                              'assets/RedDot.json',width: ratio*5,height: ratio*5
+                                                              'assets/RedDot.json',
+                                                              width: ratio * 5,
+                                                              height: ratio * 5,
                                                             ),
                                                           ),
                                                         ],
