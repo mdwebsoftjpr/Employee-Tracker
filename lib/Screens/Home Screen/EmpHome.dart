@@ -19,6 +19,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -214,8 +215,6 @@ class _EmpHomeState extends State<EmpHome> {
     } catch (e) {}
   }
 
-
-
   Future<File?> compressImage(XFile xFile) async {
     setState(() {
       isLoading = true;
@@ -266,13 +265,11 @@ class _EmpHomeState extends State<EmpHome> {
     }
   }
 
-  
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
 
-    
     if (index == 0) {
       Navigator.pushReplacement(
         context,
@@ -298,7 +295,6 @@ class _EmpHomeState extends State<EmpHome> {
 
   String? _selectedValue;
 
-  
   final List<String> _options = ['Option 1', 'Option 2', 'Option 3'];
 
   String currentDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
@@ -552,14 +548,44 @@ class _EmpHomeState extends State<EmpHome> {
     bool serviceEnabled;
     LocationPermission permission;
 
-    // Check if location services are enabled
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
+      /* 
       Alert.alert(context, 'Location services are disabled. Please enable.');
-      await Geolocator.openLocationSettings();
+      await Geolocator.openLocationSettings(); */
+      Get.defaultDialog(
+        title: "Location Required",
+        middleText: "Please enable location services to continue.",
+        backgroundColor: Colors.white, 
+
+        titleStyle: TextStyle(
+          color: Colors.indigo, 
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+
+        middleTextStyle: TextStyle(
+          color: Colors.black87, // 🔧 Message text color
+          fontSize: 16,
+        ),
+
+        radius: 12,
+        textCancel: "Cancel",
+        textConfirm: "Open Settings",
+        confirmTextColor: Colors.white,
+        cancelTextColor: Colors.indigo,
+        onCancel: () {
+          Get.back();
+        },
+        onConfirm: () async {
+          await Geolocator.openLocationSettings();
+          Get.back();
+        },
+        buttonColor: Colors.indigo, 
+      );
+
       return;
     }
-    // Check permission
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
