@@ -62,7 +62,10 @@ class CreateComState extends State<CreateCom> {
       maxHeight: 600,
     );
     if (pickedFile != null) {
-      final compressed = await compressImage(pickedFile);
+      setState(() => _imageFile = pickedFile.path != null
+          ? File(pickedFile.path)
+          : null);
+     /*  final compressed = await compressImage(pickedFile);
       if (compressed != null) {
         setState(() {
           _imageFile = compressed;
@@ -74,7 +77,7 @@ class CreateComState extends State<CreateCom> {
             backgroundColor: Colors.red,
           ),
         );
-      }
+      } */
     }
   }
 
