@@ -1,5 +1,6 @@
 import 'package:employee_tracker/Screens/Admin%20Report/VisitRepMap.dart';
 import 'package:flutter/material.dart';
+import 'package:get/route_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
@@ -20,7 +21,7 @@ final LocalStorage localStorage = LocalStorage('employee_tracker');
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
-  runApp(MaterialApp(home: Attendance(), debugShowCheckedModeBanner: false));
+  runApp(GetMaterialApp(home: Attendance(), debugShowCheckedModeBanner: false));
 }
 
 Future<void> _initializeLocalStorage() async {
@@ -123,7 +124,6 @@ class AttendanceState extends State<Attendance> {
 
   void DownlodData() async {
     if (comId == null) return;
-    print("$startDate $endDate");
     final url = Uri.parse(
       'https://testapi.rabadtechnology.com/allemployeeattendence.php',
     );
@@ -292,7 +292,7 @@ Future<void> _showDateRangePickerDialog(double ratio) async {
     final sheet = workbook.worksheets[0];
 
     if (data.isEmpty) {
-      print("No data to export.");
+      Get.snackbar("EmpAttend","No data to export.",duration: Duration(seconds: 3));
       return;
     }
 
@@ -330,12 +330,12 @@ Future<void> _showDateRangePickerDialog(double ratio) async {
     final savedPath = await FlutterFileDialog.saveFile(params: params);
 
     if (savedPath != null) {
-      print("✅ File saved to: $savedPath");
+      Get.snackbar("EmpAttend","✅ File saved to: $savedPath",duration: Duration(seconds: 3));
 
       // Optionally open the file
       await OpenFile.open(savedPath);
     } else {
-      print("❌ File save cancelled or failed.");
+      Get.snackbar("EmpAttend","❌ File save cancelled or failed.",duration: Duration(seconds: 3));
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/AdminHome.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'Screens/Create Company/CreateCom.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -37,7 +38,7 @@ void main() async {
     homeScreen = CreateScreen();
   }
 
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: SplashScreen()));
+  runApp(GetMaterialApp(debugShowCheckedModeBanner: false, home: SplashScreen()));
 }
 
 

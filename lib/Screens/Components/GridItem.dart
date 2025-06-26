@@ -1,12 +1,9 @@
-// lib/widgets/dashboard_tile.dart
-
 import 'package:flutter/material.dart';
 
 class DashboardTile extends StatelessWidget {
   final String title;
   final String imagePath;
   final VoidCallback onTap;
-
   final double deviceWidth;
   final double ratio;
 
