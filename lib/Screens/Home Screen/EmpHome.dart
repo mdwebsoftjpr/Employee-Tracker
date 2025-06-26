@@ -559,7 +559,6 @@ class _EmpHomeState extends State<EmpHome> {
       await Geolocator.openLocationSettings();
       return;
     }
-
     // Check permission
     permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
