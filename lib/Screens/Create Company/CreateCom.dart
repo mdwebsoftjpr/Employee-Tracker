@@ -55,7 +55,12 @@ class CreateComState extends State<CreateCom> {
   final TextEditingController NoOfEmp = TextEditingController();
 
   Future<void> pickImage(context) async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 20,
+      maxWidth: 600,
+      maxHeight: 600,
+    );
     if (pickedFile != null) {
       final compressed = await compressImage(pickedFile);
       if (compressed != null) {
@@ -220,19 +225,19 @@ class CreateComState extends State<CreateCom> {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
     var ratio;
-    if(deviceWidth<deviceHeight){
-      ratio=deviceHeight/deviceWidth;
-    }else{
-      ratio=deviceWidth/deviceHeight;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
     }
 
     InputDecoration buildInput(String label, IconData icon) {
       return InputDecoration(
         labelText: label,
-        contentPadding: EdgeInsets.all(ratio*7),
-        labelStyle: TextStyle(fontSize: ratio*7, color: Colors.black),
+        contentPadding: EdgeInsets.all(ratio * 7),
+        labelStyle: TextStyle(fontSize: ratio * 7, color: Colors.black),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ratio*7),
+          borderRadius: BorderRadius.circular(ratio * 7),
         ),
         filled: true,
         fillColor: Colors.grey[200],
@@ -269,7 +274,7 @@ class CreateComState extends State<CreateCom> {
         title: Text(
           'Create Company',
           style: TextStyle(
-            fontSize: ratio*9,
+            fontSize: ratio * 9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -283,7 +288,7 @@ class CreateComState extends State<CreateCom> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:ratio*25,
+                      radius: ratio * 25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here
@@ -307,7 +312,7 @@ class CreateComState extends State<CreateCom> {
                             backgroundImage: FileImage(_imageFile!),
                           )
                           : Container(
-                            width:deviceWidth * 0.32,
+                            width: deviceWidth * 0.32,
                             height: deviceWidth * 0.32,
                             decoration: BoxDecoration(
                               color: Colors.grey[300],
@@ -528,7 +533,7 @@ class CreateComState extends State<CreateCom> {
                                 Text(
                                   'Terms & Conditions',
                                   style: TextStyle(
-                                    fontSize: ratio*7,
+                                    fontSize: ratio * 7,
                                     color: Colors.blue,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -563,7 +568,7 @@ class CreateComState extends State<CreateCom> {
                                 Text(
                                   'Privacy Policy',
                                   style: TextStyle(
-                                    fontSize: ratio*7,
+                                    fontSize: ratio * 7,
                                     color: Colors.blue,
                                     fontWeight: FontWeight.w500,
                                   ),
@@ -582,8 +587,8 @@ class CreateComState extends State<CreateCom> {
                             borderRadius: BorderRadius.circular(40),
                           ),
                           padding: EdgeInsets.symmetric(
-                            horizontal: ratio*15,
-                            vertical: ratio*5,
+                            horizontal: ratio * 15,
+                            vertical: ratio * 5,
                           ),
                         ),
                         child: Text(

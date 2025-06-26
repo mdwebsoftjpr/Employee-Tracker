@@ -94,8 +94,7 @@ class UpdatecomState extends State<Updatecom> {
           PanNo.text = user['pan_card'] ?? '';
           NoOfEmp.text = (user['noofemp'] ?? '').toString();
         });
-      } catch (e) {
-      }
+      } catch (e) {}
     }
   }
 
@@ -116,140 +115,147 @@ class UpdatecomState extends State<Updatecom> {
     super.dispose();
   }
 
- Future<void> pickImage(context) async {
-  final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-  if (pickedFile != null) {
-    final compressed = await compressImage(pickedFile);
-    if (compressed != null && await compressed.length() <= 15 * 1024) {
-      if (mounted) {
-        setState(() => _imageFile = compressed);
-      }
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Failed to compress image under 15KB.'),
-          backgroundColor: Colors.red,
-        ));
-      }
+  Future<void> pickImage(context) async {
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 20,
+      maxWidth: 600,
+      maxHeight: 600,
+    );
+    if (pickedFile != null) {
+      setState(() => _imageFile = pickedFile.path != null
+          ? File(pickedFile.path)
+          : null);
+      /* final compressed = await compressImage(pickedFile);
+      if (compressed != null && await compressed.length() <= 15 * 1024) {
+        if (mounted) {
+          setState(() => _imageFile = compressed);
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to compress image under 15KB.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } */
     }
   }
-}
 
+  /* Future<File?> compressImage(XFile xFile) async {
+    if (!mounted) return null;
+    setState(() => isLoading = true);
 
+    final File file = File(xFile.path);
+    final dir = await getTemporaryDirectory();
+    const int maxSizeInBytes = 15 * 1024;
+    int minWidth = 300;
+    int minHeight = 300;
+    File? compressedFile;
 
-Future<File?> compressImage(XFile xFile) async {
-  if (!mounted) return null;
-  setState(() => isLoading = true);
+    for (int quality = 60; quality >= 10; quality -= 5) {
+      final String targetPath = join(
+        dir.path,
+        'compressed_${quality}_${DateTime.now().millisecondsSinceEpoch}_${basename(file.path)}',
+      );
 
-  final File file = File(xFile.path);
-  final dir = await getTemporaryDirectory();
-  const int maxSizeInBytes = 15 * 1024;
-  int minWidth = 300;
-  int minHeight = 300;
-  File? compressedFile;
+      final result = await FlutterImageCompress.compressAndGetFile(
+        file.path,
+        targetPath,
+        quality: quality,
+        minWidth: minWidth,
+        minHeight: minHeight,
+        format: CompressFormat.jpeg,
+      );
 
-  for (int quality = 60; quality >= 10; quality -= 5) {
-    final String targetPath = join(
-        dir.path, 'compressed_${quality}_${DateTime.now().millisecondsSinceEpoch}_${basename(file.path)}');
+      if (result != null) {
+        final length = await result.length();
+        if (length <= maxSizeInBytes) {
+          compressedFile = File(result.path);
+          break;
+        }
+      }
 
-    final result = await FlutterImageCompress.compressAndGetFile(
-      file.path,
-      targetPath,
-      quality: quality,
-      minWidth: minWidth,
-      minHeight: minHeight,
-      format: CompressFormat.jpeg,
+      minWidth = (minWidth * 0.85).toInt();
+      minHeight = (minHeight * 0.85).toInt();
+    }
+
+    if (mounted) setState(() => isLoading = false);
+    return compressedFile;
+  }
+ */
+  void company_update(context) async {
+    if (mounted) setState(() => isLoading = true);
+
+    if (userdata == null) {
+      Alert.alert(context, 'User data not loaded.');
+      return;
+    }
+
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('https://testapi.rabadtechnology.com/company_update.php'),
     );
 
-    if (result != null) {
-      final length = await result.length();
-      if (length <= maxSizeInBytes) {
-        compressedFile = File(result.path);
-        break;
+    request.fields.addAll({
+      'company_id': userdata!['id'].toString(),
+      'company_name': cname.text,
+      'key_person': keyPerson.text,
+      'gstin_no': Gst.text,
+      'pan_card': PanNo.text,
+      'mobile_no': mobile.text,
+      'email': email.text,
+      'address': address.text,
+      'website_link': website.text,
+      'username': loginUserName.text,
+      'password': password.text,
+      'noofemp': NoOfEmp.text,
+    });
+
+    try {
+      if (_imageFile != null) {
+        request.files.add(
+          await http.MultipartFile.fromPath('image', _imageFile!.path),
+        );
       }
+
+      final response = await request.send();
+      final responseBody = await http.Response.fromStream(response);
+      final Map<String, dynamic> data = jsonDecode(responseBody.body);
+
+      if (data['success'] == true) {
+        await Alert.alert(context, "Thank you, ${data['message']}.");
+        Navigator.push(context, MaterialPageRoute(builder: (_) => AdminHome()));
+      } else {
+        Alert.alert(context, data['message']);
+      }
+    } catch (e) {
+      Alert.alert(context, 'Error: $e');
+    } finally {
+      if (mounted) setState(() => isLoading = false);
     }
-
-    minWidth = (minWidth * 0.85).toInt();
-    minHeight = (minHeight * 0.85).toInt();
   }
-
-  if (mounted) setState(() => isLoading = false);
-  return compressedFile;
-}
-
-void company_update(context) async {
-  if (mounted) setState(() => isLoading = true);
-
-  if (userdata == null) {
-    Alert.alert(context, 'User data not loaded.');
-    return;
-  }
-
-  final request = http.MultipartRequest(
-    'POST',
-    Uri.parse('https://testapi.rabadtechnology.com/company_update.php'),
-  );
-
-  request.fields.addAll({
-    'company_id': userdata!['id'].toString(),
-    'company_name': cname.text,
-    'key_person': keyPerson.text,
-    'gstin_no': Gst.text,
-    'pan_card': PanNo.text,
-    'mobile_no': mobile.text,
-    'email': email.text,
-    'address': address.text,
-    'website_link': website.text,
-    'username': loginUserName.text,
-    'password': password.text,
-    'noofemp': NoOfEmp.text,
-  });
-
-  try {
-    if (_imageFile != null) {
-  request.files.add(await http.MultipartFile.fromPath('image', _imageFile!.path));
-}
-
-    final response = await request.send();
-    final responseBody = await http.Response.fromStream(response);
-    final Map<String, dynamic> data = jsonDecode(responseBody.body);
-
-    if (data['success'] == true) {
-      await Alert.alert(context, "Thank you, ${data['message']}.");
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => AdminHome()),
-      );
-    } else {
-      Alert.alert(context, data['message']);
-    }
-  } catch (e) {
-    Alert.alert(context, 'Error: $e');
-  } finally {
-    if (mounted) setState(() => isLoading = false);
-  }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
     var ratio;
-    if(deviceWidth<deviceHeight){
-      ratio=deviceHeight/deviceWidth;
-    }else{
-      ratio=deviceWidth/deviceHeight;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
     }
 
     InputDecoration buildInput(String label, IconData icon) {
       return InputDecoration(
         labelText: label,
-        contentPadding: EdgeInsets.all(ratio*7),
-        labelStyle: TextStyle(fontSize: ratio*7, color: Colors.black),
+        contentPadding: EdgeInsets.all(ratio * 7),
+        labelStyle: TextStyle(fontSize: ratio * 7, color: Colors.black),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(ratio*5),
+          borderRadius: BorderRadius.circular(ratio * 5),
         ),
         filled: true,
         fillColor: Colors.grey[200],
@@ -257,7 +263,7 @@ void company_update(context) async {
       );
     }
 
-      Widget buildTextField({
+    Widget buildTextField({
       required TextEditingController controller,
       required String label,
       required IconData icon,
@@ -286,7 +292,7 @@ void company_update(context) async {
         title: Text(
           'Update Company Details',
           style: TextStyle(
-            fontSize: ratio*9,
+            fontSize: ratio * 9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -300,7 +306,7 @@ void company_update(context) async {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:ratio*25,
+                      radius: ratio * 25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here
@@ -333,7 +339,7 @@ void company_update(context) async {
                           ),
 
                       ElevatedButton(
-                        onPressed:()=> pickImage(context),
+                        onPressed: () => pickImage(context),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -383,7 +389,10 @@ void company_update(context) async {
                         controller: Gst,
                         label: 'Enter Your GSTIN No.',
                         icon: Icons.account_balance,
-                        inputFormatters: [UpperCaseTextFormatter(),FilteringTextInputFormatter.deny(RegExp(r'\s')),],
+                        inputFormatters: [
+                          UpperCaseTextFormatter(),
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
                         validator:
                             (v) =>
                                 v!.length != 15
@@ -395,7 +404,10 @@ void company_update(context) async {
                         controller: PanNo,
                         label: 'Enter Your Pan Card No.',
                         icon: Icons.credit_card,
-                        inputFormatters: [UpperCaseTextFormatter(),FilteringTextInputFormatter.deny(RegExp(r'\s')),],
+                        inputFormatters: [
+                          UpperCaseTextFormatter(),
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
                         validator:
                             (v) =>
                                 v!.length != 10
@@ -419,7 +431,9 @@ void company_update(context) async {
                         controller: email,
                         label: 'Enter Your Email',
                         icon: Icons.email,
-                        inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s')),],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
                         validator:
                             (v) => !v!.contains('@') ? 'Invalid email' : null,
                       ),
@@ -450,7 +464,9 @@ void company_update(context) async {
                         controller: loginUserName,
                         label: 'Enter Your Login User Name',
                         icon: Icons.account_circle,
-                        inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s')),],
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                        ],
                         validator:
                             (v) =>
                                 v!.isEmpty
@@ -479,7 +495,7 @@ void company_update(context) async {
                                   setState(() => _obscureText = !_obscureText),
                         ),
                       ),
-                     
+
                       SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () => company_update(context),
@@ -489,15 +505,15 @@ void company_update(context) async {
                             borderRadius: BorderRadius.circular(40),
                           ),
                           padding: EdgeInsets.symmetric(
-                            horizontal: ratio*20,
-                            vertical: ratio*5,
+                            horizontal: ratio * 20,
+                            vertical: ratio * 5,
                           ),
                         ),
                         child: Text(
                           'Update Company',
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: ratio*8,
+                            fontSize: ratio * 8,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

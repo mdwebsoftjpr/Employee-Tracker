@@ -252,6 +252,9 @@ class _EmpHomeState extends State<EmpHome> {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.camera,
       preferredCameraDevice: CameraDevice.front,
+      imageQuality: 20,
+      maxWidth: 600,
+      maxHeight: 600,
     );
 
     if (pickedFile != null) {

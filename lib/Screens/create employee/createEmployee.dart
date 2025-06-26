@@ -130,6 +130,9 @@ class CreateEmpState extends State<CreateEmployee> {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.camera,
       preferredCameraDevice: CameraDevice.front,
+      imageQuality: 20,
+      maxWidth: 600,
+      maxHeight: 600,
     );
 
     if (pickedFile != null) {
@@ -171,37 +174,36 @@ class CreateEmpState extends State<CreateEmployee> {
   }
 
   Future<void> _pickDateDob(BuildContext context) async {
-  final DateTime? picked = await showDatePicker(
-    context: context,
-    initialDate: selectedDobDate ?? DateTime.now(),
-    firstDate: DateTime(1947),
-    lastDate: DateTime(2101),
-  );
-  if (picked != null && picked != selectedDobDate) {
-    setState(() {
-      selectedDobDate = picked;
-      formattedDobDate = DateFormat('yyyy-MM-dd').format(picked);
-      dob.text = formattedDobDate!;
-    });
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDobDate ?? DateTime.now(),
+      firstDate: DateTime(1947),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != selectedDobDate) {
+      setState(() {
+        selectedDobDate = picked;
+        formattedDobDate = DateFormat('yyyy-MM-dd').format(picked);
+        dob.text = formattedDobDate!;
+      });
+    }
   }
-}
 
-Future<void> _pickDateJoin(BuildContext context) async {
-  final DateTime? picked = await showDatePicker(
-    context: context,
-    initialDate: selectedJoinDate ?? DateTime.now(),
-    firstDate: DateTime(1975),
-    lastDate: DateTime(2101),
-  );
-  if (picked != null && picked != selectedJoinDate) {
-    setState(() {
-      selectedJoinDate = picked;
-      formattedJoinDate = DateFormat('yyyy-MM-dd').format(picked);
-      joinOfDate.text = formattedJoinDate!;
-    });
+  Future<void> _pickDateJoin(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedJoinDate ?? DateTime.now(),
+      firstDate: DateTime(1975),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != selectedJoinDate) {
+      setState(() {
+        selectedJoinDate = picked;
+        formattedJoinDate = DateFormat('yyyy-MM-dd').format(picked);
+        joinOfDate.text = formattedJoinDate!;
+      });
+    }
   }
-}
-
 
   Future<void> createEmp(BuildContext context) async {
     if (mounted) setState(() => isLoading = true);
@@ -287,10 +289,10 @@ Future<void> _pickDateJoin(BuildContext context) async {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
     var ratio;
-    if(deviceWidth<deviceHeight){
-      ratio=deviceHeight/deviceWidth;
-    }else{
-      ratio=deviceWidth/deviceHeight;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
     }
     return Scaffold(
       appBar: AppBar(
@@ -299,7 +301,7 @@ Future<void> _pickDateJoin(BuildContext context) async {
         title: Text(
           'Create Employee',
           style: TextStyle(
-            fontSize: ratio*9,
+            fontSize: ratio * 9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -313,7 +315,7 @@ Future<void> _pickDateJoin(BuildContext context) async {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:ratio*25,
+                      radius: ratio * 25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here
@@ -328,7 +330,7 @@ Future<void> _pickDateJoin(BuildContext context) async {
                 padding: EdgeInsets.only(
                   top: 0,
                   left: deviceWidth * 0.07,
-                  right:deviceWidth * 0.07,
+                  right: deviceWidth * 0.07,
                   bottom: 0,
                 ),
                 child: SingleChildScrollView(
@@ -378,20 +380,15 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Enter Name',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  ratio*7,
-                              horizontal:
-                                  ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                   ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                 ratio*7,
-                              ),
+                              borderRadius: BorderRadius.circular(ratio * 7),
                             ),
                             filled: true,
                             fillColor: Colors.grey[200],
@@ -411,19 +408,16 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Enter Date Of Birth',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  ratio*7,
-                              horizontal:
-                                 ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                ratio*7,
+                                ratio * 7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -449,20 +443,15 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Choose Designation',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  ratio*7,
-                              horizontal:
-                                  ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                ratio*7,
-                              ),
+                              borderRadius: BorderRadius.circular(ratio * 7),
                             ),
                             filled: true,
                             fillColor: Colors.grey[200],
@@ -517,19 +506,16 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Enter PAN Card No.',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  ratio*7,
-                              horizontal:
-                                  ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                ratio*7,
+                                ratio * 7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -553,19 +539,16 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Enter Mobile No.',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  ratio*7,
-                              horizontal:
-                                  ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                ratio*7,
+                                ratio * 7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -591,19 +574,16 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Enter Email',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  ratio*7,
-                              horizontal:
-                                  ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                ratio*7,
+                                ratio * 7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -626,19 +606,16 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Enter Address',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  ratio*7,
-                              horizontal:
-                                  ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                ratio*7,
+                                ratio * 7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -659,19 +636,16 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Enter Addhar Card No.',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  ratio*7,
-                              horizontal:
-                                  ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                ratio*7,
+                                ratio * 7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -695,26 +669,23 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Enter Salary',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  ratio*7,
-                              horizontal:
-                                  ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                ratio*7,
+                                ratio * 7,
                               ), // Set the border radius
                             ),
                             filled: true,
                             fillColor: Colors.grey[200],
                             prefixIcon: Icon(
                               FontAwesomeIcons.indianRupeeSign,
-                              size:ratio*7,
+                              size: ratio * 7,
                             ),
                           ),
                           keyboardType: TextInputType.phone,
@@ -732,19 +703,16 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Enter Working Hours',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  ratio*7,
-                              horizontal:
-                                  ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                ratio*7,
+                                ratio * 7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -765,19 +733,16 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Enter Joinning Date',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  ratio*7,
-                              horizontal:
-                                  ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                ratio*7,
+                                ratio * 7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -805,19 +770,16 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Enter User Name',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                 ratio*7,
-                              horizontal:
-                                 ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(
-                                ratio*7,
+                                ratio * 7,
                               ), // Set the border radius
                             ),
                             filled: true,
@@ -842,20 +804,15 @@ Future<void> _pickDateJoin(BuildContext context) async {
                           decoration: InputDecoration(
                             labelText: 'Enter Password',
                             contentPadding: EdgeInsets.symmetric(
-                              vertical:
-                                  ratio*7,
-                              horizontal:
-                                  ratio*7,
+                              vertical: ratio * 7,
+                              horizontal: ratio * 7,
                             ),
                             labelStyle: TextStyle(
                               color: Colors.black,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                             ),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(
-                                ratio*7,
-                              ),
+                              borderRadius: BorderRadius.circular(ratio * 7),
                             ),
                             filled: true,
                             fillColor: Colors.grey[200],
@@ -889,8 +846,7 @@ Future<void> _pickDateJoin(BuildContext context) async {
                             "Create Employee",
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize:
-                                  ratio*7,
+                              fontSize: ratio * 7,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

@@ -61,8 +61,7 @@ class VisitOutState extends State<VisitOut> {
           comid = user['company_id'] ?? 0;
           trade_name = user['trade_name'] ?? 0;
         });
-      } catch (e) {
-      }
+      } catch (e) {}
     }
   }
 
@@ -185,8 +184,7 @@ class VisitOutState extends State<VisitOut> {
         lat = latitude.toString();
         long = longitude.toString();
       });
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   void autofillAddress() {
@@ -231,6 +229,9 @@ class VisitOutState extends State<VisitOut> {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.camera,
       preferredCameraDevice: CameraDevice.front,
+      imageQuality: 20,
+      maxWidth: 600,
+      maxHeight: 600,
     );
 
     if (pickedFile != null) {
@@ -344,10 +345,10 @@ class VisitOutState extends State<VisitOut> {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
     var ratio;
-    if(deviceWidth<deviceHeight){
-      ratio=deviceHeight/deviceWidth;
-    }else{
-      ratio=deviceWidth/deviceHeight;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
     }
     return Scaffold(
       appBar: AppBar(
@@ -356,7 +357,7 @@ class VisitOutState extends State<VisitOut> {
         title: Text(
           'Visit Out',
           style: TextStyle(
-            fontSize:ratio*9,
+            fontSize: ratio * 9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -370,7 +371,7 @@ class VisitOutState extends State<VisitOut> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CircleAvatar(
-                      radius:ratio*25,
+                      radius: ratio * 25,
                       backgroundImage: AssetImage(
                         'assets/splesh_Screen/Emp_Attend.png',
                       ), // Set the background image here
@@ -431,7 +432,7 @@ class VisitOutState extends State<VisitOut> {
                           SizedBox(height: 10),
                           Text(
                             "Mode Of Transport",
-                            style: TextStyle(fontSize: ratio*9,),
+                            style: TextStyle(fontSize: ratio * 9),
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -472,7 +473,7 @@ class VisitOutState extends State<VisitOut> {
                                   "Take Photo",
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: ratio*9,
+                                    fontSize: ratio * 9,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -486,14 +487,14 @@ class VisitOutState extends State<VisitOut> {
                                     borderRadius: BorderRadius.circular(10),
                                     child: Image.file(
                                       File(_imageFile!.path),
-                                       width: ratio*40,
-                                    height: ratio*40,
+                                      width: ratio * 40,
+                                      height: ratio * 40,
                                       fit: BoxFit.cover,
                                     ),
                                   )
                                   : Container(
-                                    width: ratio*40,
-                                    height: ratio*40,
+                                    width: ratio * 40,
+                                    height: ratio * 40,
                                     color: Colors.grey[300],
                                   ),
                             ],
@@ -505,7 +506,7 @@ class VisitOutState extends State<VisitOut> {
                               "Visit Out",
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: ratio*9,
+                                fontSize: ratio * 9,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
