@@ -263,13 +263,13 @@ class _EmpHomeState extends State<EmpHome> {
     }
   }
 
-  // Notification method to navigate to Notification screen
+  
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
 
-    // Perform actions based on the selected index
+    
     if (index == 0) {
       Navigator.pushReplacement(
         context,
@@ -295,7 +295,7 @@ class _EmpHomeState extends State<EmpHome> {
 
   String? _selectedValue;
 
-  // List of options for the dropdown
+  
   final List<String> _options = ['Option 1', 'Option 2', 'Option 3'];
 
   String currentDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
