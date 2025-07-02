@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:employee_tracker/Screens/Admin%20Report/AttDownlod.dart';
 import 'package:employee_tracker/Screens/Admin%20Report/Attendance.dart';
 import 'package:employee_tracker/Screens/Admin%20Report/VisitReport.dart';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
@@ -747,12 +748,21 @@ class AdminhomeState extends State<AdminHome> {
                         MaterialPageRoute(builder: (_) => Employeelist()),
                       );
                     },
+                  ), DashboardTile(
+                    title: "Attendance Xl",
+                    imagePath: 'assets/images/xl.jpg',
+                    deviceWidth: deviceWidth,
+                    ratio: ratio,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => AttDownlod()),
+                      );
+                    },
                   ),
                 ],
               ),
             ),
-
-            SizedBox(height: 10),
           ],
         ),
       ),
