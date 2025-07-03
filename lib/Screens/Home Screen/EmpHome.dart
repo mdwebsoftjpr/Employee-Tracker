@@ -559,7 +559,7 @@ class _EmpHomeState extends State<EmpHome> {
         backgroundColor: Colors.white, 
 
         titleStyle: TextStyle(
-          color: Colors.indigo, 
+          color: Colors.white, 
           fontWeight: FontWeight.bold,
           fontSize: 18,
         ),
@@ -573,7 +573,7 @@ class _EmpHomeState extends State<EmpHome> {
         textCancel: "Cancel",
         textConfirm: "Open Settings",
         confirmTextColor: Colors.white,
-        cancelTextColor: Colors.indigo,
+        cancelTextColor: Colors.white,
         onCancel: () {
           Get.back();
         },
@@ -581,7 +581,7 @@ class _EmpHomeState extends State<EmpHome> {
           await Geolocator.openLocationSettings();
           Get.back();
         },
-        buttonColor: Colors.indigo, 
+        buttonColor: Color(0xFF03a9f4), 
       );
 
       return;
