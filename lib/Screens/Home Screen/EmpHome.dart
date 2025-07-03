@@ -570,8 +570,8 @@ class _EmpHomeState extends State<EmpHome> {
         ),
 
         radius: 12,
-        textCancel: "Cancel",
         textConfirm: "Open Settings",
+        textCancel: "Cancel",
         confirmTextColor: Colors.white,
         cancelTextColor: Colors.white,
         onCancel: () {
