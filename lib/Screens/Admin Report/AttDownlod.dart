@@ -194,7 +194,7 @@ class AttDownlodState extends State<AttDownlod> {
         style.borders.all.lineStyle = xlsio.LineStyle.thin;
 
         if (headers[i] == 'Name') {
-          cell.columnWidth = 35;
+          cell.columnWidth = 20;
         } else {
           sheet.autoFitColumn(i + 1);
         }
@@ -314,7 +314,10 @@ class AttDownlodState extends State<AttDownlod> {
               children: [
                 Icon(Icons.calendar_month, size: ratio * 10),
                 Text(
-                  'Month',
+                  (month != null)
+                      ? DateFormat.MMMM().format(DateTime(0, int.parse(month)))
+                      : 'Month',
+
                   style: TextStyle(fontSize: ratio * 5, color: Colors.white),
                 ),
               ],
@@ -417,12 +420,12 @@ class AttDownlodState extends State<AttDownlod> {
                                     children: [
                                       Text(
                                         'Present: ${item['total_p']}',
-                                        style: TextStyle(fontSize: ratio * 6),
+                                        style: TextStyle(fontSize: ratio * 5.8),
                                       ),
                                       SizedBox(height: ratio * 1.5),
                                       Text(
                                         "Absent: ${item['total_a']}",
-                                        style: TextStyle(fontSize: ratio * 6),
+                                        style: TextStyle(fontSize: ratio * 5.8),
                                       ),
                                     ],
                                   ),
@@ -449,7 +452,10 @@ class AttDownlodState extends State<AttDownlod> {
                         );
                       },
                     )
-                    : Text("Attendance Not found")),
+                    : Text(
+                      "Attendance Not found",
+                      style: TextStyle(fontSize: ratio * 9),
+                    )),
       ),
     );
   }
@@ -459,7 +465,17 @@ class AttDownlodState extends State<AttDownlod> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Attendance Details'),
+          title: Column(
+            children: [
+              Text(
+                'Attendance Details',
+                style: TextStyle(
+                  fontSize: ratio * 8,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
           content: SizedBox(
             width: double.maxFinite,
             height: 400,
@@ -552,7 +568,7 @@ class AttDownlodState extends State<AttDownlod> {
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(
                   horizontal: ratio * 2,
-                  vertical:  ratio * 2,
+                  vertical: ratio * 2,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(ratio * 5),
