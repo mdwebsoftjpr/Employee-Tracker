@@ -553,35 +553,81 @@ class _EmpHomeState extends State<EmpHome> {
       /* 
       Alert.alert(context, 'Location services are disabled. Please enable.');
       await Geolocator.openLocationSettings(); */
-      Get.defaultDialog(
-        title: "Location Required",
-        middleText: "Please enable location services to continue.",
-        backgroundColor: Colors.white, 
+      Get.dialog(
+        AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          backgroundColor: Colors.white,
+          title: Text(
+            "Location Required",
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          content: Text(
+            "Please enable location services to continue.",
+            style: TextStyle(color: Colors.black, fontSize: 16),
+          ),
+          actions: [
+            Row(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF03a9f4),
+                  ),
+                  onPressed: () {
+                    Get.back();
+                  },
+                  child: Text("Cancel", style: TextStyle(color: Colors.white)),
+                ),
+                SizedBox(width: 3),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF03a9f4),
+                  ),
+                  onPressed: () async {
+                    await Geolocator.openLocationSettings(); // Open settings
+                    Get.back(); // Close dialog
 
-        titleStyle: TextStyle(
-          color: Colors.white, 
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
+                    // ⏳ Wait and check if location gets enabled
+                    bool serviceEnabled = false;
+                    for (int i = 0; i < 10; i++) {
+                      serviceEnabled =
+                          await Geolocator.isLocationServiceEnabled();
+                      if (serviceEnabled) break;
+                      await Future.delayed(Duration(milliseconds: 500));
+                    }
+
+                    if (serviceEnabled) {
+                      // ✅ Navigate to next screen (location is ON)
+                      Future.delayed(Duration(milliseconds: 100), () {
+                        Get.offAll(() => EmpHome()); // your screen
+                      });
+                    } else {
+                        Get.snackbar(
+                          icon: Icon(Icons.location_on),
+                          "EmpAttend",
+                          "❗ Location is still OFF",
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Color(0xFF03a9f4),
+                          colorText: Colors.white,
+                          margin: EdgeInsets.all(10),
+                        );
+                    }
+                  },
+
+                  child: Text(
+                    "Open Settings",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-
-        middleTextStyle: TextStyle(
-          color: Colors.black87, // 🔧 Message text color
-          fontSize: 16,
-        ),
-
-        radius: 12,
-        textConfirm: "Open Settings",
-        textCancel: "Cancel",
-        confirmTextColor: Colors.white,
-        cancelTextColor: Colors.white,
-        onCancel: () {
-          Get.back();
-        },
-        onConfirm: () async {
-          await Geolocator.openLocationSettings();
-          Get.back();
-        },
-        buttonColor: Color(0xFF03a9f4), 
       );
 
       return;
@@ -815,6 +861,14 @@ class _EmpHomeState extends State<EmpHome> {
         );
       },
     );
+  }
+
+   Future<void> fetchData() async {
+    await Future.delayed(Duration(seconds: 1)); 
+    Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(builder: (context) => EmpHome()),
+); 
   }
 
   @override
@@ -1216,7 +1270,9 @@ class _EmpHomeState extends State<EmpHome> {
                   ],
                 ),
               )
-              : SingleChildScrollView(
+              : RefreshIndicator(
+  onRefresh: fetchData,
+  child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.all(5),
                   child: Column(
@@ -2509,6 +2565,9 @@ class _EmpHomeState extends State<EmpHome> {
                   ),
                 ),
               ),
+)
+
     );
   }
 }
+/*  */
