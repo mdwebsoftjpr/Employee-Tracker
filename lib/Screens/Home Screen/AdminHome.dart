@@ -5,6 +5,7 @@ import 'package:employee_tracker/Screens/Admin%20Report/VisitReport.dart';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Components/GridItem.dart';
 import 'package:employee_tracker/Screens/Employee%20Reports/employeeList.dart';
+import 'package:employee_tracker/Screens/Profile%20Scree/StaffSalery.dart';
 import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
 import 'package:employee_tracker/Screens/create%20employee/Master.dart';
 import 'package:employee_tracker/Screens/create%20employee/createEmployee.dart';
@@ -748,7 +749,8 @@ class AdminhomeState extends State<AdminHome> {
                         MaterialPageRoute(builder: (_) => Employeelist()),
                       );
                     },
-                  ), DashboardTile(
+                  ),
+                  DashboardTile(
                     title: "Attendance Xl",
                     imagePath: 'assets/images/xl.jpg',
                     deviceWidth: deviceWidth,
@@ -760,6 +762,18 @@ class AdminhomeState extends State<AdminHome> {
                       );
                     },
                   ),
+                  /* DashboardTile(
+                    title: "Salary",
+                    imagePath: 'assets/images/xl.jpg',
+                    deviceWidth: deviceWidth,
+                    ratio: ratio,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => StaffSalaryScreen()),
+                      );
+                    },
+                  ), */
                 ],
               ),
             ),
