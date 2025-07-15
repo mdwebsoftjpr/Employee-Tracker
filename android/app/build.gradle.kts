@@ -9,15 +9,15 @@ android {
     namespace = "com.employee_tracker"
 
     // Use Flutter-defined compile SDK version
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.employee_tracker"
         minSdk = flutter.minSdkVersion
-        targetSdk = 34 // Updated for Google Play requirements
-        versionName = "0.1.0"
-        versionCode = 5
+        targetSdk = 35 // Updated for Google Play requirements
+        versionName = "0.1.2"
+        versionCode = 7
         multiDexEnabled = true
     }
 
