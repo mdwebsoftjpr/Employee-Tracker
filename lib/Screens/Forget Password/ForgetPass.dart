@@ -17,7 +17,6 @@ class ForgetPassState extends State<ForgetPassword>{
   
   void forget() async {
     String Email = email.text;
-    print("Forget");
   }
 
   @override

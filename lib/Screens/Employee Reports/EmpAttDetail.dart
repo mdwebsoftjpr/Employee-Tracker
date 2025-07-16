@@ -119,7 +119,6 @@ class EmpattdetailState extends State<EmpAttdetail> {
       if (Platform.isAndroid) {
         var status = await Permission.storage.request();
         if (!status.isGranted) {
-          print('Storage permission denied');
           return;
         }
       }
@@ -141,18 +140,12 @@ class EmpattdetailState extends State<EmpAttdetail> {
         fullPath,
         onReceiveProgress: (received, total) {
           if (total != -1) {
-            print(
-              'Downloading: ${(received / total * 100).toStringAsFixed(0)}%',
-            );
           }
         },
       );
 
-      print('Downloaded file path: $fullPath');
-
       await OpenFile.open(fullPath);
     } catch (e) {
-      print('Error downloading file: $e');
     }
   }
 
