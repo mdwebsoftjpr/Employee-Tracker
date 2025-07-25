@@ -24,10 +24,10 @@ class SimpleMapScreen extends StatelessWidget {
     double deviceWidth = MediaQuery.of(context).size.width;
     double deviceHeight = MediaQuery.of(context).size.height;
     var ratio;
-    if(deviceWidth<deviceHeight){
-      ratio=deviceHeight/deviceWidth;
-    }else{
-      ratio=deviceWidth/deviceHeight;
+    if (deviceWidth < deviceHeight) {
+      ratio = deviceHeight / deviceWidth;
+    } else {
+      ratio = deviceWidth / deviceHeight;
     }
 
     return Scaffold(
@@ -36,7 +36,7 @@ class SimpleMapScreen extends StatelessWidget {
         title: Text(
           'Visit Map',
           style: TextStyle(
-            fontSize: ratio*9,
+            fontSize: ratio * 9,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
@@ -51,13 +51,14 @@ class SimpleMapScreen extends StatelessWidget {
                   FlutterMap(
                     options: MapOptions(
                       initialCenter: initialPoint,
-                      initialZoom:ratio*7,
+                      initialZoom: ratio * 7,
                     ),
                     children: [
                       TileLayer(
                         urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName: 'com.example.app',
+                            'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+                        subdomains: ['a', 'b', 'c'],
+                        userAgentPackageName: 'com.example.visitmap',
                       ),
                       PolylineLayer(
                         polylines: [
@@ -97,13 +98,13 @@ class SimpleMapScreen extends StatelessWidget {
                                     Icon(
                                       Icons.location_on,
                                       color: markerColor,
-                                      size: ratio*16,
+                                      size: ratio * 16,
                                     ),
                                     Text(
                                       label,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        fontSize: ratio*6,
+                                        fontSize: ratio * 6,
                                         color: Colors.black87,
                                       ),
                                     ),
@@ -115,24 +116,27 @@ class SimpleMapScreen extends StatelessWidget {
                     ],
                   ),
                   Positioned(
-                    top: ratio*6,
-                    right: ratio*4,
+                    top: ratio * 6,
+                    right: ratio * 4,
                     child: Container(
                       padding: EdgeInsets.symmetric(
-                        horizontal: ratio*6,
-                        vertical: ratio*4,
+                        horizontal: ratio * 6,
+                        vertical: ratio * 4,
                       ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(ratio*6),
+                        borderRadius: BorderRadius.circular(ratio * 6),
                         boxShadow: [
-                          BoxShadow(color: Colors.black26, blurRadius: ratio*4),
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: ratio * 4,
+                          ),
                         ],
                       ),
                       child: Text(
                         'Total Distance: ${totalDistance.toStringAsFixed(2)} km',
                         style: TextStyle(
-                          fontSize: ratio*6,
+                          fontSize: ratio * 6,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
