@@ -11,11 +11,16 @@ import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/services.dart' show TextInput;
-import 'SpleshScreen.dart';
+import 'SpleshScreen.dart';import 'firebase_options.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  // ✅ Correct Firebase initialization
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   await FirebaseService().initNotification();
   await _initializeLocalStorage();
 
@@ -38,7 +43,12 @@ void main() async {
     homeScreen = CreateScreen();
   }
 
-  runApp(GetMaterialApp(debugShowCheckedModeBanner: false, home: SplashScreen()));
+  runApp(
+    GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(), // or homeScreen if you want logic-based route
+    ),
+  );
 }
 
 
