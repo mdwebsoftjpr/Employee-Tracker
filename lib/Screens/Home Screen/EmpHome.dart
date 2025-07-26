@@ -90,6 +90,8 @@ class _EmpHomeState extends State<EmpHome> {
   int? totalAbsent;
   List<dynamic> statusData = [];
 
+  int currentIndex = 0;
+
   Future<String?> getDeviceId() async {
     final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
@@ -266,8 +268,15 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   void _onItemTapped(int index) {
+    int count = 0;
+    if (currentIndex == index) return;
     setState(() {
-      _selectedIndex = index;
+      count++;
+      if (count == 0) {
+        currentIndex = index;
+      } else {
+        currentIndex = 0;
+      }
     });
 
     if (index == 0) {
@@ -607,15 +616,15 @@ class _EmpHomeState extends State<EmpHome> {
                         Get.offAll(() => EmpHome()); // your screen
                       });
                     } else {
-                        Get.snackbar(
-                          icon: Icon(Icons.location_on),
-                          "EmpAttend",
-                          "❗ Location is still OFF",
-                          snackPosition: SnackPosition.BOTTOM,
-                          backgroundColor: Color(0xFF03a9f4),
-                          colorText: Colors.white,
-                          margin: EdgeInsets.all(10),
-                        );
+                      Get.snackbar(
+                        icon: Icon(Icons.location_on),
+                        "EmpAttend",
+                        "❗ Location is still OFF",
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Color(0xFF03a9f4),
+                        colorText: Colors.white,
+                        margin: EdgeInsets.all(10),
+                      );
                     }
                   },
 
@@ -863,12 +872,12 @@ class _EmpHomeState extends State<EmpHome> {
     );
   }
 
-   Future<void> fetchData() async {
-    await Future.delayed(Duration(seconds: 1)); 
+  Future<void> fetchData() async {
+    await Future.delayed(Duration(seconds: 1));
     Navigator.pushReplacement(
-  context,
-  MaterialPageRoute(builder: (context) => EmpHome()),
-); 
+      context,
+      MaterialPageRoute(builder: (context) => EmpHome()),
+    );
   }
 
   @override
@@ -1271,1173 +1280,819 @@ class _EmpHomeState extends State<EmpHome> {
                 ),
               )
               : RefreshIndicator(
-  onRefresh: fetchData,
-  child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: Column(
-                    children: <Widget>[
-                      Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(
-                              top: 0,
-                              bottom: ratio * 1,
-                              right: ratio * 2,
-                              left: ratio * 2,
-                            ),
-                            width: double.infinity,
-                            child: Center(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF03a9f4),
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 2,
-                                      blurRadius: 6,
-                                      offset: Offset(
-                                        0,
-                                        3,
-                                      ), // changes position of shadow
-                                    ),
-                                  ],
-                                ),
-                                width: deviceWidth * 0.9,
-                                child: Column(
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
+                onRefresh: fetchData,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+                    child: Column(
+                      children: <Widget>[
+                        Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.only(
+                                top: 0,
+                                bottom: ratio * 1,
+                                right: ratio * 2,
+                                left: ratio * 2,
+                              ),
+                              width: double.infinity,
+                              child: Center(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFF03a9f4),
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 6,
+                                        offset: Offset(
+                                          0,
+                                          3,
+                                        ), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  width: deviceWidth * 0.9,
+                                  child: Column(
+                                    children: [
+                                      Column(
+                                        children: [
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                ),
+                                                margin: EdgeInsets.all(10),
+                                                child:
+                                                    (UserImage != '' &&
+                                                            UserImage
+                                                                .isNotEmpty)
+                                                        ? ClipRRect(
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                10,
+                                                              ),
+                                                          child: Image.network(
+                                                            'https://testapi.rabadtechnology.com/uploads/$UserImage',
+                                                            width: ratio * 38,
+                                                            height: ratio * 38,
+                                                            fit: BoxFit.cover,
+                                                          ),
+                                                        )
+                                                        : Icon(
+                                                          Icons.account_circle,
+                                                          size: ratio * 38,
+                                                        ),
+                                              ),
+
+                                              SizedBox(width: 10),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .start, // Align text to the start
+                                                  children: [
+                                                    Text(
+                                                      name,
+                                                      style: TextStyle(
+                                                        fontSize: ratio * 8,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 4),
+                                                    Text(
+                                                      CurrentAddress,
+                                                      style: TextStyle(
+                                                        fontSize: ratio * 6,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: Colors.white,
+                                                      ),
+                                                      softWrap: true,
+                                                      overflow:
+                                                          TextOverflow
+                                                              .visible, // or TextOverflow.ellipsis
+                                                      maxLines:
+                                                          null, // allow multiple lines
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Container(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
                                           children: [
                                             Container(
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(20),
+                                              width: deviceWidth * 0.85,
+                                              margin: EdgeInsets.only(
+                                                bottom: 5,
                                               ),
-                                              margin: EdgeInsets.all(10),
-                                              child:
-                                                  (UserImage != '' &&
-                                                          UserImage.isNotEmpty)
-                                                      ? ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              10,
-                                                            ),
-                                                        child: Image.network(
-                                                          'https://testapi.rabadtechnology.com/uploads/$UserImage',
-                                                          width: ratio * 38,
-                                                          height: ratio * 38,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      )
-                                                      : Icon(
-                                                        Icons.account_circle,
-                                                        size: ratio * 38,
-                                                      ),
-                                            ),
-
-                                            SizedBox(width: 10),
-                                            Expanded(
                                               child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment
-                                                        .start, // Align text to the start
                                                 children: [
-                                                  Text(
-                                                    name,
-                                                    style: TextStyle(
-                                                      fontSize: ratio * 8,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: Colors.white,
-                                                    ),
+                                                  Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      drop
+                                                          ? TextButton(
+                                                            onPressed:
+                                                                () =>
+                                                                    dropdown(),
+                                                            child: Row(
+                                                              children: [
+                                                                Text(
+                                                                  'Today Report: $currentDate',
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        ratio *
+                                                                        7,
+                                                                    color:
+                                                                        Colors
+                                                                            .black,
+                                                                  ),
+                                                                ),
+                                                                Icon(
+                                                                  Icons
+                                                                      .arrow_drop_up,
+                                                                  size:
+                                                                      ratio *
+                                                                      10,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            style: TextButton.styleFrom(
+                                                              iconColor:
+                                                                  Colors.black,
+                                                              backgroundColor:
+                                                                  Colors.white,
+                                                            ),
+                                                          )
+                                                          : TextButton(
+                                                            onPressed:
+                                                                () => dropUp(),
+                                                            child: Row(
+                                                              children: [
+                                                                Text(
+                                                                  'Today Report: $currentDate',
+                                                                  style: TextStyle(
+                                                                    fontSize:
+                                                                        ratio *
+                                                                        7,
+                                                                    color:
+                                                                        Colors
+                                                                            .black,
+                                                                  ),
+                                                                ),
+                                                                Icon(
+                                                                  Icons
+                                                                      .arrow_drop_down,
+                                                                  size:
+                                                                      ratio *
+                                                                      10,
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            style: TextButton.styleFrom(
+                                                              iconColor:
+                                                                  Colors.black,
+                                                              backgroundColor:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
+                                                    ],
                                                   ),
-                                                  SizedBox(height: 4),
-                                                  Text(
-                                                    CurrentAddress,
-                                                    style: TextStyle(
-                                                      fontSize: ratio * 6,
-                                                      fontWeight:
-                                                          FontWeight.w600,
+                                                  Container(
+                                                    decoration: BoxDecoration(
                                                       color: Colors.white,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            ratio * 7,
+                                                          ),
                                                     ),
-                                                    softWrap: true,
-                                                    overflow:
-                                                        TextOverflow
-                                                            .visible, // or TextOverflow.ellipsis
-                                                    maxLines:
-                                                        null, // allow multiple lines
+                                                    child:
+                                                        drop
+                                                            ? Container(
+                                                              height:
+                                                                  ratio * 27,
+                                                              child: Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceAround,
+                                                                children: [
+                                                                  Expanded(
+                                                                    flex: 1,
+                                                                    child: Column(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .center,
+                                                                      children: [
+                                                                        Text(
+                                                                          "View",
+                                                                          style: TextStyle(
+                                                                            fontSize:
+                                                                                ratio *
+                                                                                6,
+                                                                            color:
+                                                                                Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                        Container(
+                                                                          width:
+                                                                              ratio *
+                                                                              14,
+                                                                          height:
+                                                                              ratio *
+                                                                              14,
+                                                                          child: IconButton(
+                                                                            padding:
+                                                                                EdgeInsets.zero,
+                                                                            onPressed:
+                                                                                () => Navigator.push(
+                                                                                  context,
+                                                                                  MaterialPageRoute(
+                                                                                    builder:
+                                                                                        (
+                                                                                          context,
+                                                                                        ) =>
+                                                                                            EmpAttdetail(),
+                                                                                  ),
+                                                                                ),
+                                                                            icon: Icon(
+                                                                              Icons.remove_red_eye,
+                                                                              size:
+                                                                                  ratio *
+                                                                                  14,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  Expanded(
+                                                                    flex: 1,
+                                                                    child: Column(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .center,
+                                                                      children: [
+                                                                        Text(
+                                                                          "Attendance",
+                                                                          style: TextStyle(
+                                                                            fontSize:
+                                                                                ratio *
+                                                                                6,
+                                                                            color:
+                                                                                Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          height:
+                                                                              ratio *
+                                                                              3,
+                                                                        ),
+                                                                        (Mainstatus !=
+                                                                                "")
+                                                                            ? Container(
+                                                                              width:
+                                                                                  ratio *
+                                                                                  30,
+                                                                              height:
+                                                                                  ratio *
+                                                                                  9,
+                                                                              color:
+                                                                                  Colors.green,
+                                                                              child: Center(
+                                                                                child: Text(
+                                                                                  PSatatus,
+                                                                                  style: TextStyle(
+                                                                                    fontSize:
+                                                                                        ratio *
+                                                                                        6,
+                                                                                    color:
+                                                                                        Colors.white,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                            : Text(
+                                                                              "Not Marked",
+                                                                            ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  Expanded(
+                                                                    flex: 1,
+                                                                    child: Column(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .center,
+                                                                      children: [
+                                                                        Text(
+                                                                          "Work Start",
+                                                                          style: TextStyle(
+                                                                            fontSize:
+                                                                                ratio *
+                                                                                6,
+                                                                            color:
+                                                                                Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          height:
+                                                                              ratio *
+                                                                              3,
+                                                                        ),
+                                                                        (punchIntime !=
+                                                                                '')
+                                                                            ? Container(
+                                                                              width:
+                                                                                  ratio *
+                                                                                  30,
+                                                                              height:
+                                                                                  ratio *
+                                                                                  9,
+                                                                              color:
+                                                                                  Colors.white,
+                                                                              child: Center(
+                                                                                child: Text(
+                                                                                  punchIntime,
+                                                                                  style: TextStyle(
+                                                                                    fontSize:
+                                                                                        ratio *
+                                                                                        6,
+                                                                                    color:
+                                                                                        Colors.black,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                            : Text(
+                                                                              "-",
+                                                                            ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                  Expanded(
+                                                                    flex: 1,
+                                                                    child: Column(
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .center,
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .center,
+                                                                      children: [
+                                                                        Text(
+                                                                          "Work End",
+                                                                          style: TextStyle(
+                                                                            fontSize:
+                                                                                ratio *
+                                                                                6,
+                                                                            color:
+                                                                                Colors.black,
+                                                                          ),
+                                                                        ),
+                                                                        SizedBox(
+                                                                          height:
+                                                                              ratio *
+                                                                              3,
+                                                                        ),
+                                                                        (punchOuttime !=
+                                                                                '')
+                                                                            ? Container(
+                                                                              width:
+                                                                                  ratio *
+                                                                                  30,
+                                                                              height:
+                                                                                  ratio *
+                                                                                  9,
+                                                                              color:
+                                                                                  Colors.white,
+                                                                              child: Center(
+                                                                                child: Text(
+                                                                                  punchOuttime,
+                                                                                  style: TextStyle(
+                                                                                    fontSize:
+                                                                                        ratio *
+                                                                                        6,
+                                                                                    color:
+                                                                                        Colors.black,
+                                                                                  ),
+                                                                                ),
+                                                                              ),
+                                                                            )
+                                                                            : Text(
+                                                                              "-",
+                                                                            ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            )
+                                                            : Text(""),
                                                   ),
                                                 ],
                                               ),
                                             ),
                                           ],
                                         ),
-                                      ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: ratio * 3),
+                        Container(
+                          width: deviceWidth * 0.9,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Total Present Box
+                              Container(
+                                width: deviceWidth * 0.27,
+                                padding: EdgeInsets.symmetric(
+                                  vertical: ratio * 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(
+                                    ratio * 4,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.blue.withOpacity(0.2),
+                                      blurRadius: 8,
+                                      offset: Offset(0, 4),
                                     ),
-                                    Container(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
-                                        children: [
-                                          Container(
-                                            width: deviceWidth * 0.85,
-                                            margin: EdgeInsets.only(bottom: 5),
-                                            child: Column(
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    drop
-                                                        ? TextButton(
-                                                          onPressed:
-                                                              () => dropdown(),
-                                                          child: Row(
-                                                            children: [
-                                                              Text(
-                                                                'Today Report: $currentDate',
-                                                                style: TextStyle(
-                                                                  fontSize:
-                                                                      ratio * 7,
-                                                                  color:
-                                                                      Colors
-                                                                          .black,
-                                                                ),
-                                                              ),
-                                                              Icon(
-                                                                Icons
-                                                                    .arrow_drop_up,
-                                                                size:
-                                                                    ratio * 10,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          style:
-                                                              TextButton.styleFrom(
-                                                                iconColor:
-                                                                    Colors
-                                                                        .black,
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .white,
-                                                              ),
-                                                        )
-                                                        : TextButton(
-                                                          onPressed:
-                                                              () => dropUp(),
-                                                          child: Row(
-                                                            children: [
-                                                              Text(
-                                                                'Today Report: $currentDate',
-                                                                style: TextStyle(
-                                                                  fontSize:
-                                                                      ratio * 7,
-                                                                  color:
-                                                                      Colors
-                                                                          .black,
-                                                                ),
-                                                              ),
-                                                              Icon(
-                                                                Icons
-                                                                    .arrow_drop_down,
-                                                                size:
-                                                                    ratio * 10,
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          style:
-                                                              TextButton.styleFrom(
-                                                                iconColor:
-                                                                    Colors
-                                                                        .black,
-                                                                backgroundColor:
-                                                                    Colors
-                                                                        .white,
-                                                              ),
-                                                        ),
-                                                  ],
-                                                ),
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          ratio * 7,
-                                                        ),
-                                                  ),
-                                                  child:
-                                                      drop
-                                                          ? Container(
-                                                            height: ratio * 27,
-                                                            child: Row(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .spaceAround,
-                                                              children: [
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Column(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .center,
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .center,
-                                                                    children: [
-                                                                      Text(
-                                                                        "View",
-                                                                        style: TextStyle(
-                                                                          fontSize:
-                                                                              ratio *
-                                                                              6,
-                                                                          color:
-                                                                              Colors.black,
-                                                                        ),
-                                                                      ),
-                                                                      Container(
-                                                                        width:
-                                                                            ratio *
-                                                                            14,
-                                                                        height:
-                                                                            ratio *
-                                                                            14,
-                                                                        child: IconButton(
-                                                                          padding:
-                                                                              EdgeInsets.zero,
-                                                                          onPressed:
-                                                                              () => Navigator.push(
-                                                                                context,
-                                                                                MaterialPageRoute(
-                                                                                  builder:
-                                                                                      (
-                                                                                        context,
-                                                                                      ) =>
-                                                                                          EmpAttdetail(),
-                                                                                ),
-                                                                              ),
-                                                                          icon: Icon(
-                                                                            Icons.remove_red_eye,
-                                                                            size:
-                                                                                ratio *
-                                                                                14,
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Column(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .center,
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .center,
-                                                                    children: [
-                                                                      Text(
-                                                                        "Attendance",
-                                                                        style: TextStyle(
-                                                                          fontSize:
-                                                                              ratio *
-                                                                              6,
-                                                                          color:
-                                                                              Colors.black,
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        height:
-                                                                            ratio *
-                                                                            3,
-                                                                      ),
-                                                                      (Mainstatus !=
-                                                                              "")
-                                                                          ? Container(
-                                                                            width:
-                                                                                ratio *
-                                                                                30,
-                                                                            height:
-                                                                                ratio *
-                                                                                9,
-                                                                            color:
-                                                                                Colors.green,
-                                                                            child: Center(
-                                                                              child: Text(
-                                                                                PSatatus,
-                                                                                style: TextStyle(
-                                                                                  fontSize:
-                                                                                      ratio *
-                                                                                      6,
-                                                                                  color:
-                                                                                      Colors.white,
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          )
-                                                                          : Text(
-                                                                            "Not Marked",
-                                                                          ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Column(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .center,
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .center,
-                                                                    children: [
-                                                                      Text(
-                                                                        "Work Start",
-                                                                        style: TextStyle(
-                                                                          fontSize:
-                                                                              ratio *
-                                                                              6,
-                                                                          color:
-                                                                              Colors.black,
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        height:
-                                                                            ratio *
-                                                                            3,
-                                                                      ),
-                                                                      (punchIntime !=
-                                                                              '')
-                                                                          ? Container(
-                                                                            width:
-                                                                                ratio *
-                                                                                30,
-                                                                            height:
-                                                                                ratio *
-                                                                                9,
-                                                                            color:
-                                                                                Colors.white,
-                                                                            child: Center(
-                                                                              child: Text(
-                                                                                punchIntime,
-                                                                                style: TextStyle(
-                                                                                  fontSize:
-                                                                                      ratio *
-                                                                                      6,
-                                                                                  color:
-                                                                                      Colors.black,
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          )
-                                                                          : Text(
-                                                                            "-",
-                                                                          ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                                Expanded(
-                                                                  flex: 1,
-                                                                  child: Column(
-                                                                    mainAxisAlignment:
-                                                                        MainAxisAlignment
-                                                                            .center,
-                                                                    crossAxisAlignment:
-                                                                        CrossAxisAlignment
-                                                                            .center,
-                                                                    children: [
-                                                                      Text(
-                                                                        "Work End",
-                                                                        style: TextStyle(
-                                                                          fontSize:
-                                                                              ratio *
-                                                                              6,
-                                                                          color:
-                                                                              Colors.black,
-                                                                        ),
-                                                                      ),
-                                                                      SizedBox(
-                                                                        height:
-                                                                            ratio *
-                                                                            3,
-                                                                      ),
-                                                                      (punchOuttime !=
-                                                                              '')
-                                                                          ? Container(
-                                                                            width:
-                                                                                ratio *
-                                                                                30,
-                                                                            height:
-                                                                                ratio *
-                                                                                9,
-                                                                            color:
-                                                                                Colors.white,
-                                                                            child: Center(
-                                                                              child: Text(
-                                                                                punchOuttime,
-                                                                                style: TextStyle(
-                                                                                  fontSize:
-                                                                                      ratio *
-                                                                                      6,
-                                                                                  color:
-                                                                                      Colors.black,
-                                                                                ),
-                                                                              ),
-                                                                            ),
-                                                                          )
-                                                                          : Text(
-                                                                            "-",
-                                                                          ),
-                                                                    ],
-                                                                  ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          )
-                                                          : Text(""),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Present',
+                                      style: TextStyle(
+                                        fontSize: ratio * 4.8,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: ratio * 1.5),
+                                    CircleAvatar(
+                                      radius: ratio * 6.5,
+                                      backgroundColor: Colors.blue,
+                                      child: Text(
+                                        "$totalPresent",
+                                        style: TextStyle(
+                                          fontSize: ratio * 5,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                            ),
+
+                              // Total Absent Box
+                              Container(
+                                width: deviceWidth * 0.27,
+                                padding: EdgeInsets.symmetric(
+                                  vertical: ratio * 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(
+                                    ratio * 4,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.red.withOpacity(0.2),
+                                      blurRadius: 8,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Absent',
+                                      style: TextStyle(
+                                        fontSize: ratio * 4.8,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: ratio * 1.5),
+                                    CircleAvatar(
+                                      radius: ratio * 6.5,
+                                      backgroundColor: Colors.red,
+                                      child: Text(
+                                        "$totalAbsent",
+                                        style: TextStyle(
+                                          fontSize: ratio * 5,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              // Total Days Box
+                              Container(
+                                width: deviceWidth * 0.27,
+                                padding: EdgeInsets.symmetric(
+                                  vertical: ratio * 3,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(
+                                    ratio * 4,
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.green.withOpacity(0.2),
+                                      blurRadius: 8,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'Total Days',
+                                      style: TextStyle(
+                                        fontSize: ratio * 4.8,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    SizedBox(height: ratio * 1.5),
+                                    CircleAvatar(
+                                      radius: ratio * 6.5,
+                                      backgroundColor: Colors.green,
+                                      child: Text(
+                                        "$totalDays",
+                                        style: TextStyle(
+                                          fontSize: ratio * 5,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      SizedBox(height: ratio * 3),
-                      Container(
-                        width: deviceWidth * 0.9,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Total Present Box
-                            Container(
-                              width: deviceWidth * 0.27,
-                              padding: EdgeInsets.symmetric(
-                                vertical: ratio * 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(ratio * 4),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.blue.withOpacity(0.2),
-                                    blurRadius: 8,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Present',
-                                    style: TextStyle(
-                                      fontSize: ratio * 4.8,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  SizedBox(height: ratio * 1.5),
-                                  CircleAvatar(
-                                    radius: ratio * 6.5,
-                                    backgroundColor: Colors.blue,
-                                    child: Text(
-                                      "$totalPresent",
-                                      style: TextStyle(
-                                        fontSize: ratio * 5,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            // Total Absent Box
-                            Container(
-                              width: deviceWidth * 0.27,
-                              padding: EdgeInsets.symmetric(
-                                vertical: ratio * 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(ratio * 4),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.red.withOpacity(0.2),
-                                    blurRadius: 8,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Absent',
-                                    style: TextStyle(
-                                      fontSize: ratio * 4.8,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  SizedBox(height: ratio * 1.5),
-                                  CircleAvatar(
-                                    radius: ratio * 6.5,
-                                    backgroundColor: Colors.red,
-                                    child: Text(
-                                      "$totalAbsent",
-                                      style: TextStyle(
-                                        fontSize: ratio * 5,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                            // Total Days Box
-                            Container(
-                              width: deviceWidth * 0.27,
-                              padding: EdgeInsets.symmetric(
-                                vertical: ratio * 3,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(ratio * 4),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.green.withOpacity(0.2),
-                                    blurRadius: 8,
-                                    offset: Offset(0, 4),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Total Days',
-                                    style: TextStyle(
-                                      fontSize: ratio * 4.8,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  SizedBox(height: ratio * 1.5),
-                                  CircleAvatar(
-                                    radius: ratio * 6.5,
-                                    backgroundColor: Colors.green,
-                                    child: Text(
-                                      "$totalDays",
-                                      style: TextStyle(
-                                        fontSize: ratio * 5,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
                         ),
-                      ),
-                      Container(
-                        //stop
-                        padding: EdgeInsets.only(top: ratio * 5, bottom: 0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(
-                            ratio * 10,
-                          ), // Optional: Adds rounded corners
-                        ),
-                        width: deviceWidth * 0.9,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 2,
-                                      blurRadius: 6,
-                                      offset: Offset(
-                                        0,
-                                        3,
-                                      ), // changes position of shadow
-                                    ),
-                                  ],
+                        Container(
+                          //stop
+                          padding: EdgeInsets.only(top: ratio * 5, bottom: 0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                              ratio * 10,
+                            ), // Optional: Adds rounded corners
+                          ),
+                          width: deviceWidth * 0.9,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 6,
+                                        offset: Offset(
+                                          0,
+                                          3,
+                                        ), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Mark Attendance",
+                                        style: TextStyle(fontSize: ratio * 7),
+                                      ),
+                                      Image.asset(
+                                        'assets/images/attendance.png',
+                                        width: deviceWidth * 0.3,
+                                        height: deviceWidth * 0.25,
+                                      ),
+                                      (Mainstatus == "" ||
+                                              Mainstatus == 'punchout')
+                                          ? ElevatedButton(
+                                            onPressed: () async {
+                                              punchIn();
+                                            },
+                                            child: Text("Punch in"),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Color(
+                                                0xFF03a9f4,
+                                              ),
+                                              foregroundColor: Colors.white,
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: deviceWidth * 0.05,
+                                                vertical: 4,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      MediaQuery.of(
+                                                            context,
+                                                          ).size.width *
+                                                          0.07,
+                                                    ),
+                                              ),
+                                              elevation: 4,
+                                            ),
+                                          )
+                                          : ElevatedButton(
+                                            onPressed: () async {
+                                              punchOutAlert(context);
+                                            },
+                                            child: Text("Punch Out"),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Color(
+                                                0xFF03a9f4,
+                                              ),
+                                              foregroundColor: Colors.white,
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: deviceWidth * 0.05,
+                                                vertical: 4,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      deviceWidth * 0.07,
+                                                    ),
+                                              ),
+                                              elevation: 4,
+                                            ),
+                                          ),
+                                    ],
+                                  ),
                                 ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Mark Attendance",
-                                      style: TextStyle(fontSize: ratio * 7),
-                                    ),
-                                    Image.asset(
-                                      'assets/images/attendance.png',
-                                      width: deviceWidth * 0.3,
-                                      height: deviceWidth * 0.25,
-                                    ),
-                                    (Mainstatus == "" ||
-                                            Mainstatus == 'punchout')
-                                        ? ElevatedButton(
-                                          onPressed: () async {
-                                            punchIn();
-                                          },
-                                          child: Text("Punch in"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFF03a9f4),
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: deviceWidth * 0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    MediaQuery.of(
-                                                          context,
-                                                        ).size.width *
-                                                        0.07,
-                                                  ),
-                                            ),
-                                            elevation: 4,
-                                          ),
-                                        )
-                                        : ElevatedButton(
-                                          onPressed: () async {
-                                            punchOutAlert(context);
-                                          },
-                                          child: Text("Punch Out"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFF03a9f4),
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: deviceWidth * 0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    deviceWidth * 0.07,
-                                                  ),
-                                            ),
-                                            elevation: 4,
-                                          ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 6,
+                                        offset: Offset(
+                                          0,
+                                          3,
+                                        ), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Visit Time",
+                                        style: TextStyle(
+                                          fontSize: ratio * 7,
+                                          color: Colors.black,
                                         ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.withOpacity(0.5),
-                                      spreadRadius: 2,
-                                      blurRadius: 6,
-                                      offset: Offset(
-                                        0,
-                                        3,
-                                      ), // changes position of shadow
-                                    ),
-                                  ],
-                                ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Visit Time",
-                                      style: TextStyle(
-                                        fontSize: ratio * 7,
-                                        color: Colors.black,
                                       ),
-                                    ),
-                                    Image.asset(
-                                      'assets/images/visit.png',
-                                      width: deviceWidth * 0.3,
-                                      height: deviceWidth * 0.25,
-                                    ),
-                                    (visitStatus == 'opne')
-                                        ? ElevatedButton(
-                                          onPressed: () {
-                                            if (Mainstatus != '' &&
-                                                Mainstatus == 'punchin') {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder:
-                                                      (context) => VisitOut(),
-                                                ),
-                                              );
-                                            } else {
-                                              Alert.alert(
-                                                context,
-                                                'Please Mark Your Attendance Then Do Visit',
-                                              );
-                                            }
-                                          },
-                                          child: Text("Visit Out"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFF03a9f4),
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: deviceWidth * 0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    deviceWidth * 0.07,
+                                      Image.asset(
+                                        'assets/images/visit.png',
+                                        width: deviceWidth * 0.3,
+                                        height: deviceWidth * 0.25,
+                                      ),
+                                      (visitStatus == 'opne')
+                                          ? ElevatedButton(
+                                            onPressed: () {
+                                              if (Mainstatus != '' &&
+                                                  Mainstatus == 'punchin') {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder:
+                                                        (context) => VisitOut(),
                                                   ),
-                                            ),
-                                            elevation: 4,
-                                          ),
-                                        )
-                                        : ElevatedButton(
-                                          onPressed: () async {
-                                            if (Mainstatus != '' &&
-                                                Mainstatus == 'punchin') {
-                                              visitIn();
-                                            } else {
-                                              Alert.alert(
-                                                context,
-                                                'Please Mark Your Attendance Then Do Visit',
-                                              );
-                                            }
-                                          },
-                                          child: Text("Visit In"),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFF03a9f4),
-                                            foregroundColor: Colors.white,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: deviceWidth * 0.05,
-                                              vertical: 4,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                    deviceWidth * 0.07,
-                                                  ),
-                                            ),
-                                            elevation: 4,
-                                          ),
-                                        ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: ratio * 2),
-                      Container(
-                        padding: EdgeInsets.only(top: ratio * 5, bottom: 0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(
-                            10,
-                          ), // Optional: Adds rounded corners
-                        ),
-                        width: deviceWidth * 0.9,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius: 6,
-                                    offset: Offset(
-                                      0,
-                                      3,
-                                    ), // changes position of shadow
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(10),
-                                child: Column(
-                                  children: [
-                                    Text("Break 1"),
-                                    (Break1 == 'open' || Break1 == 'close')
-                                        ? Column(
-                                          children:
-                                              statusData.map<Widget>((item) {
-                                                return Column(
-                                                  children: [
-                                                    Text(
-                                                      'Start',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 6,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      '${item['break1in'] ?? '0'}',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 5,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      'End',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 6,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      '${item['break1out'] ?? '-'}',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 5,
-                                                      ),
-                                                    ),
-                                                  ],
                                                 );
-                                              }).toList(),
-                                        )
-                                        : Image.asset(
-                                          'assets/images/Break.png',
-                                          width: deviceWidth * 0.12,
-                                          height: deviceWidth * 0.12,
-                                        ),
-                                    ElevatedButton(
-                                      onPressed:
-                                          () =>
-                                              (Mainstatus == '' ||
-                                                      Mainstatus == 'punchout')
-                                                  ? {}
-                                                  : (Break1 == '' ||
-                                                      Break1 == 'open')
-                                                  ? BreakAlert(
-                                                    context,
-                                                    'break1',
-                                                    (Break1 == '')
-                                                        ? 'Are You Shore For Break'
-                                                        : (Break1 == 'open')
-                                                        ? "Are You Shore For Break End"
-                                                        : '',
-                                                    (Break1 == '')
-                                                        ? 'Break In'
-                                                        : (Break1 == 'open')
-                                                        ? "Break End"
-                                                        : '',
-                                                  )
-                                                  : {},
-
-                                      child:
-                                          (Break1 == '')
-                                              ? Text("Start")
-                                              : (Break1 == 'open')
-                                              ? Text("End")
-                                              : Text("End"),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            (Break1 == 'close' ||
-                                                    Mainstatus == '' ||
-                                                    Mainstatus == 'punchout')
-                                                ? Colors.red
-                                                : Color(0xFF03a9f4),
-                                        foregroundColor: Colors.white,
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: deviceWidth * 0.05,
-                                          vertical: 4,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            deviceWidth * 0.07,
-                                          ),
-                                        ),
-                                        elevation: 4,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius: 6,
-                                    offset: Offset(
-                                      0,
-                                      3,
-                                    ), // changes position of shadow
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(10),
-                                child: Column(
-                                  children: [
-                                    Text("Break 2"),
-                                    (Break2 == 'open' || Break2 == 'close')
-                                        ? Column(
-                                          children:
-                                              statusData.map<Widget>((item) {
-                                                return Column(
-                                                  children: [
-                                                    Text(
-                                                      'Start',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 6,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      '${item['break2in'] ?? '0'}',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 5,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      'End',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 6,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      '${item['break2out'] ?? '-'}',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 5,
-                                                      ),
-                                                    ),
-                                                  ],
+                                              } else {
+                                                Alert.alert(
+                                                  context,
+                                                  'Please Mark Your Attendance Then Do Visit',
                                                 );
-                                              }).toList(),
-                                        )
-                                        : Image.asset(
-                                          'assets/images/Break.png',
-                                          width: deviceWidth * 0.12,
-                                          height: deviceWidth * 0.12,
-                                        ),
-                                    ElevatedButton(
-                                      onPressed:
-                                          () =>
-                                              (Mainstatus == '' ||
-                                                      Mainstatus == 'punchout')
-                                                  ? {}
-                                                  : (Break1 == 'close') &&
-                                                      (Break2 == '' ||
-                                                          Break2 == 'open')
-                                                  ? BreakAlert(
-                                                    context,
-                                                    'break2',
-                                                    (Break2 == '')
-                                                        ? 'Are You Shore For Break'
-                                                        : (Break2 == 'open')
-                                                        ? "Are You Shore For Break End"
-                                                        : '',
-                                                    (Break2 == '')
-                                                        ? 'Break In'
-                                                        : (Break2 == 'open')
-                                                        ? "Break End"
-                                                        : '',
-                                                  )
-                                                  : {},
-                                      child:
-                                          (Break2 == '')
-                                              ? Text("Start")
-                                              : (Break2 == 'open')
-                                              ? Text("End")
-                                              : Text("End"),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            (Break2 == 'close' ||
-                                                    Mainstatus == '' ||
-                                                    Mainstatus == 'punchout')
-                                                ? Colors.red
-                                                : Color(0xFF03a9f4),
-                                        foregroundColor: Colors.white,
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: deviceWidth * 0.05,
-                                          vertical: 4,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            deviceWidth * 0.07,
-                                          ),
-                                        ),
-                                        elevation: 4,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius: 6,
-                                    offset: Offset(
-                                      0,
-                                      3,
-                                    ), // changes position of shadow
-                                  ),
-                                ],
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(10),
-                                child: Column(
-                                  children: [
-                                    Text("Break 3"),
-                                    (Break3 == 'open' || Break3 == 'close')
-                                        ? Column(
-                                          children:
-                                              statusData.map<Widget>((item) {
-                                                return Column(
-                                                  children: [
-                                                    Text(
-                                                      'Start',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 6,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
+                                              }
+                                            },
+                                            child: Text("Visit Out"),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Color(
+                                                0xFF03a9f4,
+                                              ),
+                                              foregroundColor: Colors.white,
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: deviceWidth * 0.05,
+                                                vertical: 4,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      deviceWidth * 0.07,
                                                     ),
-                                                    Text(
-                                                      '${item['break3in'] ?? '0'}',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 5,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      'End',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 6,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      '${item['break3out'] ?? '-'}',
-                                                      style: TextStyle(
-                                                        fontSize: ratio * 5,
-                                                      ),
-                                                    ),
-                                                  ],
+                                              ),
+                                              elevation: 4,
+                                            ),
+                                          )
+                                          : ElevatedButton(
+                                            onPressed: () async {
+                                              if (Mainstatus != '' &&
+                                                  Mainstatus == 'punchin') {
+                                                visitIn();
+                                              } else {
+                                                Alert.alert(
+                                                  context,
+                                                  'Please Mark Your Attendance Then Do Visit',
                                                 );
-                                              }).toList(),
-                                        )
-                                        : Image.asset(
-                                          'assets/images/Break.png',
-                                          width: deviceWidth * 0.12,
-                                          height: deviceWidth * 0.12,
-                                        ),
-                                    ElevatedButton(
-                                      onPressed:
-                                          () =>
-                                              (Mainstatus == '' ||
-                                                      Mainstatus == 'punchout')
-                                                  ? {}
-                                                  : (Break2 == 'close') &&
-                                                      (Break3 == '' ||
-                                                          Break3 == 'open')
-                                                  ? BreakAlert(
-                                                    context,
-                                                    'break3',
-                                                    (Break3 == '')
-                                                        ? 'Are You Shore For Break'
-                                                        : (Break3 == 'open')
-                                                        ? "Are You Shore For Break End"
-                                                        : '',
-                                                    (Break3 == '')
-                                                        ? 'Break In'
-                                                        : (Break3 == 'open')
-                                                        ? "Break End"
-                                                        : '',
-                                                  )
-                                                  : {},
-                                      child:
-                                          (Break3 == '')
-                                              ? Text("Start")
-                                              : (Break3 == 'open')
-                                              ? Text("End")
-                                              : Text("End"),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                            (Break3 == 'close' ||
-                                                    Mainstatus == '' ||
-                                                    Mainstatus == 'punchout')
-                                                ? Colors.red
-                                                : Color(0xFF03a9f4),
-                                        foregroundColor: Colors.white,
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: deviceWidth * 0.05,
-                                          vertical: 4,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            deviceWidth * 0.07,
+                                              }
+                                            },
+                                            child: Text("Visit In"),
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Color(
+                                                0xFF03a9f4,
+                                              ),
+                                              foregroundColor: Colors.white,
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: deviceWidth * 0.05,
+                                                vertical: 4,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      deviceWidth * 0.07,
+                                                    ),
+                                              ),
+                                              elevation: 4,
+                                            ),
                                           ),
-                                        ),
-                                        elevation: 4,
-                                      ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-
-                      SizedBox(height: 10),
-                      Container(
-                        padding: EdgeInsets.only(top: ratio * 5, bottom: 0),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(
-                            10,
-                          ), // Optional: Adds rounded corners
-                        ),
-                        width: deviceWidth * 0.9,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(10),
+                        SizedBox(height: ratio * 2),
+                        Container(
+                          padding: EdgeInsets.only(top: ratio * 5, bottom: 0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                              10,
+                            ), // Optional: Adds rounded corners
+                          ),
+                          width: deviceWidth * 0.9,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(10),
@@ -2453,51 +2108,110 @@ class _EmpHomeState extends State<EmpHome> {
                                     ),
                                   ],
                                 ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Att. Report's",
-                                      style: TextStyle(fontSize: ratio * 7),
-                                    ),
-                                    Image.asset(
-                                      'assets/images/Att  Report.png',
-                                      width: deviceWidth * 0.25,
-                                      height: deviceWidth * 0.20,
-                                    ),
-                                    ElevatedButton(
-                                      onPressed:
-                                          () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (context) => EmpAttdetail(),
+                                child: Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Column(
+                                    children: [
+                                      Text("Break 1"),
+                                      (Break1 == 'open' || Break1 == 'close')
+                                          ? Column(
+                                            children:
+                                                statusData.map<Widget>((item) {
+                                                  return Column(
+                                                    children: [
+                                                      Text(
+                                                        'Start',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 6,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        '${item['break1in'] ?? '0'}',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 5,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        'End',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 6,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        '${item['break1out'] ?? '-'}',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 5,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                }).toList(),
+                                          )
+                                          : Image.asset(
+                                            'assets/images/Break.png',
+                                            width: deviceWidth * 0.12,
+                                            height: deviceWidth * 0.12,
+                                          ),
+                                      ElevatedButton(
+                                        onPressed:
+                                            () =>
+                                                (Mainstatus == '' ||
+                                                        Mainstatus ==
+                                                            'punchout')
+                                                    ? {}
+                                                    : (Break1 == '' ||
+                                                        Break1 == 'open')
+                                                    ? BreakAlert(
+                                                      context,
+                                                      'break1',
+                                                      (Break1 == '')
+                                                          ? 'Are You Shore For Break'
+                                                          : (Break1 == 'open')
+                                                          ? "Are You Shore For Break End"
+                                                          : '',
+                                                      (Break1 == '')
+                                                          ? 'Break In'
+                                                          : (Break1 == 'open')
+                                                          ? "Break End"
+                                                          : '',
+                                                    )
+                                                    : {},
+
+                                        child:
+                                            (Break1 == '')
+                                                ? Text("Start")
+                                                : (Break1 == 'open')
+                                                ? Text("End")
+                                                : Text("End"),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              (Break1 == 'close' ||
+                                                      Mainstatus == '' ||
+                                                      Mainstatus == 'punchout')
+                                                  ? Colors.red
+                                                  : Color(0xFF03a9f4),
+                                          foregroundColor: Colors.white,
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: deviceWidth * 0.05,
+                                            vertical: 4,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              deviceWidth * 0.07,
                                             ),
                                           ),
-                                      child: Text("View"),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color(0xFF03a9f4),
-                                        foregroundColor: Colors.white,
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: deviceWidth * 0.05,
-                                          vertical: 4,
+                                          elevation: 4,
                                         ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            deviceWidth * 0.07,
-                                          ),
-                                        ),
-                                        elevation: 4,
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Container(
-                                padding: EdgeInsets.all(10),
+                              Container(
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(10),
@@ -2513,60 +2227,375 @@ class _EmpHomeState extends State<EmpHome> {
                                     ),
                                   ],
                                 ),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Visit Report's",
-                                      style: TextStyle(fontSize: ratio * 7),
-                                    ),
-                                    Image.asset(
-                                      'assets/images/visit_report.png',
-                                      width: deviceWidth * 0.25,
-                                      height: deviceWidth * 0.20,
-                                    ),
-                                    ElevatedButton(
-                                      onPressed:
-                                          () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) => Empvisitrep(),
+                                child: Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Column(
+                                    children: [
+                                      Text("Break 2"),
+                                      (Break2 == 'open' || Break2 == 'close')
+                                          ? Column(
+                                            children:
+                                                statusData.map<Widget>((item) {
+                                                  return Column(
+                                                    children: [
+                                                      Text(
+                                                        'Start',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 6,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        '${item['break2in'] ?? '0'}',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 5,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        'End',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 6,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        '${item['break2out'] ?? '-'}',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 5,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                }).toList(),
+                                          )
+                                          : Image.asset(
+                                            'assets/images/Break.png',
+                                            width: deviceWidth * 0.12,
+                                            height: deviceWidth * 0.12,
+                                          ),
+                                      ElevatedButton(
+                                        onPressed:
+                                            () =>
+                                                (Mainstatus == '' ||
+                                                        Mainstatus ==
+                                                            'punchout')
+                                                    ? {}
+                                                    : (Break1 == 'close') &&
+                                                        (Break2 == '' ||
+                                                            Break2 == 'open')
+                                                    ? BreakAlert(
+                                                      context,
+                                                      'break2',
+                                                      (Break2 == '')
+                                                          ? 'Are You Shore For Break'
+                                                          : (Break2 == 'open')
+                                                          ? "Are You Shore For Break End"
+                                                          : '',
+                                                      (Break2 == '')
+                                                          ? 'Break In'
+                                                          : (Break2 == 'open')
+                                                          ? "Break End"
+                                                          : '',
+                                                    )
+                                                    : {},
+                                        child:
+                                            (Break2 == '')
+                                                ? Text("Start")
+                                                : (Break2 == 'open')
+                                                ? Text("End")
+                                                : Text("End"),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              (Break2 == 'close' ||
+                                                      Mainstatus == '' ||
+                                                      Mainstatus == 'punchout')
+                                                  ? Colors.red
+                                                  : Color(0xFF03a9f4),
+                                          foregroundColor: Colors.white,
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: deviceWidth * 0.05,
+                                            vertical: 4,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              deviceWidth * 0.07,
                                             ),
                                           ),
-                                      child: Text("View"),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Color(0xFF03a9f4),
-                                        foregroundColor: Colors.white,
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.width *
-                                              0.05,
-                                          vertical: 4,
+                                          elevation: 4,
                                         ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            deviceWidth * 0.07,
-                                          ),
-                                        ),
-                                        elevation: 4,
                                       ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      spreadRadius: 2,
+                                      blurRadius: 6,
+                                      offset: Offset(
+                                        0,
+                                        3,
+                                      ), // changes position of shadow
                                     ),
                                   ],
                                 ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(10),
+                                  child: Column(
+                                    children: [
+                                      Text("Break 3"),
+                                      (Break3 == 'open' || Break3 == 'close')
+                                          ? Column(
+                                            children:
+                                                statusData.map<Widget>((item) {
+                                                  return Column(
+                                                    children: [
+                                                      Text(
+                                                        'Start',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 6,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        '${item['break3in'] ?? '0'}',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 5,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        'End',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 6,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        '${item['break3out'] ?? '-'}',
+                                                        style: TextStyle(
+                                                          fontSize: ratio * 5,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
+                                                }).toList(),
+                                          )
+                                          : Image.asset(
+                                            'assets/images/Break.png',
+                                            width: deviceWidth * 0.12,
+                                            height: deviceWidth * 0.12,
+                                          ),
+                                      ElevatedButton(
+                                        onPressed:
+                                            () =>
+                                                (Mainstatus == '' ||
+                                                        Mainstatus ==
+                                                            'punchout')
+                                                    ? {}
+                                                    : (Break2 == 'close') &&
+                                                        (Break3 == '' ||
+                                                            Break3 == 'open')
+                                                    ? BreakAlert(
+                                                      context,
+                                                      'break3',
+                                                      (Break3 == '')
+                                                          ? 'Are You Shore For Break'
+                                                          : (Break3 == 'open')
+                                                          ? "Are You Shore For Break End"
+                                                          : '',
+                                                      (Break3 == '')
+                                                          ? 'Break In'
+                                                          : (Break3 == 'open')
+                                                          ? "Break End"
+                                                          : '',
+                                                    )
+                                                    : {},
+                                        child:
+                                            (Break3 == '')
+                                                ? Text("Start")
+                                                : (Break3 == 'open')
+                                                ? Text("End")
+                                                : Text("End"),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor:
+                                              (Break3 == 'close' ||
+                                                      Mainstatus == '' ||
+                                                      Mainstatus == 'punchout')
+                                                  ? Colors.red
+                                                  : Color(0xFF03a9f4),
+                                          foregroundColor: Colors.white,
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: deviceWidth * 0.05,
+                                            vertical: 4,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              deviceWidth * 0.07,
+                                            ),
+                                          ),
+                                          elevation: 4,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                    ],
+
+                        SizedBox(height: 10),
+                        Container(
+                          padding: EdgeInsets.only(top: ratio * 5, bottom: 0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                              10,
+                            ), // Optional: Adds rounded corners
+                          ),
+                          width: deviceWidth * 0.9,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 6,
+                                        offset: Offset(
+                                          0,
+                                          3,
+                                        ), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Att. Report's",
+                                        style: TextStyle(fontSize: ratio * 7),
+                                      ),
+                                      Image.asset(
+                                        'assets/images/Att  Report.png',
+                                        width: deviceWidth * 0.25,
+                                        height: deviceWidth * 0.20,
+                                      ),
+                                      ElevatedButton(
+                                        onPressed:
+                                            () => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (context) => EmpAttdetail(),
+                                              ),
+                                            ),
+                                        child: Text("View"),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(0xFF03a9f4),
+                                          foregroundColor: Colors.white,
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: deviceWidth * 0.05,
+                                            vertical: 4,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              deviceWidth * 0.07,
+                                            ),
+                                          ),
+                                          elevation: 4,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Expanded(
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 6,
+                                        offset: Offset(
+                                          0,
+                                          3,
+                                        ), // changes position of shadow
+                                      ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Visit Report's",
+                                        style: TextStyle(fontSize: ratio * 7),
+                                      ),
+                                      Image.asset(
+                                        'assets/images/visit_report.png',
+                                        width: deviceWidth * 0.25,
+                                        height: deviceWidth * 0.20,
+                                      ),
+                                      ElevatedButton(
+                                        onPressed:
+                                            () => Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => Empvisitrep(),
+                                              ),
+                                            ),
+                                        child: Text("View"),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(0xFF03a9f4),
+                                          foregroundColor: Colors.white,
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.width *
+                                                0.05,
+                                            vertical: 4,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              deviceWidth * 0.07,
+                                            ),
+                                          ),
+                                          elevation: 4,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                      ],
+                    ),
                   ),
                 ),
               ),
-)
-
     );
   }
 }

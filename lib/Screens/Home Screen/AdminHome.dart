@@ -5,7 +5,7 @@ import 'package:employee_tracker/Screens/Admin%20Report/VisitReport.dart';
 import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Components/GridItem.dart';
 import 'package:employee_tracker/Screens/Employee%20Reports/employeeList.dart';
-import 'package:employee_tracker/Screens/Profile%20Scree/StaffSalery.dart';
+/* import 'package:employee_tracker/Screens/Profile%20Scree/StaffSalery.dart'; */
 import 'package:employee_tracker/Screens/Profile%20Scree/adminProfile.dart';
 import 'package:employee_tracker/Screens/create%20employee/Master.dart';
 import 'package:employee_tracker/Screens/create%20employee/createEmployee.dart';
@@ -42,6 +42,7 @@ class AdminhomeState extends State<AdminHome> {
   String comName = 'Compamy';
   String image = '';
   bool visit = false;
+  int currentIndex = 0;
 
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
@@ -84,8 +85,15 @@ class AdminhomeState extends State<AdminHome> {
 
   // Notification method to navigate to Notification screen
   void _onItemTapped(int index) {
+    int count = 0;
+    if (currentIndex == index) return;
     setState(() {
-      _selectedIndex = index;
+      count++;
+      if (count == 0) {
+        currentIndex = index;
+      } else {
+        currentIndex = 0;
+      }
     });
 
     // Perform actions based on the selected index
