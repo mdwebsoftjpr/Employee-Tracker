@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:employee_tracker/Screens/Admin%20Report/AttDownlod.dart';
 import 'package:employee_tracker/Screens/Admin%20Report/Attendance.dart';
 import 'package:employee_tracker/Screens/Admin%20Report/VisitReport.dart';
@@ -459,7 +460,7 @@ class AdminhomeState extends State<AdminHome> {
                       LogOutAlert(context);
                     },
                   ),
-                  SizedBox(height: .015 * deviceHeight),
+                  SizedBox(height:Platform.isIOS? ratio*35: ratio*5),
                   Divider(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),

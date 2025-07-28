@@ -1128,7 +1128,7 @@ class _EmpHomeState extends State<EmpHome> {
                       LogOutAlert(context);
                     },
                   ),
-                  SizedBox(height: .10 * deviceHeight),
+                  SizedBox(height:Platform.isIOS? deviceHeight*.15: deviceHeight*.10),
                   Divider(),
                   Padding(
                     padding: const EdgeInsets.only(bottom: 5),
