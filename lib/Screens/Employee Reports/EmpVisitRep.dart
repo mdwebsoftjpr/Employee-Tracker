@@ -101,6 +101,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
         "date": day,
         "emp_id": empId,
       };
+      print(requestBody);
 
       final response = await http.post(
         url,
@@ -196,13 +197,14 @@ class EmpvisitrepState extends State<Empvisitrep> {
                             width: deviceWidth * .30,
                             height: deviceWidth * .30,
                             decoration: BoxDecoration(color: Colors.grey[200]),
-                            child: Image.network(
-                              visit['image'] ?? '',
-                              fit: BoxFit.cover,
-                              errorBuilder:
-                                  (context, error, stackTrace) =>
-                                      Icon(Icons.broken_image, size: 40),
-                            ),
+                            child: visit['imagev']!=''?Image.network(
+                                visit['imagev'] ?? '',
+                                width: ratio * 30,
+                                fit: BoxFit.cover,
+                                errorBuilder:
+                                    (context, error, stackTrace) =>
+                                        Icon(Icons.broken_image),
+                              ):Icon(Icons.person,size: ratio*25,),
                           ),
                         ),
                       ),
@@ -409,14 +411,14 @@ class EmpvisitrepState extends State<Empvisitrep> {
                           child: ListTile(
                             leading: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
+                              child: visit['imagev']!=''?Image.network(
                                 visit['imagev'] ?? '',
                                 width: ratio * 30,
                                 fit: BoxFit.cover,
                                 errorBuilder:
                                     (context, error, stackTrace) =>
                                         Icon(Icons.broken_image),
-                              ),
+                              ):Icon(Icons.person,size: ratio*25,),
                             ),
                             title: Text(
                               visit['NameOfCustomer'] ?? 'No Customer Name',

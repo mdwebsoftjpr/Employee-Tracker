@@ -671,9 +671,9 @@ class _EmpHomeState extends State<EmpHome> {
   }
 
   Future<void> fetchAndPrintAddress() async {
-    setState(() {
+    /* setState(() {
       isLoading = true;
-    });
+    }); */
     double? lat = double.tryParse(latitude);
     double? lng = double.tryParse(longitude);
 
@@ -688,10 +688,10 @@ class _EmpHomeState extends State<EmpHome> {
         String address =
             "${place.name}, ${place.street}, ${place.locality}, ${place.postalCode}, ${place.country}";
 
-        setState(() {
+       setState(() {
           CurrentAddress = address;
-          isLoading = false;
-        });
+          /* isLoading = false; */
+        }); 
       }
     } catch (e) {}
   }

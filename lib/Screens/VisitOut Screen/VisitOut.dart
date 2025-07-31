@@ -10,10 +10,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:http/http.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:path/path.dart' as p;
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
@@ -192,7 +188,7 @@ class VisitOutState extends State<VisitOut> {
       address.text = 'Address Automatically Picked';
     });
   }
-
+/* 
   Future<File?> compressImage(XFile xFile) async {
     setState(() {
       isLoading = true;
@@ -223,7 +219,7 @@ class VisitOutState extends State<VisitOut> {
       isLoading = false;
     });
     return compressedFile;
-  }
+  } */
 
   Future<void> _pickImageFromCamera() async {
     final XFile? pickedFile = await _picker.pickImage(
@@ -235,10 +231,10 @@ class VisitOutState extends State<VisitOut> {
     );
 
     if (pickedFile != null) {
-      File? compressed = await compressImage(pickedFile);
+    /*   File? compressed = await compressImage(pickedFile); */
 
       setState(() {
-        _imageFile = compressed != null ? XFile(compressed.path) : pickedFile;
+        _imageFile = /* compressed != null ? XFile(compressed.path) : */ pickedFile;
       });
     }
   }
@@ -307,7 +303,7 @@ class VisitOutState extends State<VisitOut> {
         // Get the response and handle it
         var responseData = await Response.fromStream(response);
         var data = jsonDecode(responseData.body);
-
+        print( _imageFile!.path);
         if (response.statusCode == 200) {
           if (data['success'] == true) {
             localStorage.deleteItem('visitId');
@@ -332,10 +328,11 @@ class VisitOutState extends State<VisitOut> {
           Alert.alert(context, "Server error: ${response.statusCode}");
         }
       } catch (e) {
+        Alert.alert(context, "Upload error: $e");
+      }finally{
         setState(() {
           isLoading = false;
         });
-        Alert.alert(context, "Upload error: $e");
       }
     }
   }
