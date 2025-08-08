@@ -45,8 +45,6 @@ class AdminhomeState extends State<AdminHome> {
   bool visit = false;
   int currentIndex = 0;
 
-  final ImagePicker _picker = ImagePicker();
-  XFile? _imageFile;
   void initState() {
     super.initState();
     _loadUser();
@@ -66,25 +64,14 @@ class AdminhomeState extends State<AdminHome> {
     var Visit = localStorage.getItem('visitout') ?? false;
     if (Visit == true) {
       setState(() {
-        visit:
         Visit;
       });
     }
   }
 
-  Future<void> _pickImageFromCamera() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.camera,
-      preferredCameraDevice: CameraDevice.front,
-    );
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = pickedFile;
-      });
-    }
-  }
 
-  // Notification method to navigate to Notification screen
+
+  
   void _onItemTapped(int index) {
     int count = 0;
     if (currentIndex == index) return;
@@ -121,10 +108,6 @@ class AdminhomeState extends State<AdminHome> {
     }
   }
 
-  String? _selectedValue;
-
-  // List of options for the dropdown
-  final List<String> _options = ['Option 1', 'Option 2', 'Option 3'];
 
   String currentDate = DateFormat(
     'dd-MM-yyyy',
@@ -153,8 +136,7 @@ class AdminhomeState extends State<AdminHome> {
     });
   }
 
-  // This is the value that will hold the selected item
-  String _selectedItem = 'One';
+
 
   void _openDropdown(TapDownDetails details) async {
     final selectedItem = await showMenu<String>(

@@ -99,7 +99,7 @@ class _EmpHomeState extends State<EmpHome> {
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       var DeviceId = androidInfo.id;
       setState(() {
-        deviceId = DeviceId ?? 'unknown';
+        deviceId = DeviceId /* ?? 'unknown' */;
       });
     } else if (Platform.isIOS) {
       IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
@@ -143,7 +143,7 @@ class _EmpHomeState extends State<EmpHome> {
       var responseData = jsonDecode(response.body);
 
       var success = responseData['success'];
-      var message = responseData['message'];
+     /*  var message = responseData['message']; */
       if (success == true) {
         var data = responseData['data'];
         var statusin = data[0]['status_PunchIn'] ?? '';
@@ -302,9 +302,9 @@ class _EmpHomeState extends State<EmpHome> {
     }
   }
 
-  String? _selectedValue;
+/*   String? _selectedValue;
 
-  final List<String> _options = ['Option 1', 'Option 2', 'Option 3'];
+  final List<String> _options = ['Option 1', 'Option 2', 'Option 3']; */
 
   String currentDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
@@ -696,14 +696,14 @@ class _EmpHomeState extends State<EmpHome> {
     } catch (e) {}
   }
 
-  void _showSnackBar(String message) {
+/*   void _showSnackBar(String message) {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   // This is the value that will hold the selected item
-  String _selectedItem = 'One';
+  String _selectedItem = 'One'; */
 
   void _openDropdown(TapDownDetails details) async {
     final selectedItem = await showMenu<String>(
@@ -930,13 +930,13 @@ class _EmpHomeState extends State<EmpHome> {
             GestureDetector(
               onTapDown: _openDropdown,
               child: Container(
-                margin: EdgeInsets.only(left: 10),
+                margin: EdgeInsets.only(left: ratio*5),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(ratio*5),
                   border: Border.all(color: Colors.white70, width: 1),
                 ),
                 child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(ratio*5),
                   child:
                       (userImg != null)
                           ? Image.network(
