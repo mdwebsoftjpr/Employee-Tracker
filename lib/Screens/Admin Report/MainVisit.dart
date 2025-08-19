@@ -240,8 +240,7 @@ class MainvisitState extends State<Mainvisit> {
     } else {
       ratio = deviceWidth / deviceHeight;
     }
-    return SafeArea(
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(color: Colors.white),
           backgroundColor: Color(0xFF03a9f4),
@@ -453,7 +452,6 @@ class MainvisitState extends State<Mainvisit> {
             );
           },
         ),
-      ),
     );
   }
 }
