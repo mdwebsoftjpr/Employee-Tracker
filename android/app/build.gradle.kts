@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.employee_tracker"
-        minSdk = flutter.minSdkVersion
+        minSdk = 23
         targetSdk = 35 // Updated for Google Play requirements
         versionName = "0.1.3"
         versionCode = 8

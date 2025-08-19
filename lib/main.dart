@@ -11,15 +11,13 @@ import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/services.dart' show TextInput;
-import 'SpleshScreen.dart';import 'firebase_options.dart'; 
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // ✅ Correct Firebase initialization
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await FirebaseService().initNotification();
   await _initializeLocalStorage();
@@ -46,11 +44,10 @@ void main() async {
   runApp(
     GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(), // or homeScreen if you want logic-based route
+      home: homeScreen, // or homeScreen if you want logic-based route
     ),
   );
 }
-
 
 Future<void> _initializeLocalStorage() async {
   await localStorage.ready;
@@ -303,7 +300,9 @@ class _createScreen extends State<CreateScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.grey[200],
                             padding: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 20),
+                              vertical: 8,
+                              horizontal: 20,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(40),
                             ),
@@ -321,14 +320,18 @@ class _createScreen extends State<CreateScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text("Don't Have Company?",
-                                style: TextStyle(color: Colors.black)),
+                            Text(
+                              "Don't Have Company?",
+                              style: TextStyle(color: Colors.black),
+                            ),
                             TextButton(
-                              onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => CreateCom()),
-                              ),
+                              onPressed:
+                                  () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => CreateCom(),
+                                    ),
+                                  ),
                               child: Text("Create Company"),
                             ),
                           ],
@@ -339,14 +342,23 @@ class _createScreen extends State<CreateScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Image.asset('assets/images/facebook.jpg',
-                                width: 30, height: 30),
+                            Image.asset(
+                              'assets/images/facebook.jpg',
+                              width: 30,
+                              height: 30,
+                            ),
                             SizedBox(width: 20),
-                            Image.asset('assets/images/insta.jpg',
-                                width: 30, height: 30),
+                            Image.asset(
+                              'assets/images/insta.jpg',
+                              width: 30,
+                              height: 30,
+                            ),
                             SizedBox(width: 20),
-                            Image.asset('assets/images/tweeter.jpg',
-                                width: 30, height: 30),
+                            Image.asset(
+                              'assets/images/tweeter.jpg',
+                              width: 30,
+                              height: 30,
+                            ),
                           ],
                         ),
                       ],
