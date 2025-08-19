@@ -15,9 +15,9 @@ android {
     defaultConfig {
         applicationId = "com.employee_tracker"
         minSdk = 23
-        targetSdk = 35 // Updated for Google Play requirements
+        targetSdk = 35
         versionName = "0.1.3"
-        versionCode = 8
+        versionCode = 10
         multiDexEnabled = true
     }
 
