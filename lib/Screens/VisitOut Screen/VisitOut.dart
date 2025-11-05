@@ -98,6 +98,8 @@ class VisitOutState extends State<VisitOut> {
   final TextEditingController probability = TextEditingController();
   final TextEditingController address = TextEditingController();
   final TextEditingController remark = TextEditingController();
+  final TextEditingController industry = TextEditingController();
+  final TextEditingController nextmeet = TextEditingController();
 
   final ImagePicker _picker = ImagePicker();
   XFile? _imageFile;
@@ -252,6 +254,8 @@ class VisitOutState extends State<VisitOut> {
       String Cprobability = probability.text;
       String Caddress = address.text;
       String Cremark = remark.text;
+      String Cindustry = industry.text;
+      String Cnextmeet = nextmeet.text;
 
       String modeOfTransport = '';
       if (selectedTransportModes[0]) modeOfTransport += 'Air ';
@@ -293,6 +297,8 @@ class VisitOutState extends State<VisitOut> {
         request.fields['Probablity'] = Cprobability;
         request.fields['address'] = Caddress;
         request.fields['Remark'] = Cremark;
+        request.fields['Industry'] = Cindustry;
+        request.fields['Nextmeet'] = Cnextmeet;
         request.fields['Prospects'] = weather;
         request.fields['diviceid'] = "$deviceId";
         request.fields['location'] = "$lat,$long";
@@ -389,14 +395,17 @@ class VisitOutState extends State<VisitOut> {
                       child: Column(
                         children: [
                           buildTextField(
+                            line: 1,
                             controller: organization,
                             label: 'Enter Organization',
                           ),
                           buildTextField(
+                            line: 1,
                             controller: concernedPerson,
                             label: 'Enter Concerned Person',
                           ),
                           buildTextField(
+                            line: 1,
                             controller: phone,
                             label: 'Enter Phone No.',
                             keyboardType: TextInputType.phone,
@@ -458,15 +467,18 @@ class VisitOutState extends State<VisitOut> {
                           //   label: 'Enter Address',
                           // ),
                           buildTextField(
+                            line: 4,
                             controller: remark,
                             label: 'Enter description ',
                           ),
                            buildTextField(
-                            controller: remark,
+                            line: 1,
+                            controller: industry,
                             label: 'Enter industry type ',
                           ),
                            buildTextField(
-                            controller: remark,
+                            line: 1,
+                            controller: nextmeet,
                             label: 'Enter next meeting ',
                           ),
                           Row(
@@ -533,12 +545,14 @@ class VisitOutState extends State<VisitOut> {
   Widget buildTextField({
     required TextEditingController controller,
     required String label,
+    required int line,
     String? Function(String?)? validator,
     TextInputType? keyboardType,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
+        maxLines: line,
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
