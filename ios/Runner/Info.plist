@@ -2,83 +2,67 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- Location Usage (Required for live tracking) -->
-    <key>NSCameraUsageDescription</key>
-<string>This app needs camera access to scan barcodes.</string>
-
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>This app requires your location while using the app for live tracking.</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>This app needs access to your location even in the background for continuous tracking.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>This app tracks your location in the background to monitor attendance and visits.</string>
-
-    <!-- Photo/Camera Access -->
-    <key>NSCameraUsageDescription</key>
-    <string>This app requires camera access to capture attendance photos.</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>This app needs photo library access to upload profile or attendance images.</string>
-
-    <!-- Google Maps (iOS only) -->
-    <key>GMSApiKey</key>
-    <string>YOUR_ACTUAL_GOOGLE_MAPS_API_KEY</string> <!-- Replace with your actual API Key -->
-
-    <!-- Required for Google Maps to embed in Flutter -->
-    <key>io.flutter.embedded_views_preview</key>
-    <true/>
-
-    <!-- General App Metadata -->
-    <key>CFBundleDevelopmentRegion</key>
-    <string>$(DEVELOPMENT_LANGUAGE)</string>
-    <key>CFBundleDisplayName</key>
-    <string>EmpAttend</string>
-    <key>CFBundleExecutable</key>
-    <string>$(EXECUTABLE_NAME)</string>
-    <key>CFBundleIdentifier</key>
-    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-    <key>CFBundleName</key>
-    <string>employee_tracker</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
-    <key>CFBundleShortVersionString</key>
-    <string>$(FLUTTER_BUILD_NAME)</string>
-    <key>CFBundleSignature</key>
-    <string>????</string>
-    <key>CFBundleVersion</key>
-    <string>$(FLUTTER_BUILD_NUMBER)</string>
-    <key>LSRequiresIPhoneOS</key>
-    <true/>
-    <key>UILaunchStoryboardName</key>
-    <string>LaunchScreen</string>
-    <key>UIMainStoryboardFile</key>
-    <string>Main</string>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-    <key>NSAllowsArbitraryLoads</key>
-    <true/>
-    </dict>
-
-    <!-- Supported Orientations -->
-    <key>UISupportedInterfaceOrientations</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
-    <key>UISupportedInterfaceOrientations~ipad</key>
-    <array>
-        <string>UIInterfaceOrientationPortrait</string>
-        <string>UIInterfaceOrientationPortraitUpsideDown</string>
-        <string>UIInterfaceOrientationLandscapeLeft</string>
-        <string>UIInterfaceOrientationLandscapeRight</string>
-    </array>
-
-    <!-- Performance and Input Flags -->
-    <key>CADisableMinimumFrameDurationOnPhone</key>
-    <true/>
-    <key>UIApplicationSupportsIndirectInputEvents</key>
-    <true/>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>EmpAttend</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>employee_tracker</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>2.0.0</string>
+	<key>GMSApiKey</key>
+	<string>YOUR_ACTUAL_GOOGLE_MAPS_API_KEY</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires camera access to capture attendance photos.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs access to your location even in the background for continuous tracking.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app tracks your location in the background to monitor attendance and visits.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app requires your location while using the app for live tracking.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to upload profile or attendance images.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
 </dict>
 </plist>

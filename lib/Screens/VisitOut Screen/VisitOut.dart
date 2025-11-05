@@ -409,57 +409,65 @@ class VisitOutState extends State<VisitOut> {
                               return null;
                             },
                           ),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: buildTextField(
-                                  controller: item,
-                                  label: 'Enter Items',
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: buildTextField(
-                                  controller: value,
-                                  label: 'Enter Value',
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Row(
+                          //   children: [
+                          //     Expanded(
+                          //       child: buildTextField(
+                          //         controller: item,
+                          //         label: 'Enter Items',
+                          //       ),
+                          //     ),
+                          //     SizedBox(width: 10),
+                          //     Expanded(
+                          //       child: buildTextField(
+                          //         controller: value,
+                          //         label: 'Enter Value',
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                           SizedBox(height: 10),
-                          Text(
-                            "Mode Of Transport",
-                            style: TextStyle(fontSize: ratio * 9),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              buildCheckbox("Air", 0),
-                              buildCheckbox("Surface", 1),
-                              buildCheckbox("Extrain", 2),
-                            ],
-                          ),
-                          buildTextField(
-                            controller: probability,
-                            label: 'Enter Probability %',
-                          ),
-                          SizedBox(height: 10),
-                          Text("Propetion", style: TextStyle(fontSize: 20)),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              buildRadio("Hot", 1),
-                              buildRadio("Rain", 2),
-                              buildRadio("Cold", 3),
-                            ],
-                          ),
-                          buildTextField(
-                            controller: address,
-                            label: 'Enter Address',
-                          ),
+                          // Text(
+                          //   "Mode Of Transport",
+                          //   style: TextStyle(fontSize: ratio * 9),
+                          // ),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.center,
+                          //   children: [
+                          //     buildCheckbox("Air", 0),
+                          //     buildCheckbox("Surface", 1),
+                          //     buildCheckbox("Extrain", 2),
+                          //   ],
+                          // ),
+                          // buildTextField(
+                          //   controller: probability,
+                          //   label: 'Enter Probability %',
+                          // ),
+                          // SizedBox(height: 10),
+                          // Text("Propetion", style: TextStyle(fontSize: 20)),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.center,
+                          //   children: [
+                          //     buildRadio("Hot", 1),
+                          //     buildRadio("Rain", 2),
+                          //     buildRadio("Cold", 3),
+                          //   ],
+                          // ),
+                          // buildTextField(
+                          //   controller: address,
+                          //   label: 'Enter Address',
+                          // ),
                           buildTextField(
                             controller: remark,
-                            label: 'Enter Remark',
+                            label: 'Enter description ',
+                          ),
+                           buildTextField(
+                            controller: remark,
+                            label: 'Enter industry type ',
+                          ),
+                           buildTextField(
+                            controller: remark,
+                            label: 'Enter next meeting ',
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,

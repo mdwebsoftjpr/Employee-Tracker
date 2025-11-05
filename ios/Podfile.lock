@@ -211,7 +211,7 @@ SPEC CHECKSUMS:
   FirebaseCoreInternal: dedc28e569a4be85f38f3d6af1070a2e12018d55
   FirebaseInstallations: d4c7c958f99c8860d7fcece786314ae790e2f988
   FirebaseMessaging: af49f8d7c0a3d2a017d9302c80946f45a7777dde
-  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_file_dialog: 4c014a45b105709a27391e266c277d7e588e9299
   flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   geocoding_ios: eafacae6ad11a1eb56681f7d11df602a5fd49416
