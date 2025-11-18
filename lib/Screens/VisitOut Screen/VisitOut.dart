@@ -297,8 +297,8 @@ class VisitOutState extends State<VisitOut> {
         request.fields['Probablity'] = Cprobability;
         request.fields['address'] = Caddress;
         request.fields['Remark'] = Cremark;
-        request.fields['Industry'] = Cindustry;
-        request.fields['Nextmeet'] = Cnextmeet;
+        request.fields['industrytype'] = Cindustry;
+        request.fields['nextdate'] = Cnextmeet;
         request.fields['Prospects'] = weather;
         request.fields['diviceid'] = "$deviceId";
         request.fields['location'] = "$lat,$long";
@@ -309,7 +309,9 @@ class VisitOutState extends State<VisitOut> {
         // Get the response and handle it
         var responseData = await Response.fromStream(response);
         var data = jsonDecode(responseData.body);
-        print( _imageFile!.path);
+
+        print("hanu responce data");
+        print( data);
         if (response.statusCode == 200) {
           if (data['success'] == true) {
             localStorage.deleteItem('visitId');
