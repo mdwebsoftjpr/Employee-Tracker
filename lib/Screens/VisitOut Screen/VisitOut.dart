@@ -1,15 +1,18 @@
 import 'package:employee_tracker/Screens/Components/Alert.dart';
 import 'package:employee_tracker/Screens/Home%20Screen/EmpHome.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'package:localstorage/localstorage.dart';
 import 'dart:convert';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:http/http.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await _initializeLocalStorage();
@@ -190,7 +193,7 @@ class VisitOutState extends State<VisitOut> {
       address.text = 'Address Automatically Picked';
     });
   }
-/* 
+  /* 
   Future<File?> compressImage(XFile xFile) async {
     setState(() {
       isLoading = true;
@@ -233,29 +236,37 @@ class VisitOutState extends State<VisitOut> {
     );
 
     if (pickedFile != null) {
-    /*   File? compressed = await compressImage(pickedFile); */
+      /*   File? compressed = await compressImage(pickedFile); */
 
       setState(() {
-        _imageFile = /* compressed != null ? XFile(compressed.path) : */ pickedFile;
+        _imageFile = /* compressed != null ? XFile(compressed.path) : */
+            pickedFile;
       });
     }
   }
 
   void VisitOut(BuildContext context) async {
-    setState(() {
-      isLoading = true;
-    });
+    // setState(() {
+    //   isLoading = true;
+    // });
+
+    print("object");
+
+
+    print(phone);
     if (_formKey.currentState?.validate() ?? false) {
       String Corganization = organization.text;
       String CconcernedPerson = concernedPerson.text;
       String Cphone = phone.text;
-      String Citem = item.text;
-      String Cvalue = value.text;
-      String Cprobability = probability.text;
+
+      // String Citem = item.text;
+      // String Cvalue = value.text;
+      // String Cprobability = probability.text;
       String Caddress = address.text;
       String Cremark = remark.text;
+
       String Cindustry = industry.text;
-      String Cnextmeet = nextmeet.text;
+      var Cnextmeet = DateFormat('dd/MM/yyyy').format(selectedDate!);
 
       String modeOfTransport = '';
       if (selectedTransportModes[0]) modeOfTransport += 'Air ';
@@ -274,6 +285,7 @@ class VisitOutState extends State<VisitOut> {
         return;
       }
 
+      print("Cnextmeet" + Cnextmeet);
       try {
         // Prepare the multipart request
         var url = Uri.parse(
@@ -291,11 +303,11 @@ class VisitOutState extends State<VisitOut> {
         request.fields['concernedperson'] = CconcernedPerson;
         request.fields['trade_name'] = trade_name.toString();
         request.fields['phoneno'] = Cphone;
-        request.fields['item'] = Citem;
-        request.fields['volume'] = Cvalue;
+        // // request.fields['item'] = Citem;
+        // request.fields['volume'] = Cvalue;
         request.fields['transport'] = modeOfTransport.trim();
-        request.fields['Probablity'] = Cprobability;
-        request.fields['address'] = Caddress;
+        // request.fields['Probablity'] = Cprobability;
+       request.fields['address'] = Caddress;
         request.fields['Remark'] = Cremark;
         request.fields['industrytype'] = Cindustry;
         request.fields['nextdate'] = Cnextmeet;
@@ -311,7 +323,7 @@ class VisitOutState extends State<VisitOut> {
         var data = jsonDecode(responseData.body);
 
         print("hanu responce data");
-        print( data);
+        print(data);
         if (response.statusCode == 200) {
           if (data['success'] == true) {
             localStorage.deleteItem('visitId');
@@ -337,12 +349,28 @@ class VisitOutState extends State<VisitOut> {
         }
       } catch (e) {
         Alert.alert(context, "Upload error: $e");
-      }finally{
+      } finally {
         setState(() {
           isLoading = false;
         });
       }
     }
+  }
+
+  DateTime? selectedDate;
+  final now = DateTime.now();
+
+  Future<void> _selectDate() async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: DateTime(now.year), // This year (Jan 1)
+      lastDate: DateTime(now.year + 1),
+    );
+
+    setState(() {
+      selectedDate = pickedDate;
+    });
   }
 
   @override
@@ -406,20 +434,55 @@ class VisitOutState extends State<VisitOut> {
                             controller: concernedPerson,
                             label: 'Enter Concerned Person',
                           ),
-                          buildTextField(
-                            line: 1,
+
+                          // buildTextField(
+                          //   line: 1,
+                          //   controller: phone,
+                          //   label: 'Enter Phone No.',
+                          //   keyboardType: TextInputType.phone,
+                          //   validator: (value) {
+                          //     if (value == null || value.isEmpty) {
+                          //       return 'Enter Your Mobile No.';
+                          //     } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                          //       return 'Mobile number must be exactly 10 digits';
+                          //     }
+                          //     return null;
+                          //   },
+                          // ),
+                          TextField(
                             controller: phone,
-                            label: 'Enter Phone No.',
-                            keyboardType: TextInputType.phone,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Enter Your Mobile No.';
-                              } else if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                                return 'Mobile number must be exactly 10 digits';
-                              }
-                              return null;
-                            },
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(
+                                10,
+                              ), // Limit to 100 digits
+                              FilteringTextInputFormatter
+                                  .digitsOnly, // Only digits allowed
+                            ],
+
+                            decoration: InputDecoration(
+                              labelText: "Enter Phone No.",
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical:
+                                    4 * MediaQuery.of(context).devicePixelRatio,
+                                horizontal:
+                                    4 * MediaQuery.of(context).devicePixelRatio,
+                              ),
+                              labelStyle: TextStyle(
+                                color: Colors.black,
+                                fontSize:
+                                    5 * MediaQuery.of(context).devicePixelRatio,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(
+                                  4 * MediaQuery.of(context).devicePixelRatio,
+                                ), // Set the border radius
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                            ),
                           ),
+
                           // Row(
                           //   children: [
                           //     Expanded(
@@ -473,18 +536,45 @@ class VisitOutState extends State<VisitOut> {
                             controller: remark,
                             label: 'Enter description ',
                           ),
-                           buildTextField(
+                          buildTextField(
                             line: 1,
                             controller: industry,
                             label: 'Enter industry type ',
                           ),
-                           buildTextField(
-                            line: 1,
-                            controller: nextmeet,
-                            label: 'Enter next meeting ',
+                          //  buildTextField(
+                          //   line: 1,
+                          //   controller: nextmeet,
+                          //   label: 'Enter next meeting ',
+                          // ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              OutlinedButton(
+                                style: OutlinedButton.styleFrom(
+                                  backgroundColor: const Color(
+                                    0xFF03A9F4,
+                                  ), // Button background
+                                  foregroundColor:
+                                      Colors.white, // Text (and icon) color
+                                  side: BorderSide.none, // Remove border
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      8,
+                                    ), // Optional: rounded corners
+                                  ),
+                                ),
+                                onPressed: _selectDate,
+                                child: const Text('Select Next Date'),
+                              ),
+                              Text(
+                                selectedDate != null
+                                    ? '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'
+                                    : 'No date selected',
+                              ),
+                            ],
                           ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               ElevatedButton(
                                 onPressed: _pickImageFromCamera,
@@ -492,7 +582,7 @@ class VisitOutState extends State<VisitOut> {
                                   "Take Photo",
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontSize: ratio * 9,
+
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -519,21 +609,46 @@ class VisitOutState extends State<VisitOut> {
                             ],
                           ),
                           SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () => VisitOut(context),
-                            child: Text(
-                              "Visit Out",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: ratio * 9,
-                                fontWeight: FontWeight.bold,
+                          SizedBox(
+                            width: double.infinity, // FULL WIDTH
+                            child: ElevatedButton(
+                              onPressed: () => VisitOut(context),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF03A9F4),
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.zero, // REMOVE RADIUS
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ), // Taller button
+                              ),
+                              child: Text(
+                                "Visit Out",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: ratio * 9,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFF03a9f4),
-                            ),
                           ),
-                          SizedBox(height: 20),
+
+                          // ElevatedButton(
+                          //   onPressed: () => VisitOut(context),
+                          //   child: Text(
+                          //     "Visit Out",
+                          //     style: TextStyle(
+                          //       color: Colors.white,
+                          //       fontSize: ratio * 9,
+                          //       fontWeight: FontWeight.bold,
+                          //     ),
+                          //   ),
+                          //   style: ElevatedButton.styleFrom(
+                          //     backgroundColor: Color(0xFF03a9f4),
+                          //   ),
+                          // ),
+                          SizedBox(height: 10),
                         ],
                       ),
                     ),
