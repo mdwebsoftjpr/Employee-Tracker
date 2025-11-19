@@ -373,6 +373,23 @@ class EmpattdetailState extends State<EmpAttdetail> {
     }
   }
 
+
+Color getDayColor(String weekday) {
+  switch (weekday) {
+    case 'Sunday':   // Sunday or Saturday
+      return const Color.fromARGB(255, 250, 196, 196);
+    case 'Monday':
+    case 'Tuesday':
+    case 'Wednesday':
+    case 'Thursday':
+    case 'Friday':
+    case 'Saturday':
+      return const Color.fromARGB(255, 247, 239, 230);
+    default:
+      return const Color.fromARGB(255, 242, 188, 188);
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     double deviceWidth = MediaQuery.of(context).size.width;
@@ -449,7 +466,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                       padding: EdgeInsets.all(ratio * 2),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(deviceWidth * 0.03),
-                        color: const Color.fromARGB(255, 247, 239, 230),
+                        color: getDayColor(data['day']),
                       ),
                       child: Column(
                         children: [
@@ -515,12 +532,21 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
+                                   
+                                    Row(
+                                      children: [
+Text(data['day']+"/",style: TextStyle(
+                                        fontSize: ratio * 6,
+                                       
+                                      )),
+                                     Text(
                                       "Date",
                                       style: TextStyle(
                                         fontSize: ratio * 6,
-                                        fontWeight: FontWeight.bold,
+                                      
                                       ),
+                                    ),
+                                      ],
                                     ),
                                     Text(
                                       data['date'] != null
@@ -529,8 +555,9 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                               .reversed
                                               .join('-')
                                           : '',
-                                      style: TextStyle(fontSize: ratio * 6),
+                                      style: TextStyle(fontSize: 12),
                                     ),
+                                    
                                     Text(
                                       "Punch Out:",
                                       style: TextStyle(
@@ -579,7 +606,7 @@ class EmpattdetailState extends State<EmpAttdetail> {
                                                                 'P' ||
                                                             data['attendance_status'] ==
                                                                 'p')
-                                                        ? Color(0xFF03a9f4)
+                                                        ? Color.fromARGB(255, 1, 152, 26)
                                                         : Colors.redAccent,
                                                 borderRadius:
                                                     BorderRadius.circular(

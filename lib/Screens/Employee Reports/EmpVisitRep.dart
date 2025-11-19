@@ -222,8 +222,8 @@ class EmpvisitrepState extends State<Empvisitrep> {
                     ),
                     buildTextDetail("Mobile No.", visit['phoneno'], context),
                     buildTextDetail("Date", visit['date'], context),
-                    buildTextDetail("Start Time", visit['time'], context),
-                    buildTextDetail("End Time", visit['end'], context),
+                    buildTextDetail("Start Time", visit['end'], context),
+                    buildTextDetail("End Time", visit['time'], context),
                     buildTextDetail("Transport", visit['transport'], context),
                     buildTextDetail("Probablity", visit['probablity'], context),
                     buildTextDetail("Prospects", visit['prospects'], context),
@@ -296,7 +296,7 @@ class EmpvisitrepState extends State<Empvisitrep> {
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Color(0xFF03a9f4),
         title: Text(
-          'Employee Visit',
+          'Visit',
           style: TextStyle(
             fontSize: ratio * 9,
             fontWeight: FontWeight.bold,

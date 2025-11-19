@@ -2109,7 +2109,7 @@ class _EmpHomeState extends State<EmpHome> {
                                   ],
                                 ),
                                 child: Padding(
-                                  padding: EdgeInsets.all(10),
+                                  padding: EdgeInsets.all(6),
                                   child: Column(
                                     children: [
                                       Text("Break 1"),
@@ -2455,13 +2455,13 @@ class _EmpHomeState extends State<EmpHome> {
 
                         SizedBox(height: 10),
                         Container(
-                          padding: EdgeInsets.only(top: ratio * 5, bottom: 0),
+                          padding: EdgeInsets.only(top: ratio * 2, bottom: 0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(
                               10,
                             ), // Optional: Adds rounded corners
                           ),
-                          width: deviceWidth * 0.9,
+                          width: deviceWidth * 0.99,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
